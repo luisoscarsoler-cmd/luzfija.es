@@ -494,7 +494,7 @@
     function toggleMenu(force){ const s=(typeof force==='boolean')?force:!el.menuPanel.classList.contains('show'); el.menuPanel.classList.toggle('show',s); }
     
     document.addEventListener('DOMContentLoaded', async ()=>{
-      fetchTarifas(); loadInputs(); 
+      loadInputs(); 
       Object.values(el.inputs).forEach(i=>{
           i.addEventListener('input',()=>{
               state.userHasInteracted=true; updateKwhHint();
