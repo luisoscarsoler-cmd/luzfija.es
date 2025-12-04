@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <base target="_top">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Comparador profesional de tarifas eléctricas. Encuentra la luz más barata en segundos."
-/>
+  <meta name="description" content="Comparador profesional de tarifas eléctricas. Encuentra la luz más barata en segundos." />
   <title>⚡ Comparador de Tarifas Eléctricas</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
   <style>
+    /* === TU DISEÑO ORIGINAL EXACTO === */
     :root{
       --bg0:#070A12;
       --bg1:#0B1020;
@@ -34,8 +34,7 @@
       --sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif;
     }
 
-    *{box-sizing:border-box;
-    margin:0; padding:0}
+    *{box-sizing:border-box; margin:0; padding:0}
     html,body{height:100%;}
     body{
       font-family: var(--sans);
@@ -53,12 +52,10 @@
       padding: clamp(50px, 5vw, 70px) clamp(22px, 4.5vw, 60px);
     }
 
-    .topbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 22px;
-    }
+    .topbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 22px; }
     .brand{display:flex; align-items:center; gap:14px; min-width: 240px; position: relative;}
     .logo{
-      width:60px;
-      height:60px; border-radius:18px;
+      width:60px; height:60px; border-radius:18px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
       background-size: 400% 400%;
       box-shadow: 0 0 30px rgba(139,92,246,.4), 0 0 60px rgba(139,92,246,.2), 0 10px 40px rgba(0,0,0,.3), inset 0 0 20px rgba(255,255,255,.1);
@@ -68,365 +65,194 @@
       border: 2px solid rgba(255,255,255,.2);
       backdrop-filter: blur(10px);
     }
-    .logo::before{ content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,.8) 50%, transparent 70%); animation: logoRotate 3s linear infinite; }
-    .logo::after{ content: '';
-    position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border-radius: 20px; border: 2px solid transparent;
-    background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
-    animation: ringPulse 2s ease-in-out infinite; opacity: 0.6; }
+    .logo::before{ content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,.8) 50%, transparent 70%); animation: logoRotate 3s linear infinite; }
+    .logo::after{ content: ''; position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border-radius: 20px; border: 2px solid transparent; background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringPulse 2s ease-in-out infinite; opacity: 0.6; }
     
-    @keyframes gradientShift { 0%, 100% { background-position: 0% 50%;
-    } 50% { background-position: 100% 50%; } }
-    @keyframes logoFloat { 0%, 100% { transform: translateY(0) rotate(0deg);
-    } 25% { transform: translateY(-5px) rotate(-2deg); } 50% { transform: translateY(0) rotate(0deg); } 75% { transform: translateY(-5px) rotate(2deg);
-    } }
-    @keyframes logoRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg);
-    } }
-    @keyframes ringPulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.1);
-    opacity: 1; } }
-    .logo:hover{ transform: scale(1.15) rotate(5deg) !important;
-    box-shadow: 0 0 50px rgba(139,92,246,.6), 0 0 100px rgba(139,92,246,.3), 0 15px 50px rgba(0,0,0,.4);
-    }
+    @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    @keyframes logoFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-5px) rotate(-2deg); } 50% { transform: translateY(0) rotate(0deg); } 75% { transform: translateY(-5px) rotate(2deg); } }
+    @keyframes logoRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes ringPulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.1); opacity: 1; } }
+    .logo:hover{ transform: scale(1.15) rotate(5deg) !important; box-shadow: 0 0 50px rgba(139,92,246,.6), 0 0 100px rgba(139,92,246,.3), 0 15px 50px rgba(0,0,0,.4); }
     
-    .particle{ position: absolute; width: 4px; height: 4px; background: linear-gradient(45deg, var(--accent), var(--accent2));
-    border-radius: 50%; pointer-events: none; opacity: 0; animation: particleFloat 3s ease-in-out infinite; box-shadow: 0 0 10px currentColor;
-    }
+    .particle{ position: absolute; width: 4px; height: 4px; background: linear-gradient(45deg, var(--accent), var(--accent2)); border-radius: 50%; pointer-events: none; opacity: 0; animation: particleFloat 3s ease-in-out infinite; box-shadow: 0 0 10px currentColor; }
     .particle:nth-child(1) { top: 10px; left: -20px; animation-delay: 0s; }
-    .particle:nth-child(2) { top: 40px;
-    left: -15px; animation-delay: 0.5s; }
-    .particle:nth-child(3) { top: 25px; left: 80px; animation-delay: 1s;
-    }
+    .particle:nth-child(2) { top: 40px; left: -15px; animation-delay: 0.5s; }
+    .particle:nth-child(3) { top: 25px; left: 80px; animation-delay: 1s; }
     .particle:nth-child(4) { top: 5px; left: 75px; animation-delay: 1.5s; }
-    .particle:nth-child(5) { top: 50px;
-    left: 70px; animation-delay: 2s; }
-    .particle:nth-child(6) { top: -5px; left: 30px; animation-delay: 2.5s;
-    }
-    @keyframes particleFloat { 0% { opacity: 0; transform: translateY(0) scale(0); } 20% { opacity: 1;
-    transform: translateY(-10px) scale(1); } 80% { opacity: 1; transform: translateY(-30px) scale(0.8); } 100% { opacity: 0; transform: translateY(-50px) scale(0);
-    } }
-    @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1;
-    } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+    .particle:nth-child(5) { top: 50px; left: 70px; animation-delay: 2s; }
+    .particle:nth-child(6) { top: -5px; left: 30px; animation-delay: 2.5s; }
+    @keyframes particleFloat { 0% { opacity: 0; transform: translateY(0) scale(0); } 20% { opacity: 1; transform: translateY(-10px) scale(1); } 80% { opacity: 1; transform: translateY(-30px) scale(0.8); } 100% { opacity: 0; transform: translateY(-50px) scale(0); } }
+    @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     
-    .brand h1{ font-size: clamp(20px,3.2vw,34px);
-    line-height: 1.05; letter-spacing: -0.5px; font-weight: 900; background: linear-gradient( 90deg, rgba(167,139,250,1) 0%, rgba(139,92,246,1) 25%, rgba(34,197,94,1) 50%, rgba(139,92,246,1) 75%, rgba(167,139,250,1) 100% );
-    background-size: 200% auto; -webkit-background-clip: text; background-clip:text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; text-shadow: 0 0 30px rgba(139,92,246,.3);
-    }
-    @keyframes shimmer { 0% { background-position: 0% center; } 100% { background-position: 200% center;
-    } }
-    @keyframes ripple { from { transform: scale(0); opacity: 1; } to { transform: scale(4);
-    opacity: 0; } }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px);
-    } to { opacity: 1; transform: translateY(0); } }
-    @keyframes goldenPulse { 0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, .3), 0 0 40px rgba(251, 191, 36, .1);
-    } 50% { box-shadow: 0 0 30px rgba(251, 191, 36, .6), 0 0 60px rgba(251, 191, 36, .2);
-    } }
+    .brand h1{ font-size: clamp(20px,3.2vw,34px); line-height: 1.05; letter-spacing: -0.5px; font-weight: 900; background: linear-gradient( 90deg, rgba(167,139,250,1) 0%, rgba(139,92,246,1) 25%, rgba(34,197,94,1) 50%, rgba(139,92,246,1) 75%, rgba(167,139,250,1) 100% ); background-size: 200% auto; -webkit-background-clip: text; background-clip:text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; text-shadow: 0 0 30px rgba(139,92,246,.3); }
+    @keyframes shimmer { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+    @keyframes ripple { from { transform: scale(0); opacity: 1; } to { transform: scale(4); opacity: 0; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes goldenPulse { 0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, .3), 0 0 40px rgba(251, 191, 36, .1); } 50% { box-shadow: 0 0 30px rgba(251, 191, 36, .6), 0 0 60px rgba(251, 191, 36, .2); } }
     
     .brand p{color: var(--muted); font-size: 13px; margin-top: 3px;}
-    .actions{display:flex;
-    align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
-    .pill{ display:flex; align-items:center; gap:10px; padding: 10px 14px; background: var(--card); border: 1px solid var(--border);
-    border-radius: 999px; backdrop-filter: blur(14px); box-shadow: 0 12px 50px rgba(0,0,0,.20); color: var(--muted); font-size: 13px; user-select:none; white-space: nowrap;
-    }
+    .actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
+    .pill{ display:flex; align-items:center; gap:10px; padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; backdrop-filter: blur(14px); box-shadow: 0 12px 50px rgba(0,0,0,.20); color: var(--muted); font-size: 13px; user-select:none; white-space: nowrap; }
     .pill.loading{border-color: rgba(139,92,246,.55); box-shadow: 0 0 0 4px rgba(139,92,246,.12), 0 18px 55px rgba(0,0,0,.35);}
-    .pill.ok{border-color: rgba(34,197,94,.55);
-    box-shadow: 0 0 0 4px rgba(34,197,94,.12), 0 18px 55px rgba(0,0,0,.35);}
-    .pill.err{border-color: rgba(239,68,68,.55);
-    box-shadow: 0 0 0 4px rgba(239,68,68,.12), 0 18px 55px rgba(0,0,0,.35);}
+    .pill.ok{border-color: rgba(34,197,94,.55); box-shadow: 0 0 0 4px rgba(34,197,94,.12), 0 18px 55px rgba(0,0,0,.35);}
+    .pill.err{border-color: rgba(239,68,68,.55); box-shadow: 0 0 0 4px rgba(239,68,68,.12), 0 18px 55px rgba(0,0,0,.35);}
 
-    .btn{ border: 1px solid var(--border); background: var(--card);
-    color: var(--text); padding: 10px 12px; border-radius: 12px; cursor:pointer; font-weight: 900; font-size: 13px; display:inline-flex; align-items:center; gap: 10px;
-    transition: transform .15s ease, background .15s ease, border-color .15s ease, opacity .15s ease; backdrop-filter: blur(14px); min-height: 44px;
-    }
+    .btn{ border: 1px solid var(--border); background: var(--card); color: var(--text); padding: 10px 12px; border-radius: 12px; cursor:pointer; font-weight: 900; font-size: 13px; display:inline-flex; align-items:center; gap: 10px; transition: transform .15s ease, background .15s ease, border-color .15s ease, opacity .15s ease; backdrop-filter: blur(14px); min-height: 44px; }
     .btn:hover{transform: translateY(-1px); border-color: var(--border2); background: var(--card2);}
-    .btn:active{transform: translateY(0px);
-    opacity:.9}
-    .btn.primary{ background: linear-gradient(45deg, rgba(139,92,246,1), rgba(167,139,250,1)); border-color: rgba(139,92,246,.55); box-shadow: 0 12px 30px rgba(139,92,246,.25); padding: 12px 14px;
-    position: relative; overflow: hidden; }
-    .btn.primary::before{ content: ''; position: absolute; bottom: 0; left: 0; height: 3px;
-    width: 0%; background: linear-gradient(90deg, #22C55E, #10B981); box-shadow: 0 0 10px rgba(34,197,94,.6); transition: width 0.3s ease;
-    }
+    .btn:active{transform: translateY(0px); opacity:.9}
+    .btn.primary{ background: linear-gradient(45deg, rgba(139,92,246,1), rgba(167,139,250,1)); border-color: rgba(139,92,246,.55); box-shadow: 0 12px 30px rgba(139,92,246,.25); padding: 12px 14px; position: relative; overflow: hidden; }
+    .btn.primary::before{ content: ''; position: absolute; bottom: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, #22C55E, #10B981); box-shadow: 0 0 10px rgba(34,197,94,.6); transition: width 0.3s ease; }
     .btn.primary.calculating::before{ animation: progressBar 2s ease-in-out; }
-    @keyframes progressBar { 0% { width: 0%;
-    } 50% { width: 70%; } 100% { width: 100%; } }
-    .btn.primary:disabled{ background: rgba(255,255,255,.06); border-color: var(--border);
-    box-shadow:none; cursor:not-allowed; opacity:.6; transform:none; }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg);
-    } }
-    .spinner{ display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius:50%; animation: spin 0.6s linear infinite;
-    }
+    @keyframes progressBar { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
+    .btn.primary:disabled{ background: rgba(255,255,255,.06); border-color: var(--border); box-shadow:none; cursor:not-allowed; opacity:.6; transform:none; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .spinner{ display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius:50%; animation: spin 0.6s linear infinite; }
 
-    .grid{ display:grid; grid-template-columns: 420px 1fr; gap: 24px;
-    }
+    .grid{ display:grid; grid-template-columns: 420px 1fr; gap: 24px; }
     @media (max-width: 1100px){ .grid{grid-template-columns:1fr;} }
-    .card{ background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); box-shadow: var(--shadow); overflow:hidden; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); transition: transform .3s ease, box-shadow .3s ease; animation: fadeInUp 0.5s ease-out;
-    margin-bottom: 6px; }
-    .card:hover{ transform: translateY(-4px); box-shadow: 0 28px 80px rgba(0,0,0,.60);
-    }
-    .card .head{ padding: 18px 18px 14px 18px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, rgba(139,92,246,.10), transparent);
-    }
-    .kicker{ font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted2); font-weight: 900;
-    }
-    .title{ margin-top: 6px; font-size: 18px; font-weight: 900; letter-spacing: -0.3px;
-    }
+    .card{ background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow:hidden; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); transition: transform .3s ease, box-shadow .3s ease; animation: fadeInUp 0.5s ease-out; margin-bottom: 6px; }
+    .card:hover{ transform: translateY(-4px); box-shadow: 0 28px 80px rgba(0,0,0,.60); }
+    .card .head{ padding: 18px 18px 14px 18px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, rgba(139,92,246,.10), transparent); }
+    .kicker{ font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted2); font-weight: 900; }
+    .title{ margin-top: 6px; font-size: 18px; font-weight: 900; letter-spacing: -0.3px; }
     .body{padding: 18px;}
-    .alert{ border: 1px solid rgba(239,68,68,.40); background: rgba(239,68,68,.15); color: rgba(255,255,255,.95);
-    padding: 12px 12px; border-radius: 14px; font-size: 13px; line-height: 1.35; display:none; margin-bottom: 12px;
-    }
+    .alert{ border: 1px solid rgba(239,68,68,.40); background: rgba(239,68,68,.15); color: rgba(255,255,255,.95); padding: 12px 12px; border-radius: 14px; font-size: 13px; line-height: 1.35; display:none; margin-bottom: 12px; }
     .alert.show{display:block} .alert b{color: #fff}
-    .form{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-    }
+    .form{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     @media (max-width: 520px){ .form{grid-template-columns: repeat(2, 1fr);} }
-    .group{display:flex; flex-direction:column;
-    gap: 7px;}
-    label{ font-size: 12px; color: var(--muted); font-weight: 900; letter-spacing: .2px; position: relative; display: inline-flex; align-items: center;
-    gap: 6px; }
-    .tooltip{ position: relative; cursor: help; display: inline-flex; align-items: center; justify-content: center; width: 16px;
-    height: 16px; border-radius: 50%; background: rgba(139,92,246,.2); color: var(--accent); font-size: 10px; font-weight: 900; }
-    .tooltip:hover::after{ content: attr(data-tip);
-    position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 8px 12px; background: rgba(5,8,16,.95); color: #fff; border-radius: 8px;
-    font-size: 11px; font-weight: 600; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 100; animation: fadeInUp 0.2s ease;
-    border: 1px solid rgba(139,92,246,.4); }
+    .group{display:flex; flex-direction:column; gap: 7px;}
+    label{ font-size: 12px; color: var(--muted); font-weight: 900; letter-spacing: .2px; position: relative; display: inline-flex; align-items: center; gap: 6px; }
+    .tooltip{ position: relative; cursor: help; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(139,92,246,.2); color: var(--accent); font-size: 10px; font-weight: 900; }
+    .tooltip:hover::after{ content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 8px 12px; background: rgba(5,8,16,.95); color: #fff; border-radius: 8px; font-size: 11px; font-weight: 600; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 100; animation: fadeInUp 0.2s ease; border: 1px solid rgba(139,92,246,.4); }
     
-    .input{ width:100%; padding: 14px 12px; border-radius: 12px;
-    border: 1px solid var(--border); background: rgba(0,0,0,.22); color: var(--text); outline:none; font-weight: 900; font-size: 15px;
-    transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease, background .15s ease; min-height: 44px; position: relative;
-    }
-    .input:focus{ border-color: var(--accent); background: rgba(139, 92, 246, 0.1);
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15), 0 0 15px rgba(139, 92, 246, 0.3); transform: translateY(-2px);
-    }
+    .input{ width:100%; padding: 14px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.22); color: var(--text); outline:none; font-weight: 900; font-size: 15px; transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease, background .15s ease; min-height: 44px; position: relative; }
+    .input:focus{ border-color: var(--accent); background: rgba(139, 92, 246, 0.1); box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15), 0 0 15px rgba(139, 92, 246, 0.3); transform: translateY(-2px); }
     .input:valid:not(:placeholder-shown){ border-color: rgba(34,197,94,.4); box-shadow: 0 0 0 2px rgba(34,197,94,.08); }
-    .input.error{ border-color: rgba(239,68,68,.7);
-    box-shadow: 0 0 0 4px rgba(239,68,68,.12); background: rgba(239,68,68,.08); }
-    .help{ margin-top: 12px; padding: 12px 12px; border-radius: 14px;
-    border: 1px solid rgba(139,92,246,.25); background: rgba(139,92,246,.10); color: var(--muted); font-size: 12px; line-height: 1.35; }
-    .row{ display:flex; gap: 12px;
-    align-items:center; justify-content: space-between; flex-wrap: wrap; margin-top: 12px; }
-    .kwhPill{ display:flex; align-items:baseline; flex-wrap:wrap; gap: 10px; padding: 10px 12px;
-    border-radius: 14px; border: 1px solid var(--border); background: rgba(0,0,0,.18); min-height: 44px; }
-    .kwhLabel{ color: var(--muted2); font-weight: 900;
-    letter-spacing: .3px; text-transform: uppercase; font-size: 11px; }
-    .kwhValue{ font-family: var(--mono); font-size: 17px; font-weight: 1000; letter-spacing: -.2px;
-    color: rgba(255,255,255,.94); }
+    .input.error{ border-color: rgba(239,68,68,.7); box-shadow: 0 0 0 4px rgba(239,68,68,.12); background: rgba(239,68,68,.08); }
+    .help{ margin-top: 12px; padding: 12px 12px; border-radius: 14px; border: 1px solid rgba(139,92,246,.25); background: rgba(139,92,246,.10); color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .row{ display:flex; gap: 12px; align-items:center; justify-content: space-between; flex-wrap: wrap; margin-top: 12px; }
+    .kwhPill{ display:flex; align-items:baseline; flex-wrap:wrap; gap: 10px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--border); background: rgba(0,0,0,.18); min-height: 44px; }
+    .kwhLabel{ color: var(--muted2); font-weight: 900; letter-spacing: .3px; text-transform: uppercase; font-size: 11px; }
+    .kwhValue{ font-family: var(--mono); font-size: 17px; font-weight: 1000; letter-spacing: -.2px; color: rgba(255,255,255,.94); }
     @media (max-width: 520px){ .kwhValue{font-size: 16px;} .row{gap: 10px;} }
 
-    .heroKpis{ display:grid;
-    grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+    .heroKpis{ display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
     @media (max-width: 760px){ .heroKpis{grid-template-columns: 1fr;} }
-    .heroCard{ padding: 18px 16px;
-    border-radius: 18px; border: 1px solid var(--border); background: linear-gradient(135deg, rgba(139,92,246,.14), rgba(34,197,94,.06)); position:relative; overflow:hidden; min-height: 120px; display:flex; flex-direction:column; justify-content:center; gap: 10px;
-    animation: fadeInUp 0.6s ease-out; animation-delay: 0.1s; animation-fill-mode: both; }
-    .heroCard.best{ border: 2px solid rgba(251, 191, 36, .6);
-    background: linear-gradient(135deg, rgba(251, 191, 36, .15), rgba(139,92,246,.10)); animation: fadeInUp 0.6s ease-out, goldenPulse 2s ease-in-out infinite; animation-delay: 0.1s, 0.8s;
-    animation-fill-mode: both, forwards; position: relative; }
-    .heroCard.best::before{ content: ''; position: absolute; top: 0; left: -100%; width: 100%;
-    height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent); animation: shine 3s infinite;
-    }
-    @keyframes shine { 0% { left: -100%; } 50%, 100% { left: 200%;
-    } }
-    .heroCard .k{ font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted2); font-weight: 1000; display:flex; align-items:center;
-    gap: 6px; }
-    .heroCard.best .k::before{ content: "🏆"; font-size: 14px;
-    }
-    .heroCard .v{ font-size: clamp(28px, 2.6vw, 44px); font-weight: 1100; letter-spacing: -0.6px; line-height: 1.0; white-space: nowrap; overflow: hidden;
-    text-overflow: ellipsis; }
+    .heroCard{ padding: 18px 16px; border-radius: 18px; border: 1px solid var(--border); background: linear-gradient(135deg, rgba(139,92,246,.14), rgba(34,197,94,.06)); position:relative; overflow:hidden; min-height: 120px; display:flex; flex-direction:column; justify-content:center; gap: 10px; animation: fadeInUp 0.6s ease-out; animation-delay: 0.1s; animation-fill-mode: both; }
+    .heroCard.best{ border: 2px solid rgba(251, 191, 36, .6); background: linear-gradient(135deg, rgba(251, 191, 36, .15), rgba(139,92,246,.10)); animation: fadeInUp 0.6s ease-out, goldenPulse 2s ease-in-out infinite; animation-delay: 0.1s, 0.8s; animation-fill-mode: both, forwards; position: relative; }
+    .heroCard.best::before{ content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent); animation: shine 3s infinite; }
+    @keyframes shine { 0% { left: -100%; } 50%, 100% { left: 200%; } }
+    .heroCard .k{ font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted2); font-weight: 1000; display:flex; align-items:center; gap: 6px; }
+    .heroCard.best .k::before{ content: "🏆"; font-size: 14px; }
+    .heroCard .v{ font-size: clamp(28px, 2.6vw, 44px); font-weight: 1100; letter-spacing: -0.6px; line-height: 1.0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .heroCard .s{ color: var(--muted); font-size: 12px; line-height: 1.25; }
 
-    .statsbar{ display:grid;
-    grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; opacity: .92; }
+    .statsbar{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; opacity: .92; }
     @media (max-width: 760px){ .statsbar{grid-template-columns: 1fr;} }
-    .statCard{ border: 1px solid var(--border);
-    background: rgba(0,0,0,.14); border-radius: 16px; padding: 12px 12px; display:flex; flex-direction:column; gap: 6px; animation: fadeInUp 0.5s ease-out; animation-fill-mode: both;
-    }
-    .statCard:nth-child(1) { animation-delay: 0.2s; } .statCard:nth-child(2) { animation-delay: 0.3s; } .statCard:nth-child(3) { animation-delay: 0.4s;
-    }
-    .statLabel{ color: var(--muted2); letter-spacing: 1px; text-transform: uppercase; font-size: 10px; font-weight: 1000;
-    }
-    .statValue{ font-size: clamp(18px, 1.5vw, 24px); font-weight: 1100; letter-spacing: -0.4px; white-space: nowrap;
-    }
+    .statCard{ border: 1px solid var(--border); background: rgba(0,0,0,.14); border-radius: 16px; padding: 12px 12px; display:flex; flex-direction:column; gap: 6px; animation: fadeInUp 0.5s ease-out; animation-fill-mode: both; }
+    .statCard:nth-child(1) { animation-delay: 0.2s; } .statCard:nth-child(2) { animation-delay: 0.3s; } .statCard:nth-child(3) { animation-delay: 0.4s; }
+    .statLabel{ color: var(--muted2); letter-spacing: 1px; text-transform: uppercase; font-size: 10px; font-weight: 1000; }
+    .statValue{ font-size: clamp(18px, 1.5vw, 24px); font-weight: 1100; letter-spacing: -0.4px; white-space: nowrap; }
 
-    .badge{ display:inline-flex; align-items:center; justify-content:center; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,.06);
-    font-weight: 1000; font-size: 11px; letter-spacing: .3px; transition: transform .15s ease, box-shadow .15s ease; }
-    .badge.b1{ border: none;
-    background: linear-gradient(135deg, rgba(59,130,246,.9), rgba(96,165,250,.8)); color: #fff; box-shadow: 0 4px 12px rgba(59,130,246,.3); }
-    .badge.b1:hover{ transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(59,130,246,.4); }
-    .badge.b3{ border: none; background: linear-gradient(135deg, rgba(245,158,11,.9), rgba(251,191,36,.8)); color: #fff;
-    box-shadow: 0 4px 12px rgba(245,158,11,.3); }
-    .badge.b3:hover{ transform: scale(1.05); box-shadow: 0 6px 16px rgba(245,158,11,.4);
-    }
+    .badge{ display:inline-flex; align-items:center; justify-content:center; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,.06); font-weight: 1000; font-size: 11px; letter-spacing: .3px; transition: transform .15s ease, box-shadow .15s ease; }
+    .badge.b1{ border: none; background: linear-gradient(135deg, rgba(59,130,246,.9), rgba(96,165,250,.8)); color: #fff; box-shadow: 0 4px 12px rgba(59,130,246,.3); }
+    .badge.b1:hover{ transform: scale(1.05); box-shadow: 0 6px 16px rgba(59,130,246,.4); }
+    .badge.b3{ border: none; background: linear-gradient(135deg, rgba(245,158,11,.9), rgba(251,191,36,.8)); color: #fff; box-shadow: 0 4px 12px rgba(245,158,11,.3); }
+    .badge.b3:hover{ transform: scale(1.05); box-shadow: 0 6px 16px rgba(245,158,11,.4); }
 
-    .toolbar{ display:flex; align-items:center; justify-content:flex-end; gap: 12px; margin: 10px 0 12px; flex-wrap: wrap;
-    }
+    .toolbar{ display:flex; align-items:center; justify-content:flex-end; gap: 12px; margin: 10px 0 12px; flex-wrap: wrap; }
     .filters{display:flex; gap: 10px; flex-wrap: wrap;}
-    .fbtn{ padding: 10px 12px; border-radius: 12px;
-    border: 1px solid var(--border); background: rgba(255,255,255,.06); color: var(--muted); cursor:pointer; font-weight: 1000; font-size: 12px;
-    transition: transform .15s ease, border-color .15s ease, background .15s ease; user-select:none; min-height: 44px; display:flex; align-items:center;
-    }
+    .fbtn{ padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,.06); color: var(--muted); cursor:pointer; font-weight: 1000; font-size: 12px; transition: transform .15s ease, border-color .15s ease, background .15s ease; user-select:none; min-height: 44px; display:flex; align-items:center; }
     .fbtn:hover{transform: translateY(-1px); border-color: var(--border2); background: rgba(255,255,255,.09);}
-    .fbtn.active{ background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.55); color: var(--text);
-    }
+    .fbtn.active{ background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.55); color: var(--text); }
 
-    .tableWrap{ background: transparent !important; border: none !important; overflow: visible !important;
-    }
-    table{ width: 100%; border-collapse: separate !important; border-spacing: 0 8px; table-layout: fixed;
-    }
+    .tableWrap{ background: transparent !important; border: none !important; overflow: visible !important; }
+    table{ width: 100%; border-collapse: separate !important; border-spacing: 0 8px; table-layout: fixed; }
     
-    thead th:nth-child(1), tbody td:nth-child(1) { width: 4%;
-    }
-    thead th:nth-child(2), tbody td:nth-child(2) { width: 23%;
-    }
-    thead th:nth-child(3), tbody td:nth-child(3) { width: 10%;
-    }
-    thead th:nth-child(4), tbody td:nth-child(4) { width: 10%;
-    }
-    thead th:nth-child(5), tbody td:nth-child(5) { width: 11%;
-    }
-    thead th:nth-child(6), tbody td:nth-child(6) { width: 10%;
-    }
-    thead th:nth-child(7), tbody td:nth-child(7) { width: 12%;
-    }
-    thead th:nth-child(8), tbody td:nth-child(8) { width: 8%;
-    }
+    thead th:nth-child(1), tbody td:nth-child(1) { width: 4%; }
+    thead th:nth-child(2), tbody td:nth-child(2) { width: 23%; }
+    thead th:nth-child(3), tbody td:nth-child(3) { width: 10%; }
+    thead th:nth-child(4), tbody td:nth-child(4) { width: 10%; }
+    thead th:nth-child(5), tbody td:nth-child(5) { width: 11%; }
+    thead th:nth-child(6), tbody td:nth-child(6) { width: 10%; }
+    thead th:nth-child(7), tbody td:nth-child(7) { width: 12%; }
+    thead th:nth-child(8), tbody td:nth-child(8) { width: 8%; }
     thead th:nth-child(9), tbody td:nth-child(9) { width: 8%; }
 
-    thead th{ position: sticky;
-    top: 0; z-index: 5; text-align:right; padding: 14px 12px; font-size: 11px !important; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted) !important;
-    background: transparent !important; border-bottom: none !important; user-select:none; white-space: nowrap; padding-bottom: 15px;
-    }
+    thead th{ position: sticky; top: 0; z-index: 5; text-align:right; padding: 14px 12px; font-size: 11px !important; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted) !important; background: transparent !important; border-bottom: none !important; user-select:none; white-space: nowrap; padding-bottom: 15px; }
     thead th:first-child, tbody td:first-child{text-align:center}
-    thead th:nth-child(2), tbody td:nth-child(2){text-align:left;
-    white-space: nowrap;}
+    thead th:nth-child(2), tbody td:nth-child(2){text-align:left; white-space: nowrap;}
     thead th.sort{cursor:pointer}
     thead th.sort:hover{background: rgba(139,92,246,.12)}
-    .sortIcon{opacity:.8; font-size: 12px;
-    margin-left: 6px;}
+    .sortIcon{opacity:.8; font-size: 12px; margin-left: 6px;}
 
-    tbody tr { background: rgba(255, 255, 255, 0.03); transition: all 0.2s ease; backdrop-filter: blur(10px);
-    }
-    tbody td{ padding: 14px 12px; border-bottom: none !important; text-align:right; font-size: 15px; color: rgba(255,255,255,.88); vertical-align: middle;
-    white-space: nowrap; }
-    tbody tr td:first-child { border-radius: 12px 0 0 12px;
-    }
-    tbody tr td:last-child  { border-radius: 0 12px 12px 0;
-    }
-    tbody td:nth-child(2){ font-weight: 1100; color: #fff; font-size: 14px;
-    }
-    tbody tr:hover{ transform: scale(1.01) translateY(-2px); background: rgba(255, 255, 255, 0.07); box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    z-index: 10; position: relative; }
-    tbody tr.best{ background: linear-gradient(90deg, rgba(34,197,94,0.15), rgba(139,92,246,0.1)) !important; border: 1px solid rgba(34,197,94,0.3);
-    box-shadow: 0 0 20px rgba(34,197,94,0.1); }
-    tbody tr.best td:nth-child(2)::before{ content: "🏆 "; font-size: 14px; margin-right: 4px;
-    }
+    tbody tr { background: rgba(255, 255, 255, 0.03); transition: all 0.2s ease; backdrop-filter: blur(10px); }
+    tbody td{ padding: 14px 12px; border-bottom: none !important; text-align:right; font-size: 15px; color: rgba(255,255,255,.88); vertical-align: middle; white-space: nowrap; }
+    tbody tr td:first-child { border-radius: 12px 0 0 12px; }
+    tbody tr td:last-child  { border-radius: 0 12px 12px 0; }
+    tbody td:nth-child(2){ font-weight: 1100; color: #fff; font-size: 14px; }
+    tbody tr:hover{ transform: scale(1.01) translateY(-2px); background: rgba(255, 255, 255, 0.07); box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 10; position: relative; }
+    tbody tr.best{ background: linear-gradient(90deg, rgba(34,197,94,0.15), rgba(139,92,246,0.1)) !important; border: 1px solid rgba(34,197,94,0.3); box-shadow: 0 0 20px rgba(34,197,94,0.1); }
+    tbody tr.best td:nth-child(2)::before{ content: "🏆 "; font-size: 14px; margin-right: 4px; }
 
-    tbody tr:nth-child(1) td:first-child { color: #FFD700; font-weight: 1000; font-size: 1.3em;
-    text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
-    tbody tr:nth-child(2) td:first-child { color: #C0C0C0; font-weight: 1000;
-    font-size: 1.2em; text-shadow: 0 0 10px rgba(192, 192, 192, 0.3); }
-    tbody tr:nth-child(3) td:first-child { color: #CD7F32;
-    font-weight: 1000; font-size: 1.2em; text-shadow: 0 0 10px rgba(205, 127, 50, 0.3); }
+    tbody tr:nth-child(1) td:first-child { color: #FFD700; font-weight: 1000; font-size: 1.3em; text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+    tbody tr:nth-child(2) td:first-child { color: #C0C0C0; font-weight: 1000; font-size: 1.2em; text-shadow: 0 0 10px rgba(192, 192, 192, 0.3); }
+    tbody tr:nth-child(3) td:first-child { color: #CD7F32; font-weight: 1000; font-size: 1.2em; text-shadow: 0 0 10px rgba(205, 127, 50, 0.3); }
 
-    td.vs{white-space: nowrap;
-    position:relative;}
-    .vs-text{ font-weight: 1100; min-width: 65px; text-align: right;
-    }
+    td.vs{white-space: nowrap; position:relative;}
+    .vs-text{ font-weight: 1100; min-width: 65px; text-align: right; }
     .vs-text.pos{color: rgba(239,68,68,.95);}
     .vs-text.neg{color: rgba(34,197,94,.95);}
     .vs-text.zero{color: var(--muted2);}
 
-    .web{ display:inline-flex;
-    width: 38px; height:38px; border-radius: 12px; border: 1px solid var(--border); background: linear-gradient(135deg, rgba(139,92,246,.18), rgba(34,197,94,.10)); align-items:center; justify-content:center; text-decoration:none;
-    transition: transform .15s ease, border-color .15s ease, background .15s ease; }
-    .web:hover{transform: translateY(-1px) scale(1.04); border-color: var(--border2);
-    background: linear-gradient(135deg, rgba(139,92,246,.30), rgba(34,197,94,.16));}
+    .web{ display:inline-flex; width: 38px; height:38px; border-radius: 12px; border: 1px solid var(--border); background: linear-gradient(135deg, rgba(139,92,246,.18), rgba(34,197,94,.10)); align-items:center; justify-content:center; text-decoration:none; transition: transform .15s ease, border-color .15s ease, background .15s ease; }
+    .web:hover{transform: translateY(-1px) scale(1.04); border-color: var(--border2); background: linear-gradient(135deg, rgba(139,92,246,.30), rgba(34,197,94,.16));}
     .web:active{transform: translateY(0px) scale(.98)}
-    .empty{ padding: 14px; color: var(--muted); font-size: 13px;
-    }
+    .empty{ padding: 14px; color: var(--muted); font-size: 13px; }
 
     .menu{position:relative;}
-    .menuPanel{ position:absolute; right:0; top: calc(100% + 10px); min-width: 260px; background: rgba(5,8,16,.92);
-    border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow2); backdrop-filter: blur(14px); padding: 8px; display:none; z-index: 50; }
-    .menuPanel.show{display:block;
-    animation: popMenu .16s ease;}
-    @keyframes popMenu{ from{opacity:0; transform: translateY(6px);} to{opacity:1;
-    transform: translateY(0px);} }
-    .menuItem{ width: 100%; text-align:left; padding: 10px 10px; border-radius: 12px; border: 1px solid transparent;
-    background: transparent; color: rgba(255,255,255,.92); cursor:pointer; font-weight: 1000; font-size: 13px; display:flex; align-items:center; justify-content:space-between; gap: 10px; white-space: nowrap; min-height: 44px;
-    }
+    .menuPanel{ position:absolute; right:0; top: calc(100% + 10px); min-width: 260px; background: rgba(5,8,16,.92); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow2); backdrop-filter: blur(14px); padding: 8px; display:none; z-index: 50; }
+    .menuPanel.show{display:block; animation: popMenu .16s ease;}
+    @keyframes popMenu{ from{opacity:0; transform: translateY(6px);} to{opacity:1; transform: translateY(0px);} }
+    .menuItem{ width: 100%; text-align:left; padding: 10px 10px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: rgba(255,255,255,.92); cursor:pointer; font-weight: 1000; font-size: 13px; display:flex; align-items:center; justify-content:space-between; gap: 10px; white-space: nowrap; min-height: 44px; }
     .menuItem:hover{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08); }
-    .mi-left{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
+    .mi-left{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .mi-right{ opacity: .6; white-space: nowrap; flex: 0 0 auto; }
-    .menuDivider{ height:1px;
-    background: rgba(255,255,255,.08); margin: 6px 6px; }
-    .menuHint{ padding: 8px 10px 6px 10px; color: var(--muted2); font-size: 11px;
-    font-weight: 900; letter-spacing: .2px; }
+    .menuDivider{ height:1px; background: rgba(255,255,255,.08); margin: 6px 6px; }
+    .menuHint{ padding: 8px 10px 6px 10px; color: var(--muted2); font-size: 11px; font-weight: 900; letter-spacing: .2px; }
 
-    .toast{ position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(5,8,16,.92);
-    border: 1px solid var(--border); color: var(--text); border-radius: 16px; box-shadow: var(--shadow2); padding: 12px 14px; display:none; gap: 10px; align-items:center;
-    max-width: min(760px, calc(100vw - 24px)); backdrop-filter: blur(14px); z-index: 9999; font-size: 13px; }
-    .toast.show{display:flex;
-    animation: pop .22s ease;}
-    @keyframes pop { from{opacity:0; transform: translateX(-50%) translateY(8px);} to{opacity:1;
-    transform: translateX(-50%) translateY(0px);} }
-    .dot{width:10px; height:10px; border-radius:999px;
-    background: var(--accent);}
+    .toast{ position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(5,8,16,.92); border: 1px solid var(--border); color: var(--text); border-radius: 16px; box-shadow: var(--shadow2); padding: 12px 14px; display:none; gap: 10px; align-items:center; max-width: min(760px, calc(100vw - 24px)); backdrop-filter: blur(14px); z-index: 9999; font-size: 13px; }
+    .toast.show{display:flex; animation: pop .22s ease;}
+    @keyframes pop { from{opacity:0; transform: translateX(-50%) translateY(8px);} to{opacity:1; transform: translateX(-50%) translateY(0px);} }
+    .dot{width:10px; height:10px; border-radius:999px; background: var(--accent);}
     .dot.ok{background: var(--accent2)}
     .dot.err{background: var(--danger)}
     
-    .scroll-btn{ position: fixed;
-    bottom: 90px; right: 30px; padding: 14px 20px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; border-radius: 999px; font-weight: 900;
-    font-size: 13px; cursor: pointer; box-shadow: 0 8px 24px rgba(139,92,246,.4); z-index: 9998; animation: bounce 2s ease-in-out infinite;
-    transition: transform .2s ease, box-shadow .2s ease; }
-    .scroll-btn:hover{ transform: translateY(-2px) scale(1.05); box-shadow: 0 12px 32px rgba(139,92,246,.6);
-    }
-    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px);
-    } }
+    .scroll-btn{ position: fixed; bottom: 90px; right: 30px; padding: 14px 20px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; border-radius: 999px; font-weight: 900; font-size: 13px; cursor: pointer; box-shadow: 0 8px 24px rgba(139,92,246,.4); z-index: 9998; animation: bounce 2s ease-in-out infinite; transition: transform .2s ease, box-shadow .2s ease; }
+    .scroll-btn:hover{ transform: translateY(-2px) scale(1.05); box-shadow: 0 12px 32px rgba(139,92,246,.6); }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
     
-    /* 📱 MODO TARJETA PARA MÓVIL VERTICAL (Responsive Real) */
     @media (max-width: 768px) {
-      thead { display: none;
-    }
-      tbody tr { display: block; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 16px;
-    padding: 15px; background: var(--card); box-shadow: var(--shadow2); }
-      tbody td { display: flex; justify-content: space-between;
-    align-items: center; text-align: right; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); width: 100% !important; box-sizing: border-box; font-size: 14px;
-    }
-      tbody td:last-child { border-bottom: none;
-    }
+      thead { display: none; }
+      tbody tr { display: block; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 16px; padding: 15px; background: var(--card); box-shadow: var(--shadow2); }
+      tbody td { display: flex; justify-content: space-between; align-items: center; text-align: right; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); width: 100% !important; box-sizing: border-box; font-size: 14px; }
+      tbody td:last-child { border-bottom: none; }
       
-      tbody td:nth-of-type(1)::before { content: "Ranking"; font-weight:900; color:var(--muted);
+      tbody td:nth-of-type(1)::before { content: "Ranking"; font-weight:900; color:var(--muted); }
+      tbody td:nth-of-type(2)::before { content: "Compañía"; display:none; }
+      tbody td:nth-of-type(3)::before { content: "Potencia"; font-weight:900; color:var(--muted); }
+      tbody td:nth-of-type(4)::before { content: "Consumo"; font-weight:900; color:var(--muted); }
+      tbody td:nth-of-type(5)::before { content: "Impuestos"; font-weight:900; color:var(--muted); }
+      tbody td:nth-of-type(6)::before { content: "TOTAL"; font-weight:900; color:var(--accent); font-size:1.2em; }
+      tbody td:nth-of-type(7)::before { content: "Diferencia"; font-weight:900; color:var(--muted); }
+      tbody td:nth-of-type(8)::before { content: "Tipo"; font-weight:900; color:var(--muted); }
+      tbody td:nth-of-type(9)::before { content: "Contratar"; font-weight:900; color:var(--muted); }
+      tbody td:nth-of-type(2) { display:block; text-align:center; font-size: 18px !important; margin-bottom: 10px; padding-bottom:10px; border-bottom: 2px solid var(--border); color: #fff; }
+      .scroll-btn{ bottom: 80px; right: 20px; font-size: 12px; padding: 12px 16px; }
     }
-      tbody td:nth-of-type(2)::before { content: "Compañía"; display:none;
-    }
-      tbody td:nth-of-type(3)::before { content: "Potencia"; font-weight:900; color:var(--muted);
-    }
-      tbody td:nth-of-type(4)::before { content: "Consumo"; font-weight:900; color:var(--muted);
-    }
-      tbody td:nth-of-type(5)::before { content: "Impuestos"; font-weight:900; color:var(--muted);
-    }
-      tbody td:nth-of-type(6)::before { content: "TOTAL"; font-weight:900; color:var(--accent); font-size:1.2em;
-    }
-      tbody td:nth-of-type(7)::before { content: "Diferencia"; font-weight:900; color:var(--muted);
-    }
-      tbody td:nth-of-type(8)::before { content: "Tipo"; font-weight:900; color:var(--muted);
-    }
-      tbody td:nth-of-type(9)::before { content: "Contratar"; font-weight:900; color:var(--muted);
-    }
-
-      /* Destacar nombre de tarifa en móvil */
-      tbody td:nth-of-type(2) { display:block;
-    text-align:center; font-size: 18px !important; margin-bottom: 10px; padding-bottom:10px; border-bottom: 2px solid var(--border); color: #fff;
-    }
-      .scroll-btn{ bottom: 80px; right: 20px; font-size: 12px; padding: 12px 16px;
-    }
-    }
-    
     @media (min-width: 1400px){
-      thead th:nth-child(2), tbody td:nth-child(2) { width: 28%;
-    }
-      tbody td:nth-child(2) { font-size: 15px;
-    }
+      thead th:nth-child(2), tbody td:nth-child(2) { width: 28%; }
+      tbody td:nth-child(2) { font-size: 15px; }
     }
   </style>
 </head>
@@ -440,25 +266,21 @@
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
             <defs>
               <linearGradient id="logoGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-        
                 <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1"><animate attributeName="stop-color" values="#fbbf24;#f59e0b;#fbbf24" dur="2s" repeatCount="indefinite"/></stop>
                 <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1"/>
                 <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:1"><animate attributeName="stop-color" values="#fbbf24;#f59e0b;#fbbf24" dur="2s" repeatCount="indefinite"/></stop>
               </linearGradient>
               <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1"/><stop offset="100%" style="stop-color:#6366f1;stop-opacity:1"/></linearGradient>
-         
               <filter id="glow"><feGaussianBlur stdDeviation="2" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
             </defs>
             <circle cx="50" cy="50" r="35" fill="url(#logoGrad2)" opacity="0.2"><animate attributeName="r" values="35;38;35" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.2;0.4;0.2" dur="2s" repeatCount="indefinite"/></circle>
             <path d="M 55 15 L 35 48 L 48 48 L 45 85 L 70 45 L 57 45 Z" fill="url(#logoGrad1)" filter="url(#glow)" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"><animateTransform attributeName="transform" attributeType="XML" type="scale" values="1;1.08;1" dur="1.5s" repeatCount="indefinite" additive="sum"/></path>
-          
-          <circle cx="30" cy="30" r="2" fill="#fbbf24" opacity="0"><animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/><animate attributeName="r" values="2;3;2" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="30" cy="30" r="2" fill="#fbbf24" opacity="0"><animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/><animate attributeName="r" values="2;3;2" dur="1.5s" repeatCount="indefinite"/></circle>
             <circle cx="70" cy="35" r="2" fill="#fbbf24" opacity="0"><animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/><animate attributeName="r" values="2;3;2" dur="1.5s" begin="0.5s" repeatCount="indefinite"/></circle>
             <circle cx="65" cy="70" r="2" fill="#fbbf24" opacity="0"><animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="1s" repeatCount="indefinite"/><animate attributeName="r" values="2;3;2" dur="1.5s" begin="1s" repeatCount="indefinite"/></circle>
           </svg>
         </div>
-        <div><h1>Comparador de Tarifas</h1><p>Encuentra la tarifa 
-    más barata en segundos</p></div>
+        <div><h1>Comparador de Tarifas</h1><p>Encuentra la tarifa más barata en segundos</p></div>
       </div>
 
       <div class="actions">
@@ -467,8 +289,7 @@
           <button class="btn" id="btnMenu" type="button" aria-haspopup="true" aria-expanded="false" title="Opciones">⚙️</button>
           <div class="menuPanel" id="menuPanel" role="menu" aria-label="Opciones">
             <div class="menuHint">Opciones</div>
-            <button class="menuItem" id="btnShare" type="button" 
-    role="menuitem"><span class="mi-left">🔗 Compartir</span><span class="mi-right">copiar</span></button>
+            <button class="menuItem" id="btnShare" type="button" role="menuitem"><span class="mi-left">🔗 Compartir</span><span class="mi-right">copiar</span></button>
             <button class="menuItem" id="btnExport" type="button" role="menuitem"><span class="mi-left">⬇️ Descargar CSV</span><span class="mi-right">ranking</span></button>
             <div class="menuDivider"></div>
             <button class="menuItem" id="btnReset" type="button" role="menuitem"><span class="mi-left">↺ Restablecer</span><span class="mi-right">valores</span></button>
@@ -479,27 +300,23 @@
 
     <div class="grid">
       <section class="card">
-     
         <div class="head"><div class="kicker">Tus datos</div><div class="title">Potencia y consumos (kWh)</div></div>
         <div class="body">
           <div class="alert" id="errorBox"><b>Error:</b> <span id="errorText"></span></div>
           <div class="form">
             <div class="group"><label for="p1">Potencia P1 (kW)</label><input id="p1" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 3,45" /></div>
             <div class="group"><label for="p2">Potencia P2 (kW)</label><input id="p2" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 3,45" /></div>
-      
             <div class="group"><label for="dias">Días factura</label><input id="dias" class="input" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="1 a 365" /></div>
           </div>
           <div style="height:12px"></div>
           <div class="form">
             <div class="group"><label for="cPunta">Consumo PUNTA <span class="tooltip" data-tip="10h-14h y 18h-22h">ⓘ</span></label><input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 120" /></div>
-            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h 
-    y 22h-24h">ⓘ</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 80" /></div>
+            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h">ⓘ</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 80" /></div>
             <div class="group"><label for="cValle">Consumo VALLE <span class="tooltip" data-tip="0h-8h (madrugada)">ⓘ</span></label><input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 150" /></div>
           </div>
           <div class="row" style="margin-top:14px">
             <div class="kwhPill" aria-live="polite"><div class="kwhLabel">Total kWh</div><div class="kwhValue" id="kwhHint">—</div></div>
-            <button class="btn primary" id="btnCalc" type="button" title="Calcular ahora"><span id="btnText">⚡ Calcular</span><span id="btnSpinner" 
-    style="display:none;"><span class="spinner"></span></span></button>
+            <button class="btn primary" id="btnCalc" type="button" title="Calcular ahora"><span id="btnText">⚡ Calcular</span><span id="btnSpinner" style="display:none;"><span class="spinner"></span></span></button>
           </div>
           <div class="help">Se recalcula automáticamente al cambiar cualquier dato.</div>
         </div>
@@ -509,16 +326,14 @@
         <div class="head"><div class="kicker">Resultados</div><div class="title">Tarifa óptima + ranking</div></div>
         <div class="body">
           <div class="heroKpis" id="heroKpis" style="display:none;">
-            <div class="heroCard best"><div 
-    class="k">Tarifa más barata</div><div class="v" id="kpiBest">—</div><div class="s">Mejor opción</div></div>
+            <div class="heroCard best"><div class="k">Tarifa más barata</div><div class="v" id="kpiBest">—</div><div class="s">Mejor opción</div></div>
             <div class="heroCard"><div class="k">Factura mínima</div><div class="v" id="kpiPrice">—</div><div class="s">Según tus datos</div></div>
           </div>
 
           <div class="statsbar" id="statsBar" style="display:none;">
             <div class="statCard"><div class="statLabel">Precio mínimo</div><div class="statValue" id="statMin">—</div></div>
             <div class="statCard"><div class="statLabel">Precio medio</div><div class="statValue" id="statAvg">—</div></div>
-            <div class="statCard"><div class="statLabel">Precio máximo</div><div class="statValue" 
-    id="statMax">—</div></div>
+            <div class="statCard"><div class="statLabel">Precio máximo</div><div class="statValue" id="statMax">—</div></div>
           </div>
 
           <div class="toolbar" id="toolbar" style="display:none;">
@@ -526,7 +341,6 @@
               <button class="fbtn active" data-filter="all" type="button">Todas</button>
               <button class="fbtn" data-filter="1P" type="button"><span class="badge b1">1P</span></button>
               <button class="fbtn" data-filter="3P" type="button"><span class="badge b3">3P</span></button>
-        
             </div>
           </div>
 
@@ -535,22 +349,18 @@
               <thead>
                 <tr>
                   <th>#</th>
-             
                   <th class="sort" data-sort="tarifa">Tarifa <span class="sortIcon" id="si_tarifa"></span></th>
                   <th class="sort" data-sort="potenciaNum">Potencia <span class="sortIcon" id="si_potenciaNum"></span></th>
                   <th class="sort" data-sort="consumoNum">Consumo <span class="sortIcon" id="si_consumoNum"></span></th>
                   <th class="sort" data-sort="impuestosNum">Impuestos <span class="sortIcon" id="si_impuestosNum"></span></th>
-                  <th class="sort" data-sort="totalNum">Total 
-    <span class="sortIcon" id="si_totalNum"></span></th>
+                  <th class="sort" data-sort="totalNum">Total <span class="sortIcon" id="si_totalNum"></span></th>
                   <th class="sort" data-sort="vsMejorNum">Vs mejor <span class="sortIcon" id="si_vsMejorNum"></span></th>
                   <th>Tipo</th><th>Web</th>
                 </tr>
               </thead>
               <tbody id="tbody"></tbody>
-           
-    </table>
-            <div class="empty" id="emptyBox">Aún no hay resultados.
-    Calcula para mostrar ranking.</div>
+            </table>
+            <div class="empty" id="emptyBox">Aún no hay resultados. Calcula para mostrar ranking.</div>
           </div>
 
         </div>
@@ -565,22 +375,14 @@
   </div>
 
   <div class="toast" id="toast"><span class="dot" id="toastDot"></span><span id="toastText"></span></div>
-  <button id="scrollToResults" 
-    class="scroll-btn" style="display:none;" title="Ver resultados">↓ Ver resultados</button>
+  <button id="scrollToResults" class="scroll-btn" style="display:none;" title="Ver resultados">↓ Ver resultados</button>
 
   <script>
     const $ = id => document.getElementById(id);
-    
-    // --------------------------------------------------------------------------------
-    // 1. INYECCIÓN DE DATOS DEL SERVIDOR
-    // SERVER_PARAMS: Parámetros URL capturados por doGet (ej: ?cValle=200)
-    // GOOGLE_URL: URL pública del script para compartir (ej: script.google.com/...)
-    // --------------------------------------------------------------------------------
-    const SERVER_PARAMS = <?!= JSON.stringify(params || {}) ?>;
-    const GOOGLE_URL = "<?= pubUrl ?>";
+    // URL DE TU SCRIPT (LA MISMA)
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwfrP2AxSQz_k1NlSDcdZxvQR_m0t3xKO1JnD7FnRqOWCM0RYqLihg5cca6vXQswn4j/exec';
 
     const LS_KEY = 'almax_comparador_v6_inputs';
-    const LS_TOKEN_KEY = 'almax_user_token';
     const DEFAULTS = { p1:'3,45', p2:'3,45', dias:'30', cPunta:'100', cLlano:'100', cValle:'100' };
     const el = {
       inputs: { p1:$('p1'), p2:$('p2'), dias:$('dias'), cPunta:$('cPunta'), cLlano:$('cLlano'), cValle:$('cValle') },
@@ -590,208 +392,262 @@
       statsBar: $('statsBar'), statMin: $('statMin'), statAvg: $('statAvg'), statMax: $('statMax'),
       toolbar: $('toolbar'), table: $('table'), tbody: $('tbody'), emptyBox: $('emptyBox'),
       toast: $('toast'), toastText: $('toastText'), toastDot: $('toastDot'),
-      menuRoot: $('menuRoot'), btnMenu: 
-    $('btnMenu'), menuPanel: $('menuPanel'),
+      menuRoot: $('menuRoot'), btnMenu: $('btnMenu'), menuPanel: $('menuPanel'),
       btnShare: $('btnShare'), btnExport: $('btnExport'), btnReset: $('btnReset')
     };
-    const state = { busy: false, debounce: null, debounceMs: 800, requestId: 0, retryCount: 0, maxRetries: 1, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false };
-    function getOrCreateToken() { let t = localStorage.getItem(LS_TOKEN_KEY); if(!t){t='u_'+Date.now()+'_'+Math.random().toString(36).substr(2,8);localStorage.setItem(LS_TOKEN_KEY,t);} return t; }
-    function parseNum(str){ if(str===null||str===undefined)return 0;
-    if(typeof str==='number')return Number.isFinite(str)?str:0; let s=String(str).trim().replace(/\s/g,''); if(!s)return 0; if(s.includes(',')&&s.includes('.')){const lc=s.lastIndexOf(',');const ld=s.lastIndexOf('.');if(lc>ld)s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'');}else if(s.includes(',')){s=s.replace(',','.');} s=s.replace(/[^\d.-]/g,''); const n=Number(s); return Number.isFinite(n)?n:0;
+
+    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false };
+    
+    // VARIABLES PARA CACHE
+    let cachedTarifas = [];
+    let initialLoadDone = false;
+
+    function parseNum(str){ 
+      if(str===null||str===undefined)return 0;
+      if(typeof str==='number')return Number.isFinite(str)?str:0; 
+      let s=String(str).trim().replace(/\s/g,''); 
+      if(!s)return 0; 
+      if(s.includes(',')&&s.includes('.')){const lc=s.lastIndexOf(',');const ld=s.lastIndexOf('.');if(lc>ld)s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'');}else if(s.includes(',')){s=s.replace(',','.');} 
+      s=s.replace(/[^\d.-]/g,''); const n=Number(s); return Number.isFinite(n)?n:0;
     }
     function escapeHtml(v){ return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
     function setStatus(text, mode='idle'){ el.statusText.textContent=text; el.statusPill.classList.remove('loading','ok','err'); if(mode==='loading')el.statusPill.classList.add('loading'); if(mode==='ok')el.statusPill.classList.add('ok'); if(mode==='err')el.statusPill.classList.add('err'); const l=mode==='loading'; el.btnCalc.disabled=l; el.btnText.style.display=l?'none':'flex'; el.btnSpinner.style.display=l?'flex':'none'; if(l)el.btnCalc.classList.add('calculating'); else el.btnCalc.classList.remove('calculating'); }
     function toast(msg, mode='ok'){ el.toastText.textContent=msg; el.toastDot.classList.remove('ok','err'); el.toastDot.classList.add(mode==='err'?'err':'ok'); el.toast.classList.add('show'); clearTimeout(el.toast._t); el.toast._t=setTimeout(()=>el.toast.classList.remove('show'),2800); }
     
-    // --------------------------------------------------------------------------------
-    // 2. FUNCIÓN DE CARGA ROBUSTA (PRIORIDAD SERVER > LOCALSTORAGE)
-    // --------------------------------------------------------------------------------
-    function loadInputs() {
-      const fu = {};
-      
-      // Intentamos cargar desde el servidor primero (URL params)
-      if (SERVER_PARAMS && typeof SERVER_PARAMS === 'object') {
-        for (const k in DEFAULTS) {
-          // Chequeo estricto de existencia de clave (permite valor 0)
-          if (k in SERVER_PARAMS && SERVER_PARAMS[k] !== null && SERVER_PARAMS[k] !== undefined) {
-            fu[k] = String(SERVER_PARAMS[k]);
-          }
+    // --- LÓGICA DE CARGA Y CÁLCULO LOCAL ---
+
+    async function fetchTarifas() {
+        if(cachedTarifas.length > 0) return true;
+        setStatus('Cargando tarifas...', 'loading');
+        try {
+            const response = await fetch(API_URL + '?action=tarifas');
+            const data = await response.json();
+            if (data.success) {
+                cachedTarifas = data.tarifas;
+                setStatus('Datos actualizados', 'ok');
+                setTimeout(() => setStatus('Listo para calcular', 'idle'), 1500);
+                return true;
+            } else {
+                throw new Error('Error en datos');
+            }
+        } catch (e) {
+            setStatus('Error conexión', 'err');
+            toast('Error cargando precios. Revisa conexión.', 'err');
+            return false;
         }
-      }
+    }
 
-      // Si encontramos datos en URL, aplicamos y SALIMOS (ignorando localStorage)
-      if (Object.keys(fu).length > 0) {
-        const d = Object.assign({}, DEFAULTS, fu);
-        for (const k in DEFAULTS) el.inputs[k].value = d[k];
-        updateKwhHint();
-        // Recálculo automático inmediato
-        setTimeout(() => calculate(false), 500);
-        return; 
-      }
+    function calculateLocal() {
+        // Leemos inputs
+        const p1 = parseNum(el.inputs.p1.value);
+        const p2 = parseNum(el.inputs.p2.value);
+        const dias = Math.trunc(parseNum(el.inputs.dias.value)) || 30;
+        const cPunta = parseNum(el.inputs.cPunta.value);
+        const cLlano = parseNum(el.inputs.cLlano.value);
+        const cValle = parseNum(el.inputs.cValle.value);
 
-      // Si no había URL, fallback a LocalStorage
-      let fl = null;
-      try {
+        if(!cachedTarifas.length) {
+            toast('No hay tarifas cargadas', 'err');
+            return;
+        }
+
+        // CÁLCULO MATEMÁTICO (Igual que en Excel/Apps Script)
+        const resultados = cachedTarifas.map((t, index) => {
+            const pot = (p1 * dias * t.p1) + (p2 * dias * t.p2);
+            const cons = (cPunta * t.cPunta) + (cLlano * t.cLlano) + (cValle * t.cValle);
+            const tarifaAcceso = (4.650987 / 365 * dias);
+            const sumaBase = pot + cons + tarifaAcceso;
+            
+            const impuestoElec = Math.max(
+                (5.11269632 / 100) * sumaBase,
+                (cPunta + cLlano + cValle) * 0.001
+            );
+
+            const margen = dias * 0.026667;
+            const subtotal = sumaBase + impuestoElec + margen;
+            const iva = subtotal * 0.21; 
+            const total = subtotal + iva;
+            
+            // Formateo para la tabla (Strings bonitos)
+            return {
+                ...t,
+                posicion: index + 1, // Se recalcula al ordenar
+                potenciaNum: pot,
+                potencia: formatMoney(pot),
+                consumoNum: cons,
+                consumo: formatMoney(cons),
+                impuestosNum: impuestoElec + margen + iva,
+                impuestos: formatMoney(impuestoElec + margen + iva),
+                totalNum: total,
+                total: formatMoney(total),
+                webUrl: t.web
+            };
+        });
+
+        // Ordenar por precio
+        resultados.sort((a, b) => a.totalNum - b.totalNum);
+        
+        // Calcular diferencias (Vs Mejor)
+        const bestPrice = resultados[0].totalNum;
+        const processed = resultados.map((r, i) => {
+            const diff = r.totalNum - bestPrice;
+            return {
+                ...r,
+                posicion: i + 1,
+                esMejor: i === 0,
+                vsMejorNum: diff,
+                vsMejor: i === 0 ? '—' : '+' + formatMoney(diff)
+            };
+        });
+
+        // Estadísticas
+        const prices = processed.map(r => r.totalNum);
+        const min = Math.min(...prices);
+        const max = Math.max(...prices);
+        const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
+
+        // Renderizar
+        renderAll({
+            success: true,
+            resumen: {
+                mejor: processed[0].nombre,
+                precio: formatMoney(processed[0].totalNum)
+            },
+            stats: {
+                precioMin: formatMoney(min),
+                precioMax: formatMoney(max),
+                precioMedio: formatMoney(avg)
+            },
+            resultados: processed
+        });
+    }
+
+    function formatMoney(n) {
+        return n.toFixed(2).replace('.', ',') + ' €';
+    }
+
+    function loadInputs() {
         const r = localStorage.getItem(LS_KEY);
-        if (r) fl = JSON.parse(r);
-      } catch (e) {}
-
-      const d = Object.assign({}, DEFAULTS, fl || {});
-      for (const k in DEFAULTS) el.inputs[k].value = d[k];
-      updateKwhHint();
+        if (r) {
+            try {
+                const d = JSON.parse(r);
+                for (const k in DEFAULTS) if(d[k]) el.inputs[k].value = d[k];
+            } catch(e){}
+        }
+        updateKwhHint();
+    }
+    function saveInputs(){ 
+        const d={}; for(const k in DEFAULTS)d[k]=el.inputs[k].value; 
+        localStorage.setItem(LS_KEY,JSON.stringify(d)); 
+    }
+    function resetInputs(){ 
+        for(const k in DEFAULTS)el.inputs[k].value=DEFAULTS[k]; 
+        saveInputs(); updateKwhHint(); clearErrorStyles(); toast('Restablecido'); 
     }
 
-    function saveInputs(){ const d={}; for(const k in DEFAULTS)d[k]=el.inputs[k].value; try{localStorage.setItem(LS_KEY,JSON.stringify(d));}catch(e){} return d;
-    }
-    function resetInputs(){ for(const k in DEFAULTS)el.inputs[k].value=DEFAULTS[k]; saveInputs(); updateKwhHint(); clearErrorStyles(); toast('Valores restablecidos'); scheduleCalc();
-    }
-
-    // --------------------------------------------------------------------------------
-    // 3. GENERADOR URL PARA COMPARTIR (GOOGLE DIRECTO)
-    // --------------------------------------------------------------------------------
-    function buildShareUrl(){ 
-      const d = saveInputs(); 
-      // Usamos la URL pública detectada por el servidor, o la actual si fallara
-      const baseUrl = (GOOGLE_URL && GOOGLE_URL.startsWith('http')) ? GOOGLE_URL : location.href;
-      
-      const u = new URL(baseUrl); 
-      u.search = ''; // Limpiamos params anteriores
-      for(const k in d) u.searchParams.set(k, d[k]); 
-      
-      return u.toString();
-    }
-
-    // --------------------------------------------------------------------------------
-    // 4. EXPORTAR CSV CON SOPORTE EXCEL (AÑADIDO BOM \ufeff)
-    // --------------------------------------------------------------------------------
-    function exportCSV(){ 
-      if(!state.rows||!state.rows.length){toast('No hay datos','err');return;} 
-      
-      const r=applySort(applyFilters(state.rows)); 
-      const h=['#','Tarifa','Potencia','Consumo','Impuestos','Total','VsMejor','Tipo','Web']; 
-      const l=[h]; 
-      
-      r.forEach(x=>l.push([x.posicion||'',x.tarifa||'',x.potencia||'',x.consumo||'',x.impuestos||'',x.total||'',x.vsMejor||'',x.tipo||'',x.webUrl||'']));
-      
-      const csv=l.map(a=>a.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\n'); 
-      
-      // ✅ CORRECCIÓN CLAVE: Añadimos "\ufeff" (BOM) al inicio del Blob para UTF-8 en Excel
-      const b=new Blob(["\ufeff", csv],{type:'text/csv;charset=utf-8'}); 
-      
-      const a=document.createElement('a'); 
-      a.href=URL.createObjectURL(b); 
-      a.download='comparador_tarifas_almax.csv'; 
-      document.body.appendChild(a); 
-      a.click(); 
-      a.remove(); 
-      setTimeout(()=>URL.revokeObjectURL(a.href),1000); 
-      toast('CSV descargado'); 
-    }
-
-    async function copyText(t){ try{await navigator.clipboard.writeText(t);return true;}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(x){}a.remove();return true;} }
-    function updateKwhHint(){ const t=parseNum(el.inputs.cPunta.value)+parseNum(el.inputs.cLlano.value)+parseNum(el.inputs.cValle.value);
-    el.kwhHint.textContent=`${t.toFixed(2).replace('.',',')} kWh`; }
-    function showError(m){ el.errorText.textContent=m||'Error desconocido'; el.errorBox.classList.add('show'); }
-    function hideError(){ el.errorBox.classList.remove('show');
+    function updateKwhHint(){ 
+        const t=parseNum(el.inputs.cPunta.value)+parseNum(el.inputs.cLlano.value)+parseNum(el.inputs.cValle.value);
+        el.kwhHint.textContent=`${t.toFixed(2).replace('.',',')} kWh`;
     }
     function clearErrorStyles(){ Object.values(el.inputs).forEach(i=>i.classList.remove('error')); }
-    function markErrorField(f){ if(el.inputs[f])el.inputs[f].classList.add('error');
-    }
-    function validateClient(d){ clearErrorStyles(); const x=Math.trunc(parseNum(d.dias)); if(x<1||x>365){markErrorField('dias');return 'Días factura debe estar entre 1 y 365.';} if(parseNum(d.p1)<0||parseNum(d.p2)<0){if(parseNum(d.p1)<0)markErrorField('p1');if(parseNum(d.p2)<0)markErrorField('p2');return 'Las potencias no pueden ser negativas.';} if(parseNum(d.cPunta)<0||parseNum(d.cLlano)<0||parseNum(d.cValle)<0){if(parseNum(d.cPunta)<0)markErrorField('cPunta');if(parseNum(d.cLlano)<0)markErrorField('cLlano');if(parseNum(d.cValle)<0)markErrorField('cValle');return 'Los consumos no pueden ser negativos.';} return '';
-    }
-    function rowTipoBadge(t){ const s=String(t||'').trim(); if(s==='1P')return `<span class="badge b1">1P</span>`; if(s==='3P')return `<span class="badge b3">3P</span>`; return `<span class="badge">${escapeHtml(s||'—')}</span>`;
-    }
-    function formatVsWithBar(v,vn){ const s=String(v??'').trim(); if(!s||s==='—'||s==='0'||s==='0,00'||s==='0 €'||s==='0,00 €')return '<span class="vs-text zero">—</span>'; const pos=s.startsWith('+'); const c=pos?'pos':'neg'; const a=pos?'▲':'▼';
-    return `<span class="vs-text ${c}">${a} ${escapeHtml(s)}</span>`; }
-    function applyFilters(r){ const f=state.filter; return r.filter(x=>(f==='all'||String(x.tipo||'')===f));
-    }
-    function applySort(r){ const {key,dir}=state.sort; const asc=dir==='asc'; const c=r.slice();
-    c.sort((a,b)=>{const va=a[key],vb=b[key]; if(key==='tarifa'){const sa=String(va||'').toLowerCase(),sb=String(vb||'').toLowerCase();if(sa>sb)return asc?1:-1;if(sa<sb)return asc?-1:1;return 0;} const na=Number(va)||0,nb=Number(vb)||0; if(na>nb)return asc?1:-1;if(na<nb)return asc?-1:1;return 0;}); return c;
-    }
+
+    function rowTipoBadge(t){ const s=String(t||'').trim(); if(s==='1P')return `<span class="badge b1">1P</span>`; if(s==='3P')return `<span class="badge b3">3P</span>`; return `<span class="badge">${escapeHtml(s||'—')}</span>`; }
+    function formatVsWithBar(v,vn){ const s=String(v??'').trim(); if(!s||s==='—'||s==='0'||s==='0,00'||s==='0 €'||s==='0,00 €')return '<span class="vs-text zero">—</span>'; const pos=s.startsWith('+'); const c=pos?'pos':'neg'; const a=pos?'▲':'▼'; return `<span class="vs-text ${c}">${a} ${escapeHtml(s)}</span>`; }
+    function applyFilters(r){ const f=state.filter; return r.filter(x=>(f==='all'||String(x.tipo||'')===f)); }
+    function applySort(r){ const {key,dir}=state.sort; const asc=dir==='asc'; const c=r.slice(); c.sort((a,b)=>{const va=a[key],vb=b[key]; if(key==='tarifa'){const sa=String(va||'').toLowerCase(),sb=String(vb||'').toLowerCase();if(sa>sb)return asc?1:-1;if(sa<sb)return asc?-1:1;return 0;} const na=Number(va)||0,nb=Number(vb)||0; if(na>nb)return asc?1:-1;if(na<nb)return asc?-1:1;return 0;}); return c; }
     function updateSortIcons(){ ['tarifa','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{const i=$('si_'+k); if(!i)return; if(state.sort.key!==k){i.textContent='';return;} i.textContent=state.sort.dir==='asc'?'▲':'▼';}); }
-    function animateNumber(el,txt,dur=500){ const m=txt.match(/([\d,\.]+)/);
-    if(!m){el.textContent=txt;return;} const tn=parseNum(m[1]); const suf=txt.replace(m[1],'').trim(); const sn=0; const st=Date.now(); const tick=()=>{const e=Date.now()-st;const p=Math.min(e/dur,1);const eo=1-Math.pow(1-p,3);const cur=sn+(tn-sn)*eo;el.textContent=cur.toFixed(2).replace('.',',')+(suf?' '+suf:'');if(p<1)requestAnimationFrame(tick);else el.textContent=txt;}; requestAnimationFrame(tick);
-    }
-    function createRipple(b,e){ const r=document.createElement('span'); const rect=b.getBoundingClientRect(); const s=Math.max(rect.width,rect.height); const x=e.clientX-rect.left-s/2; const y=e.clientY-rect.top-s/2; r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`; b.style.position='relative';
-    b.style.overflow='hidden'; b.appendChild(r); setTimeout(()=>r.remove(),600); }
-    function renderTable(){ const f=applyFilters(state.rows); const s=applySort(f); el.tbody.innerHTML='';
-    if(s.length===0){el.table.style.display='none';el.emptyBox.textContent='No hay filas para mostrar con los filtros actuales.';el.emptyBox.style.display='block';return;} el.emptyBox.style.display='none';el.table.style.display='table';
-    s.forEach((r,i)=>{const tr=document.createElement('tr');if(r.esMejor)tr.classList.add('best');const w=r.webUrl?`<a class="web" href="${escapeHtml(r.webUrl)}" target="_blank" rel="noopener" title="Abrir web">🔗</a>`:'';tr.innerHTML=`<td>${escapeHtml(r.posicion||(i+1))}</td><td title="${escapeHtml(r.tarifa)}">${escapeHtml(r.tarifa)}</td><td>${escapeHtml(r.potencia||'—')}</td><td>${escapeHtml(r.consumo||'—')}</td><td>${escapeHtml(r.impuestos||'—')}</td><td><strong style="font-weight:1100; color: rgba(167,139,250,1);">${escapeHtml(r.total||'—')}</strong></td><td class="vs">${formatVsWithBar(r.vsMejor,r.vsMejorNum)}</td><td>${rowTipoBadge(r.tipo)}</td><td style="text-align:center">${w}</td>`;el.tbody.appendChild(tr);}); updateSortIcons();
-    }
-    function launchConfetti(){ const c=['#667eea','#764ba2','#f093fb','#4facfe','#00f2fe','#22C55E','#F59E0B']; for(let i=0;i<50;i++){const d=document.createElement('div');d.style.cssText=`position:fixed;width:${Math.random()*10+5}px;height:${Math.random()*10+5}px;background:${c[Math.floor(Math.random()*c.length)]};left:${Math.random()*100}vw;top:-10px;opacity:${Math.random()*0.8+0.2};transform:rotate(${Math.random()*360}deg);pointer-events:none;z-index:10000;border-radius:${Math.random()>0.5?'50%':'0'};animation:confettiFall ${Math.random()*3+2}s ease-out forwards;`;document.body.appendChild(d);setTimeout(()=>d.remove(),5000);} }
-    function renderAll(d){ hideError();
-    clearErrorStyles(); if(!d||!d.success){setStatus('Error de cálculo','err');showError(d?.error||'Error desconocido.');toast('Fallo al calcular','err');return;} setStatus('Resultados actualizados','ok'); const t=parseNum(el.kwhHint.textContent); toast(`Actualizado ✅ (${t.toFixed(0)} kWh)`,'ok'); const r=d.resumen||{}; el.kpiBest.textContent='—'; el.kpiPrice.textContent='—'; setTimeout(()=>{if(r.mejor&&r.mejor!=='—')el.kpiBest.textContent=r.mejor;if(r.precio&&r.precio!=='—')animateNumber(el.kpiPrice,r.precio,600);},100);
-    el.heroKpis.style.display='grid'; const s=d.stats; if(s){el.statMin.textContent='—';el.statAvg.textContent='—';el.statMax.textContent='—';setTimeout(()=>{if(s.precioMin!=='—')animateNumber(el.statMin,s.precioMin,500);if(s.precioMedio!=='—')animateNumber(el.statAvg,s.precioMedio,550);if(s.precioMax!=='—')animateNumber(el.statMax,s.precioMax,600);},200);el.statsBar.style.display='grid';}else{el.statsBar.style.display='none';} state.rows=Array.isArray(d.resultados)?d.resultados:[]; el.toolbar.style.display='flex'; renderTable(); if(s&&s.precioMin&&s.precioMax){const min=parseFloat(s.precioMin.replace('€','').replace(',','.').trim());const max=parseFloat(s.precioMax.replace('€','').replace(',','.').trim());if((max-min)>15&&state.userHasInteracted)setTimeout(()=>launchConfetti(),800);} if(window.innerWidth<1100){const sb=$('scrollToResults');sb.style.display='block';setTimeout(()=>sb.style.display='none',5000);} }
-    function calculate(retry=false){ if(state.busy)return;
-    const d=saveInputs(); d.token=getOrCreateToken(); d.userAgent=navigator.userAgent; d.clientIP=''; d.userHasInteracted=state.userHasInteracted; const err=validateClient(d); if(err){setStatus('Revisa tus datos','err');showError(err);toast(err,'err');return;} state.busy=true; hideError(); clearErrorStyles(); const rid=++state.requestId; setStatus('Calculando...','loading');
-    const tid=setTimeout(()=>{if(rid!==state.requestId)return;state.busy=false;if(!retry&&state.retryCount<state.maxRetries){state.retryCount++;setStatus('Reintentando...','loading');setTimeout(()=>calculate(true),500);}else{state.retryCount=0;setStatus('Tiempo agotado','err');showError('El servidor tardó demasiado.');toast('Timeout','err');}},10000); google.script.run.withSuccessHandler((r)=>{clearTimeout(tid);if(rid!==state.requestId)return;state.busy=false;state.retryCount=0;renderAll(r);}).withFailureHandler((e)=>{clearTimeout(tid);if(rid!==state.requestId)return;state.busy=false;if(!retry&&state.retryCount<state.maxRetries){state.retryCount++;setStatus('Reintentando...','loading');setTimeout(()=>calculate(true),500);}else{state.retryCount=0;setStatus('Fallo de Apps Script','err');showError(e?.message||'Error desconocido.');toast('Fallo de servidor','err');}}).getResultados(d); }
-    function scheduleCalc(){ clearTimeout(state.debounce);
-    setStatus('Pendiente de cálculo...','idle'); state.debounce=setTimeout(()=>calculate(false),state.debounceMs); }
-    function toggleMenu(force){ const s=(typeof force==='boolean')?force:!el.menuPanel.classList.contains('show'); el.menuPanel.classList.toggle('show',s); el.btnMenu.setAttribute('aria-expanded',s?'true':'false'); }
+    function animateNumber(el,txt,dur=500){ el.textContent=txt; } // Simplificado para instantáneo
+    function createRipple(b,e){ const r=document.createElement('span'); const rect=b.getBoundingClientRect(); const s=Math.max(rect.width,rect.height); const x=e.clientX-rect.left-s/2; const y=e.clientY-rect.top-s/2; r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`; b.style.position='relative'; b.style.overflow='hidden'; b.appendChild(r); setTimeout(()=>r.remove(),600); }
     
+    function renderTable(){ 
+        const f=applyFilters(state.rows); 
+        const s=applySort(f); 
+        el.tbody.innerHTML='';
+        if(s.length===0){el.table.style.display='none';el.emptyBox.style.display='block';return;} 
+        el.emptyBox.style.display='none';el.table.style.display='table';
+        s.forEach((r,i)=>{
+            const tr=document.createElement('tr');
+            if(r.esMejor)tr.classList.add('best');
+            const w=r.webUrl?`<a class="web" href="${escapeHtml(r.webUrl)}" target="_blank" rel="noopener" title="Abrir web">🔗</a>`:'';
+            tr.innerHTML=`<td>${escapeHtml(r.posicion)}</td><td title="${escapeHtml(r.nombre)}">${escapeHtml(r.nombre)}</td><td>${escapeHtml(r.potencia)}</td><td>${escapeHtml(r.consumo)}</td><td>${escapeHtml(r.impuestos)}</td><td><strong style="font-weight:1100; color: rgba(167,139,250,1);">${escapeHtml(r.total)}</strong></td><td class="vs">${formatVsWithBar(r.vsMejor,r.vsMejorNum)}</td><td>${rowTipoBadge(r.tipo)}</td><td style="text-align:center">${w}</td>`;
+            el.tbody.appendChild(tr);
+        }); 
+        updateSortIcons();
+    }
+    
+    function renderAll(d){ 
+        if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;} 
+        setStatus('Resultados actualizados','ok'); 
+        const r=d.resumen||{}; 
+        if(r.mejor) el.kpiBest.textContent=r.mejor;
+        if(r.precio) el.kpiPrice.textContent=r.precio;
+        
+        el.heroKpis.style.display='grid'; 
+        const s=d.stats; 
+        if(s){
+            el.statMin.textContent=s.precioMin;
+            el.statAvg.textContent=s.precioMedio;
+            el.statMax.textContent=s.precioMax;
+            el.statsBar.style.display='grid';
+        }
+        state.rows=Array.isArray(d.resultados)?d.resultados:[]; 
+        el.toolbar.style.display='flex'; 
+        renderTable(); 
+        
+        if(window.innerWidth<1100){
+            const sb=$('scrollToResults');
+            sb.style.display='block';
+            setTimeout(()=>sb.style.display='none',5000);
+        } 
+    }
+
+    function launchConfetti(){ /* Simplificado */ }
+
+    async function calculate(isUserAction){
+        saveInputs();
+        if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0}); // Hack visual
+        
+        setStatus('Calculando...', 'loading');
+        
+        // 1. Asegurar datos cargados
+        const loaded = await fetchTarifas();
+        if(!loaded) return;
+
+        // 2. Calcular localmente (INSTANTÁNEO)
+        calculateLocal();
+    }
+
+    function toggleMenu(force){ const s=(typeof force==='boolean')?force:!el.menuPanel.classList.contains('show'); el.menuPanel.classList.toggle('show',s); }
+    
+    // STARTUP
     document.addEventListener('DOMContentLoaded', ()=>{
-      loadInputs(); setStatus('Listo para calcular','idle');
-      Object.values(el.inputs).forEach(i=>{i.addEventListener('input',()=>{state.userHasInteracted=true;updateKwhHint();scheduleCalc();});});
+      loadInputs(); 
+      fetchTarifas(); // Carga silenciosa al inicio
+      
+      Object.values(el.inputs).forEach(i=>{
+          i.addEventListener('input',()=>{
+              state.userHasInteracted=true;
+              updateKwhHint();
+              // Debounce cálculo instantáneo
+              clearTimeout(state.debounce);
+              state.debounce = setTimeout(()=>calculate(false), 500);
+          });
+      });
+      
       document.querySelectorAll('.fbtn').forEach(b=>{b.addEventListener('click',(e)=>{createRipple(b,e);document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.filter=b.getAttribute('data-filter');renderTable();});});
-    document.querySelectorAll('thead th.sort').forEach(th=>{th.addEventListener('click',()=>{const k=th.getAttribute('data-sort');if(!k)return;if(state.sort.key===k)state.sort.dir=(state.sort.dir==='asc')?'desc':'asc';else{state.sort.key=k;state.sort.dir='asc';}renderTable();updateSortIcons();});});
-      el.btnCalc.addEventListener('click',(e)=>{createRipple(el.btnCalc,e);state.userHasInteracted=true;clearTimeout(state.debounce);calculate(false);});
+      document.querySelectorAll('thead th.sort').forEach(th=>{th.addEventListener('click',()=>{const k=th.getAttribute('data-sort');if(!k)return;if(state.sort.key===k)state.sort.dir=(state.sort.dir==='asc')?'desc':'asc';else{state.sort.key=k;state.sort.dir='asc';}renderTable();updateSortIcons();});});
+      
+      el.btnCalc.addEventListener('click',(e)=>{
+          createRipple(el.btnCalc,e);
+          calculate(true);
+      });
+      
       el.btnMenu.addEventListener('click',(e)=>{createRipple(el.btnMenu,e);e.stopPropagation();toggleMenu();});
       el.menuPanel.addEventListener('click',(e)=>e.stopPropagation());
       document.addEventListener('click',()=>toggleMenu(false));
-      document.addEventListener('keydown',(e)=>{if(e.key==='Escape')toggleMenu(false);});
-      el.btnReset.addEventListener('click',(e)=>{createRipple(el.btnReset,e);toggleMenu(false);resetInputs();});
-      el.btnExport.addEventListener('click',(e)=>{createRipple(el.btnExport,e);toggleMenu(false);exportCSV();});
-      el.btnShare.addEventListener('click',async(e)=>{createRipple(el.btnShare,e);toggleMenu(false);const u=buildShareUrl();await copyText(u);toast('Enlace copiado 🔗');});
+      el.btnReset.addEventListener('click',()=>resetInputs());
+      
       $('scrollToResults').addEventListener('click',()=>{$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'});$('scrollToResults').style.display='none';});
-    });
-  </script>
-</body>
-</html>
-
-    // CARGAR VALORES POR DEFECTO Y TARIFAS (GITHUB PAGES)
-    document.addEventListener("DOMContentLoaded", function() {
-        const DEFAULTS = {
-            p1: "3,45",
-            p2: "3,45",
-            dias: "30",
-            cPunta: "100",
-            cLlano: "100",
-            cValle: "100"
-        };
-        
-        // Cargar desde LocalStorage o usar defectos
-        const saved = localStorage.getItem("almax_comparador_v6_inputs");
-        if (!saved) {
-            for (const [key, value] of Object.entries(DEFAULTS)) {
-                const el = document.getElementById(key);
-                if (el) el.value = value;
-            }
-            // Actualizar hint de kWh
-            const kwhHint = document.getElementById("kwhHint");
-            if (kwhHint) {
-                const total = parseFloat(DEFAULTS.cPunta.replace(",",".")) + 
-                              parseFloat(DEFAULTS.cLlano.replace(",",".")) + 
-                              parseFloat(DEFAULTS.cValle.replace(",","."));
-                kwhHint.textContent = total.toFixed(2).replace(".", ",") + " kWh";
-            }
-        }
-        
-        // Cargar tarifas desde Google Apps Script
-        async function loadTarifasFromAPI() {
-            try {
-                const response = await fetch("https://script.google.com/macros/s/AKfycbwfrP2AxSQz_k1NlSDcdZxvQR_m0t3xKO1JnD7FnRqOWCM0RYqLihg5cca6vXQswn4j/exec?action=tarifas");
-                const data = await response.json();
-                if (data.success) {
-                    window.cachedTarifas = data.tarifas;
-                    console.log("✅ Tarifas cargadas:", data.tarifas.length);
-                }
-            } catch(e) {
-                console.error("Error cargando tarifas:", e);
-            }
-        }
-        
-        // Cargar tarifas al iniciar
-        loadTarifasFromAPI();
     });
   </script>
 </body>
