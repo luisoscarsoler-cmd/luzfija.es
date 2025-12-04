@@ -17,7 +17,7 @@
     *{box-sizing:border-box; margin:0; padding:0}
     html,body{height:100%;}
     body{ font-family: var(--sans); color: var(--text); background: radial-gradient(1000px 600px at 12% 15%, rgba(139,92,246,.22), transparent 55%), radial-gradient(1000px 680px at 86% 88%, rgba(34,197,94,.16), transparent 55%), linear-gradient(135deg, var(--bg0), var(--bg1)); overflow-x:hidden; }
-    .container{ max-width:1400px; margin:0 auto; padding: clamp(50px, 5vw, 70px) clamp(22px, 4.5vw, 60px); }
+    .container{ max-width:1400px; margin:0 auto; padding: clamp(50px, 5vw, 70px) clamp(22px, 4.5vw, 60px); contain: layout style paint; }
     .topbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 22px; }
     .brand{display:flex; align-items:center; gap:14px; min-width: 240px; position: relative;}
     .logo{ width:60px; height:60px; border-radius:18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%); background-size: 400% 400%; box-shadow: 0 0 30px rgba(139,92,246,.4), 0 0 60px rgba(139,92,246,.2), 0 10px 40px rgba(0,0,0,.3), inset 0 0 20px rgba(255,255,255,.1); display:grid; place-items:center; font-size: 32px; position: relative; overflow: visible; animation: gradientShift 8s ease infinite, logoFloat 3s ease-in-out infinite; border: 2px solid rgba(255,255,255,.2); backdrop-filter: blur(10px); }
@@ -38,7 +38,7 @@
     @keyframes goldenPulse { 0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, .3), 0 0 40px rgba(251, 191, 36, .1); } 50% { box-shadow: 0 0 30px rgba(251, 191, 36, .6), 0 0 60px rgba(251, 191, 36, .2); } }
     .brand p{color: var(--muted); font-size: 13px; margin-top: 3px;}
     .actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
-    .pill{ display:flex; align-items:center; gap:10px; padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; backdrop-filter: blur(14px); box-shadow: 0 12px 50px rgba(0,0,0,.20); color: var(--muted); font-size: 13px; user-select:none; white-space: nowrap; }
+    .pill{ display:flex; align-items:center; gap:10px; padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; backdrop-filter: blur(14px); box-shadow: 0 12px 50px rgba(0,0,0,.20); color: var(--muted); font-size: 13px; user-select:none; white-space: nowrap; will-change: border-color, box-shadow; transition: border-color 0.15s ease, box-shadow 0.15s ease; }
     .pill.loading{border-color: rgba(139,92,246,.55); box-shadow: 0 0 0 4px rgba(139,92,246,.12), 0 18px 55px rgba(0,0,0,.35);}
     .pill.ok{border-color: rgba(34,197,94,.55); box-shadow: 0 0 0 4px rgba(34,197,94,.12), 0 18px 55px rgba(0,0,0,.35);}
     .pill.err{border-color: rgba(239,68,68,.55); box-shadow: 0 0 0 4px rgba(239,68,68,.12), 0 18px 55px rgba(0,0,0,.35);}
@@ -54,7 +54,7 @@
     .spinner{ display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius:50%; animation: spin 0.6s linear infinite; }
     .grid{ display:grid; grid-template-columns: 420px 1fr; gap: 24px; }
     @media (max-width: 1100px){ .grid{grid-template-columns:1fr;} }
-    .card{ background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow:hidden; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); transition: transform .3s ease, box-shadow .3s ease; animation: fadeInUp 0.5s ease-out; margin-bottom: 6px; }
+    .card{ background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow:hidden; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); transition: transform .3s ease, box-shadow .3s ease; animation: fadeInUp 0.5s ease-out; margin-bottom: 6px; contain: content; }
     .card:hover{ transform: translateY(-4px); box-shadow: 0 28px 80px rgba(0,0,0,.60); }
     .card .head{ padding: 18px 18px 14px 18px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, rgba(139,92,246,.10), transparent); }
     .kicker{ font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted2); font-weight: 900; }
@@ -327,7 +327,7 @@
       btnExport: $('btnExport'), btnReset: $('btnReset')
     };
 
-    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null };
+    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, debounce: null, debounceMs: 1200 };
     let cachedTarifas = [];
 
     function parseNum(str){ 
@@ -498,7 +498,7 @@
       Object.values(el.inputs).forEach(i=>{
           i.addEventListener('input',()=>{
               state.userHasInteracted=true; updateKwhHint();
-              clearTimeout(state.debounce); state.debounce = setTimeout(()=>calculate(false), 500);
+              clearTimeout(state.debounce); state.debounce = setTimeout(()=>calculate(false), state.debounceMs);
           });
       });
       document.querySelectorAll('.fbtn').forEach(b=>{b.addEventListener('click',(e)=>{createRipple(b,e);document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.filter=b.getAttribute('data-filter');renderTable();});});
