@@ -242,7 +242,7 @@
             <div class="kwhPill" aria-live="polite"><div class="kwhLabel">Total kWh</div><div class="kwhValue" id="kwhHint">—</div></div>
             <button class="btn primary" id="btnCalc" type="button" title="Calcular ahora"><span id="btnText">⚡ Calcular</span><span id="btnSpinner" style="display:none;"><span class="spinner"></span></span></button>
           </div>
-          <div class="help">Se recalcula automáticamente al cambiar cualquier dato.</div>
+          <div class="help">Pulsa Calcular o modifica un valor. Luego se actualiza automáticamente.</div>
         </div>
       </section>
 
@@ -513,7 +513,7 @@
       el.btnReset.addEventListener('click',()=>resetInputs());
       el.btnShare.addEventListener('click',async(e)=>{createRipple(el.btnShare,e);toggleMenu(false);const u=buildShareUrl();await copyText(u);toast('Enlace copiado 🔗');});
       $('scrollToResults').addEventListener('click',()=>{$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'});$('scrollToResults').style.display='none';});
-      setTimeout(()=>{ if(el.inputs.p1.value) calculate(false); }, 800);
+      // setTimeout(()=>{ if(el.inputs.p1.value) calculate(false); }, 800);
     });
   </script>
   <!-- Cloudflare Web Analytics -->
