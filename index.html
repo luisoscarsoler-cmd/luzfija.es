@@ -510,8 +510,11 @@
       el.btnReset.addEventListener('click',()=>resetInputs());
       el.btnShare.addEventListener('click',async(e)=>{createRipple(el.btnShare,e);toggleMenu(false);const u=buildShareUrl();await copyText(u);toast('Enlace copiado 🔗');});
       $('scrollToResults').addEventListener('click',()=>{$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'});$('scrollToResults').style.display='none';});
-      setTimeout(()=>{ if(el.inputs.p1.value) calculate(false); }, 800);
+      // setTimeout(()=>{ if(el.inputs.p1.value) calculate(false); }, 800);
     });
   </script>
+  <!-- Cloudflare Web Analytics -->
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fea4a7fbe6e34ab1a867cff1c7837aa3"}'></script>
+  <!-- End Cloudflare Web Analytics -->
 </body>
 </html>
