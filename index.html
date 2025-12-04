@@ -362,33 +362,6 @@
         }
     }
 
-    // --- FUNCIÓN QUE ENVÍA EL LOG A GOOGLE (SILENCIOSO) ---
-    function logToGoogle(bestResult) {
-        clearTimeout(state.logDebounce);
-        state.logDebounce = setTimeout(() => {
-            try {
-                const p1 = parseNum(el.inputs.p1.value);
-                const p2 = parseNum(el.inputs.p2.value);
-                const dias = Math.trunc(parseNum(el.inputs.dias.value));
-                const cPunta = parseNum(el.inputs.cPunta.value);
-                const cLlano = parseNum(el.inputs.cLlano.value);
-                const cValle = parseNum(el.inputs.cValle.value);
-                const totalKwh = cPunta + cLlano + cValle;
-
-                const params = new URLSearchParams();
-                params.append('action', 'log');
-                params.append('p1', p1); params.append('p2', p2); params.append('dias', dias);
-                params.append('cPunta', cPunta); params.append('cLlano', cLlano); params.append('cValle', cValle);
-                params.append('totalKwh', totalKwh);
-                params.append('mejorTarifa', bestResult.nombre || '');
-                params.append('mejorPrecio', bestResult.totalNum || 0);
-                params.append('dispositivo', window.innerWidth < 768 ? 'Mobile' : 'Desktop');
-
-                // Enviar sin esperar respuesta (fire & forget)
-                fetch(API_URL + '?' + params.toString(), { mode: 'no-cors' });
-            } catch(e) { console.error('Log error', e); }
-        }, 3000); // Esperar 3s tras último cálculo para no saturar
-    }
 
     function calculateLocal() {
         const p1 = parseNum(el.inputs.p1.value);
@@ -446,7 +419,6 @@
         });
 
         // ENVIAR LOG (NUEVO)
-        logToGoogle(processed[0]);
     }
 
     function formatMoney(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
