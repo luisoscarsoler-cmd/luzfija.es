@@ -747,37 +747,46 @@
   </script>
 </body>
 </html>
-    // CARGAR VALORES POR DEFECTO AL INICIAR
-    document.addEventListener('DOMContentLoaded', function() {
-        const defaults = {
-            p1: '3,45',
-            p2: '3,45',
-            dias: '30',
-            cPunta: '120',
-            cLlano: '80',
-            cValle: '150'
+
+    // CARGAR VALORES POR DEFECTO Y TARIFAS (GITHUB PAGES)
+    document.addEventListener("DOMContentLoaded", function() {
+        const DEFAULTS = {
+            p1: "3,45",
+            p2: "3,45",
+            dias: "30",
+            cPunta: "100",
+            cLlano: "100",
+            cValle: "100"
         };
         
-        // Cargar tarifas desde API
-        async function loadTarifasFromAPI() {
-            try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbwfrP2AxSQz_k1NlSDcdZxvQR_m0t3xKO1JnD7FnRqOWCM0RYqLihg5cca6vXQswn4j/exec?action=tarifas');
-                const data = await response.json();
-                if (data.success) {
-                    window.cachedTarifas = data.tarifas;
-                    console.log('✅ Tarifas cargadas:', data.tarifas.length);
-                }
-            } catch(e) {
-                console.error('Error cargando tarifas:', e);
+        // Cargar desde LocalStorage o usar defectos
+        const saved = localStorage.getItem("almax_comparador_v6_inputs");
+        if (!saved) {
+            for (const [key, value] of Object.entries(DEFAULTS)) {
+                const el = document.getElementById(key);
+                if (el) el.value = value;
+            }
+            // Actualizar hint de kWh
+            const kwhHint = document.getElementById("kwhHint");
+            if (kwhHint) {
+                const total = parseFloat(DEFAULTS.cPunta.replace(",",".")) + 
+                              parseFloat(DEFAULTS.cLlano.replace(",",".")) + 
+                              parseFloat(DEFAULTS.cValle.replace(",","."));
+                kwhHint.textContent = total.toFixed(2).replace(".", ",") + " kWh";
             }
         }
         
-        // Si no hay valores guardados, usar defectos
-        const saved = localStorage.getItem('almax_comparador_v6_inputs');
-        if (!saved) {
-            for (const [key, value] of Object.entries(defaults)) {
-                const el = document.getElementById(key);
-                if (el) el.value = value;
+        // Cargar tarifas desde Google Apps Script
+        async function loadTarifasFromAPI() {
+            try {
+                const response = await fetch("https://script.google.com/macros/s/AKfycbwfrP2AxSQz_k1NlSDcdZxvQR_m0t3xKO1JnD7FnRqOWCM0RYqLihg5cca6vXQswn4j/exec?action=tarifas");
+                const data = await response.json();
+                if (data.success) {
+                    window.cachedTarifas = data.tarifas;
+                    console.log("✅ Tarifas cargadas:", data.tarifas.length);
+                }
+            } catch(e) {
+                console.error("Error cargando tarifas:", e);
             }
         }
         
