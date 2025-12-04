@@ -213,7 +213,6 @@
           <button class="btn" id="btnMenu" type="button" aria-haspopup="true" aria-expanded="false" title="Opciones">⚙️</button>
           <div class="menuPanel" id="menuPanel" role="menu" aria-label="Opciones">
             <div class="menuHint">Opciones</div>
-            <button class="menuItem" id="btnShare" type="button" role="menuitem"><span class="mi-left">🔗 Compartir</span><span class="mi-right">copiar</span></button>
             <button class="menuItem" id="btnExport" type="button" role="menuitem"><span class="mi-left">⬇️ Descargar CSV</span><span class="mi-right">ranking</span></button>
             <div class="menuDivider"></div>
             <button class="menuItem" id="btnReset" type="button" role="menuitem"><span class="mi-left">↺ Restablecer</span><span class="mi-right">valores</span></button>
@@ -325,7 +324,7 @@
       toolbar: $('toolbar'), table: $('table'), tbody: $('tbody'), emptyBox: $('emptyBox'),
       toast: $('toast'), toastText: $('toastText'), toastDot: $('toastDot'),
       menuRoot: $('menuRoot'), btnMenu: $('btnMenu'), menuPanel: $('menuPanel'),
-      btnShare: $('btnShare'), btnExport: $('btnExport'), btnReset: $('btnReset')
+      btnExport: $('btnExport'), btnReset: $('btnReset')
     };
 
     const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null };
@@ -484,8 +483,6 @@
         if(window.innerWidth<1100){ const sb=$('scrollToResults'); sb.style.display='block'; setTimeout(()=>sb.style.display='none',5000); } 
     }
 
-    function buildShareUrl(){ const d = saveInputs(); const u = new URL(location.href); u.search = ''; for(const k in d) u.searchParams.set(k, d[k]); return u.toString(); }
-    async function copyText(t){ try{await navigator.clipboard.writeText(t);return true;}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(x){}a.remove();return true;} }
     async function calculate(isUserAction){
         saveInputs();
         if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0}); 
@@ -511,9 +508,8 @@
       el.menuPanel.addEventListener('click',(e)=>e.stopPropagation());
       document.addEventListener('click',()=>toggleMenu(false));
       el.btnReset.addEventListener('click',()=>resetInputs());
-      el.btnShare.addEventListener('click',async(e)=>{createRipple(el.btnShare,e);toggleMenu(false);const u=buildShareUrl();await copyText(u);toast('Enlace copiado 🔗');});
+      el.btnExport.addEventListener('click',(e)=>{createRipple(el.btnExport,e);toggleMenu(false);});
       $('scrollToResults').addEventListener('click',()=>{$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'});$('scrollToResults').style.display='none';});
-      // setTimeout(()=>{ if(el.inputs.p1.value) calculate(false); }, 800);
     });
   </script>
   <!-- Cloudflare Web Analytics -->
