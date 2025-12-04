@@ -362,4 +362,156 @@
         }
     }
 
-    // --- FUNCIÓN QUE ENVÍA EL LOG A GOOGLE (SILENCIOSO) ---
+
+    function calculateLocal() {
+        const p1 = parseNum(el.inputs.p1.value);
+        const p2 = parseNum(el.inputs.p2.value);
+        const dias = Math.trunc(parseNum(el.inputs.dias.value)) || 30;
+        const cPunta = parseNum(el.inputs.cPunta.value);
+        const cLlano = parseNum(el.inputs.cLlano.value);
+        const cValle = parseNum(el.inputs.cValle.value);
+
+        if(!cachedTarifas.length) return;
+
+        const resultados = cachedTarifas.map((t, index) => {
+            const pot = (p1 * dias * t.p1) + (p2 * dias * t.p2);
+            const cons = (cPunta * t.cPunta) + (cLlano * t.cLlano) + (cValle * t.cValle);
+            const tarifaAcceso = (4.650987 / 365 * dias);
+            const sumaBase = pot + cons + tarifaAcceso;
+            const impuestoElec = Math.max((5.11269632 / 100) * sumaBase, (cPunta + cLlano + cValle) * 0.001);
+            const margen = dias * 0.026667;
+            const subtotal = sumaBase + impuestoElec + margen;
+            const iva = subtotal * 0.21; 
+            const total = subtotal + iva;
+            
+            return {
+                ...t,
+                posicion: index + 1,
+                potenciaNum: pot, potencia: formatMoney(pot),
+                consumoNum: cons, consumo: formatMoney(cons),
+                impuestosNum: impuestoElec + margen + iva,
+                impuestos: formatMoney(impuestoElec + margen + iva),
+                totalNum: total, total: formatMoney(total),
+                webUrl: t.web
+            };
+        });
+
+        resultados.sort((a, b) => a.totalNum - b.totalNum);
+        
+        const bestPrice = resultados[0].totalNum;
+        const processed = resultados.map((r, i) => {
+            const diff = r.totalNum - bestPrice;
+            return {
+                ...r, posicion: i + 1, esMejor: i === 0,
+                vsMejorNum: diff, vsMejor: i === 0 ? '—' : '+' + formatMoney(diff)
+            };
+        });
+
+        const prices = processed.map(r => r.totalNum);
+        const min = Math.min(...prices); const max = Math.max(...prices);
+        const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
+
+        renderAll({
+            success: true,
+            resumen: { mejor: processed[0].nombre, precio: formatMoney(processed[0].totalNum) },
+            stats: { precioMin: formatMoney(min), precioMax: formatMoney(max), precioMedio: formatMoney(avg) },
+            resultados: processed
+        });
+
+        // ENVIAR LOG (NUEVO)
+    }
+
+    function formatMoney(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
+
+    function loadInputs() {
+        if (Object.keys(SERVER_PARAMS).length > 0) {
+             const d = Object.assign({}, DEFAULTS, SERVER_PARAMS);
+             for(const k in DEFAULTS) el.inputs[k].value = d[k];
+             updateKwhHint();
+             setTimeout(()=>calculate(false), 500);
+             return;
+        }
+        let savedData = {};
+        try { const r = localStorage.getItem(LS_KEY); if (r) savedData = JSON.parse(r); } catch(e){}
+        const finalData = { ...DEFAULTS, ...savedData };
+        for (const k in DEFAULTS) el.inputs[k].value = finalData[k];
+        updateKwhHint();
+    }
+
+    function saveInputs(){ const d={}; for(const k in DEFAULTS)d[k]=el.inputs[k].value; localStorage.setItem(LS_KEY,JSON.stringify(d)); return d; }
+    function resetInputs(){ for(const k in DEFAULTS)el.inputs[k].value=DEFAULTS[k]; saveInputs(); updateKwhHint(); clearErrorStyles(); toast('Restablecido'); setTimeout(()=>calculate(false), 300); }
+    function updateKwhHint(){ const t=parseNum(el.inputs.cPunta.value)+parseNum(el.inputs.cLlano.value)+parseNum(el.inputs.cValle.value); el.kwhHint.textContent=`${t.toFixed(2).replace('.',',')} kWh`; }
+    function clearErrorStyles(){ Object.values(el.inputs).forEach(i=>i.classList.remove('error')); }
+    function rowTipoBadge(t){ const s=String(t||'').trim(); if(s==='1P')return `<span class="badge b1">1P</span>`; if(s==='3P')return `<span class="badge b3">3P</span>`; return `<span class="badge">${escapeHtml(s||'—')}</span>`; }
+    function formatVsWithBar(v,vn){ const s=String(v??'').trim(); if(!s||s==='—'||s==='0'||s==='0,00'||s==='0 €'||s==='0,00 €')return '<span class="vs-text zero">—</span>'; const pos=s.startsWith('+'); const c=pos?'pos':'neg'; const a=pos?'▲':'▼'; return `<span class="vs-text ${c}">${a} ${escapeHtml(s)}</span>`; }
+    function applyFilters(r){ const f=state.filter; return r.filter(x=>(f==='all'||String(x.tipo||'')===f)); }
+    function applySort(r){ const {key,dir}=state.sort; const asc=dir==='asc'; const c=r.slice(); c.sort((a,b)=>{const va=a[key],vb=b[key]; if(key==='tarifa'){const sa=String(va||'').toLowerCase(),sb=String(vb||'').toLowerCase();if(sa>sb)return asc?1:-1;if(sa<sb)return asc?-1:1;return 0;} const na=Number(va)||0,nb=Number(vb)||0; if(na>nb)return asc?1:-1;if(na<nb)return asc?-1:1;return 0;}); return c; }
+    function updateSortIcons(){ ['tarifa','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{const i=$('si_'+k); if(!i)return; if(state.sort.key!==k){i.textContent='';return;} i.textContent=state.sort.dir==='asc'?'▲':'▼';}); }
+    function animateNumber(el,txt,dur=500){ el.textContent=txt; } 
+    function createRipple(b,e){ const r=document.createElement('span'); const rect=b.getBoundingClientRect(); const s=Math.max(rect.width,rect.height); const x=e.clientX-rect.left-s/2; const y=e.clientY-rect.top-s/2; r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`; b.style.position='relative'; b.style.overflow='hidden'; b.appendChild(r); setTimeout(()=>r.remove(),600); }
+    
+    function renderTable(){ 
+        const f=applyFilters(state.rows); 
+        const s=applySort(f); 
+        el.tbody.innerHTML='';
+        if(s.length===0){el.table.style.display='none';el.emptyBox.style.display='block';return;} 
+        el.emptyBox.style.display='none';el.table.style.display='table';
+        s.forEach((r,i)=>{
+            const tr=document.createElement('tr');
+            if(r.esMejor)tr.classList.add('best');
+            const w=r.webUrl?`<a class="web" href="${escapeHtml(r.webUrl)}" target="_blank" rel="noopener" title="Abrir web">🔗</a>`:'';
+            tr.innerHTML=`<td>${escapeHtml(r.posicion)}</td><td title="${escapeHtml(r.nombre)}">${escapeHtml(r.nombre)}</td><td>${escapeHtml(r.potencia)}</td><td>${escapeHtml(r.consumo)}</td><td>${escapeHtml(r.impuestos)}</td><td><strong style="font-weight:1100; color: rgba(167,139,250,1);">${escapeHtml(r.total)}</strong></td><td class="vs">${formatVsWithBar(r.vsMejor,r.vsMejorNum)}</td><td>${rowTipoBadge(r.tipo)}</td><td style="text-align:center">${w}</td>`;
+            el.tbody.appendChild(tr);
+        }); 
+        updateSortIcons();
+    }
+    
+    function renderAll(d){ 
+        if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;} 
+        setStatus('Resultados actualizados','ok'); 
+        const r=d.resumen||{}; 
+        if(r.mejor) el.kpiBest.textContent=r.mejor;
+        if(r.precio) el.kpiPrice.textContent=r.precio;
+        el.heroKpis.style.display='grid'; 
+        const s=d.stats; 
+        if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; el.statsBar.style.display='grid'; }
+        state.rows=Array.isArray(d.resultados)?d.resultados:[]; 
+        el.toolbar.style.display='flex'; 
+        renderTable(); 
+        if(window.innerWidth<1100){ const sb=$('scrollToResults'); sb.style.display='block'; setTimeout(()=>sb.style.display='none',5000); } 
+    }
+
+    function buildShareUrl(){ const d = saveInputs(); const u = new URL(location.href); u.search = ''; for(const k in d) u.searchParams.set(k, d[k]); return u.toString(); }
+    async function copyText(t){ try{await navigator.clipboard.writeText(t);return true;}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(x){}a.remove();return true;} }
+    async function calculate(isUserAction){
+        saveInputs();
+        if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0}); 
+        setStatus('Calculando...', 'loading');
+        const loaded = await fetchTarifas();
+        if(!loaded) return;
+        calculateLocal();
+    }
+    function toggleMenu(force){ const s=(typeof force==='boolean')?force:!el.menuPanel.classList.contains('show'); el.menuPanel.classList.toggle('show',s); }
+    
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      fetchTarifas(); loadInputs(); 
+      Object.values(el.inputs).forEach(i=>{
+          i.addEventListener('input',()=>{
+              state.userHasInteracted=true; updateKwhHint();
+              clearTimeout(state.debounce); state.debounce = setTimeout(()=>calculate(false), 500);
+          });
+      });
+      document.querySelectorAll('.fbtn').forEach(b=>{b.addEventListener('click',(e)=>{createRipple(b,e);document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.filter=b.getAttribute('data-filter');renderTable();});});
+      document.querySelectorAll('thead th.sort').forEach(th=>{th.addEventListener('click',()=>{const k=th.getAttribute('data-sort');if(!k)return;if(state.sort.key===k)state.sort.dir=(state.sort.dir==='asc')?'desc':'asc';else{state.sort.key=k;state.sort.dir='asc';}renderTable();updateSortIcons();});});
+      el.btnCalc.addEventListener('click',(e)=>{createRipple(el.btnCalc,e);calculate(true);});
+      el.btnMenu.addEventListener('click',(e)=>{createRipple(el.btnMenu,e);e.stopPropagation();toggleMenu();});
+      el.menuPanel.addEventListener('click',(e)=>e.stopPropagation());
+      document.addEventListener('click',()=>toggleMenu(false));
+      el.btnReset.addEventListener('click',()=>resetInputs());
+      el.btnShare.addEventListener('click',async(e)=>{createRipple(el.btnShare,e);toggleMenu(false);const u=buildShareUrl();await copyText(u);toast('Enlace copiado 🔗');});
+      $('scrollToResults').addEventListener('click',()=>{$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'});$('scrollToResults').style.display='none';});
+      setTimeout(()=>{ if(el.inputs.p1.value) calculate(false); }, 800);
+    });
+  </script>
+</body>
+</html>
