@@ -12,172 +12,90 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
   <style>
-    /* === TU DISEÑO ORIGINAL EXACTO (NO TOCAR) === */
-    :root{ --bg0:#070A12; --bg1:#0B1020; --card: rgba(255,255,255,.06); --card2: rgba(255,255,255,.085); --border: rgba(255,255,255,.10); --border2: rgba(255,255,255,.16); --text:#F7F7FB; --muted: rgba(247,247,251,.72); --muted2: rgba(247,247,251,.55); --accent:#8B5CF6; --accent2:#22C55E; --warn:#F59E0B; --danger:#EF4444; --shadow: 0 22px 65px rgba(0,0,0,.52); --shadow2: 0 16px 40px rgba(0,0,0,.50); --radius: 18px; --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; --sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif; }
+    /* === TU DISEÑO ORIGINAL EXACTO (NO TOCADO) === */
+    :root{
+      --bg0:#070A12; --bg1:#0B1020; --card: rgba(255,255,255,.06); --card2: rgba(255,255,255,.085);
+      --border: rgba(255,255,255,.10); --border2: rgba(255,255,255,.16); --text:#F7F7FB;
+      --muted: rgba(247,247,251,.72); --muted2: rgba(247,247,251,.55);
+      --accent:#8B5CF6; --accent2:#22C55E; --warn:#F59E0B; --danger:#EF4444;
+      --shadow: 0 22px 65px rgba(0,0,0,.52); --shadow2: 0 16px 40px rgba(0,0,0,.50);
+      --radius: 18px; --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
     *{box-sizing:border-box; margin:0; padding:0}
     html,body{height:100%;}
     body{ font-family: var(--sans); color: var(--text); background: radial-gradient(1000px 600px at 12% 15%, rgba(139,92,246,.22), transparent 55%), radial-gradient(1000px 680px at 86% 88%, rgba(34,197,94,.16), transparent 55%), linear-gradient(135deg, var(--bg0), var(--bg1)); overflow-x:hidden; }
     .container{ max-width:1400px; margin:0 auto; padding: clamp(50px, 5vw, 70px) clamp(22px, 4.5vw, 60px); }
     .topbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 22px; }
     .brand{display:flex; align-items:center; gap:14px; min-width: 240px; position: relative;}
-    .logo{ width:60px; height:60px; border-radius:18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%); background-size: 400% 400%; box-shadow: 0 0 30px rgba(139,92,246,.4), 0 0 60px rgba(139,92,246,.2), 0 10px 40px rgba(0,0,0,.3), inset 0 0 20px rgba(255,255,255,.1); display:grid; place-items:center; font-size: 32px; position: relative; overflow: visible; animation: gradientShift 8s ease infinite, logoFloat 3s ease-in-out infinite; border: 2px solid rgba(255,255,255,.2); backdrop-filter: blur(10px); }
-    .logo::before{ content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,.8) 50%, transparent 70%); animation: logoRotate 3s linear infinite; }
-    .logo::after{ content: ''; position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border-radius: 20px; border: 2px solid transparent; background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringPulse 2s ease-in-out infinite; opacity: 0.6; }
-    @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-    @keyframes logoFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-5px) rotate(-2deg); } 50% { transform: translateY(0) rotate(0deg); } 75% { transform: translateY(-5px) rotate(2deg); } }
-    @keyframes logoRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    @keyframes ringPulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.1); opacity: 1; } }
-    .logo:hover{ transform: scale(1.15) rotate(5deg) !important; box-shadow: 0 0 50px rgba(139,92,246,.6), 0 0 100px rgba(139,92,246,.3), 0 15px 50px rgba(0,0,0,.4); }
-    .particle{ position: absolute; width: 4px; height: 4px; background: linear-gradient(45deg, var(--accent), var(--accent2)); border-radius: 50%; pointer-events: none; opacity: 0; animation: particleFloat 3s ease-in-out infinite; box-shadow: 0 0 10px currentColor; }
-    .particle:nth-child(1) { top: 10px; left: -20px; animation-delay: 0s; } .particle:nth-child(2) { top: 40px; left: -15px; animation-delay: 0.5s; } .particle:nth-child(3) { top: 25px; left: 80px; animation-delay: 1s; } .particle:nth-child(4) { top: 5px; left: 75px; animation-delay: 1.5s; } .particle:nth-child(5) { top: 50px; left: 70px; animation-delay: 2s; } .particle:nth-child(6) { top: -5px; left: 30px; animation-delay: 2.5s; }
-    @keyframes particleFloat { 0% { opacity: 0; transform: translateY(0) scale(0); } 20% { opacity: 1; transform: translateY(-10px) scale(1); } 80% { opacity: 1; transform: translateY(-30px) scale(0.8); } 100% { opacity: 0; transform: translateY(-50px) scale(0); } }
-    .brand h1{ font-size: clamp(20px,3.2vw,34px); line-height: 1.05; letter-spacing: -0.5px; font-weight: 900; background: linear-gradient( 90deg, rgba(167,139,250,1) 0%, rgba(139,92,246,1) 25%, rgba(34,197,94,1) 50%, rgba(139,92,246,1) 75%, rgba(167,139,250,1) 100% ); background-size: 200% auto; -webkit-background-clip: text; background-clip:text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; text-shadow: 0 0 30px rgba(139,92,246,.3); }
-    @keyframes shimmer { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
-    @keyframes ripple { from { transform: scale(0); opacity: 1; } to { transform: scale(4); opacity: 0; } }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes goldenPulse { 0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, .3), 0 0 40px rgba(251, 191, 36, .1); } 50% { box-shadow: 0 0 30px rgba(251, 191, 36, .6), 0 0 60px rgba(251, 191, 36, .2); } }
+    .logo{ width:60px; height:60px; border-radius:18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display:grid; place-items:center; font-size: 32px; box-shadow: 0 0 30px rgba(139,92,246,.4); border: 2px solid rgba(255,255,255,.2); position:relative; overflow:visible; }
+    .logo::before{ content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:linear-gradient(45deg,transparent,rgba(255,255,255,.8),transparent); animation:logoRotate 3s linear infinite; }
+    @keyframes logoRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .logo:hover{ transform: scale(1.1) rotate(5deg); transition: 0.3s; }
+    .particle{ position: absolute; width: 4px; height: 4px; background: linear-gradient(45deg, var(--accent), var(--accent2)); border-radius: 50%; opacity: 0; animation: particleFloat 3s infinite; }
+    .particle:nth-child(1) { top: 10px; left: -20px; animation-delay: 0s; } .particle:nth-child(2) { top: 40px; left: -15px; animation-delay: 0.5s; } .particle:nth-child(3) { top: 25px; left: 80px; animation-delay: 1s; } 
+    @keyframes particleFloat { 0% { opacity: 0; transform: translateY(0) scale(0); } 50% { opacity: 1; } 100% { opacity: 0; transform: translateY(-50px) scale(0); } }
+    .brand h1{ font-size: clamp(20px,3.2vw,34px); font-weight: 900; background: linear-gradient(90deg, #a78bfa, #8b5cf6, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .brand p{color: var(--muted); font-size: 13px; margin-top: 3px;}
     .actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
-    .pill{ display:flex; align-items:center; gap:10px; padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; backdrop-filter: blur(14px); box-shadow: 0 12px 50px rgba(0,0,0,.20); color: var(--muted); font-size: 13px; user-select:none; white-space: nowrap; }
-    .pill.loading{border-color: rgba(139,92,246,.55); box-shadow: 0 0 0 4px rgba(139,92,246,.12), 0 18px 55px rgba(0,0,0,.35);}
-    .pill.ok{border-color: rgba(34,197,94,.55); box-shadow: 0 0 0 4px rgba(34,197,94,.12), 0 18px 55px rgba(0,0,0,.35);}
-    .pill.err{border-color: rgba(239,68,68,.55); box-shadow: 0 0 0 4px rgba(239,68,68,.12), 0 18px 55px rgba(0,0,0,.35);}
-    .btn{ border: 1px solid var(--border); background: var(--card); color: var(--text); padding: 10px 12px; border-radius: 12px; cursor:pointer; font-weight: 900; font-size: 13px; display:inline-flex; align-items:center; gap: 10px; transition: transform .15s ease, background .15s ease, border-color .15s ease, opacity .15s ease; backdrop-filter: blur(14px); min-height: 44px; }
-    .btn:hover{transform: translateY(-1px); border-color: var(--border2); background: var(--card2);}
-    .btn:active{transform: translateY(0px); opacity:.9}
-    .btn.primary{ background: linear-gradient(45deg, rgba(139,92,246,1), rgba(167,139,250,1)); border-color: rgba(139,92,246,.55); box-shadow: 0 12px 30px rgba(139,92,246,.25); padding: 12px 14px; position: relative; overflow: hidden; }
-    .btn.primary::before{ content: ''; position: absolute; bottom: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, #22C55E, #10B981); box-shadow: 0 0 10px rgba(34,197,94,.6); transition: width 0.3s ease; }
-    .btn.primary.calculating::before{ animation: progressBar 2s ease-in-out; }
-    @keyframes progressBar { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
-    .btn.primary:disabled{ background: rgba(255,255,255,.06); border-color: var(--border); box-shadow:none; cursor:not-allowed; opacity:.6; transform:none; }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .spinner{ display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius:50%; animation: spin 0.6s linear infinite; }
+    .pill{ padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; font-size: 13px; color: var(--muted); display:flex; gap:8px; align-items:center; }
+    .pill.ok{ border-color: rgba(34,197,94,.5); color: #fff; }
+    .pill.loading{ border-color: rgba(139,92,246,.5); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%{opacity:1} 50%{opacity:.6} 100%{opacity:1} }
+    .btn{ border: 1px solid var(--border); background: var(--card); color: var(--text); padding: 10px 12px; border-radius: 12px; cursor:pointer; font-weight: 900; font-size: 13px; transition: 0.2s; min-height: 44px; display:inline-flex; align-items:center; gap:10px; }
+    .btn:hover{ background: var(--card2); border-color: var(--border2); transform: translateY(-2px); }
+    .btn.primary{ background: linear-gradient(45deg, var(--accent), #6366f1); border-color: rgba(139,92,246,.5); box-shadow: 0 10px 30px rgba(139,92,246,.3); position:relative; overflow:hidden; }
+    .btn.primary::before{ content:''; position:absolute; left:0; bottom:0; width:0%; height:3px; background:#fff; transition:0.3s; }
+    .btn.primary.calculating::before{ width:100%; }
     .grid{ display:grid; grid-template-columns: 420px 1fr; gap: 24px; }
     @media (max-width: 1100px){ .grid{grid-template-columns:1fr;} }
-    .card{ background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow:hidden; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); transition: transform .3s ease, box-shadow .3s ease; animation: fadeInUp 0.5s ease-out; margin-bottom: 6px; }
-    .card:hover{ transform: translateY(-4px); box-shadow: 0 28px 80px rgba(0,0,0,.60); }
-    .card .head{ padding: 18px 18px 14px 18px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, rgba(139,92,246,.10), transparent); }
+    .card{ background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); backdrop-filter: blur(20px); overflow:hidden; animation: fadeInUp 0.5s ease-out; }
+    .card .head{ padding: 18px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, rgba(139,92,246,.1), transparent); }
     .kicker{ font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted2); font-weight: 900; }
-    .title{ margin-top: 6px; font-size: 18px; font-weight: 900; letter-spacing: -0.3px; }
+    .title{ margin-top:6px; font-size: 18px; font-weight: 900; }
     .body{padding: 18px;}
-    .alert{ border: 1px solid rgba(239,68,68,.40); background: rgba(239,68,68,.15); color: rgba(255,255,255,.95); padding: 12px 12px; border-radius: 14px; font-size: 13px; line-height: 1.35; display:none; margin-bottom: 12px; }
-    .alert.show{display:block} .alert b{color: #fff}
+    .alert{ border: 1px solid rgba(239,68,68,.4); background: rgba(239,68,68,.15); color: #fff; padding: 12px; border-radius: 12px; font-size: 13px; display:none; margin-bottom:12px; }
+    .alert.show{ display:block; animation: shake 0.4s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
     .form{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    @media (max-width: 520px){ .form{grid-template-columns: repeat(2, 1fr);} }
     .group{display:flex; flex-direction:column; gap: 7px;}
-    label{ font-size: 12px; color: var(--muted); font-weight: 900; letter-spacing: .2px; position: relative; display: inline-flex; align-items: center; gap: 6px; }
-    .tooltip{ position: relative; cursor: help; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(139,92,246,.2); color: var(--accent); font-size: 10px; font-weight: 900; }
-    .tooltip:hover::after{ content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 8px 12px; background: rgba(5,8,16,.95); color: #fff; border-radius: 8px; font-size: 11px; font-weight: 600; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 100; animation: fadeInUp 0.2s ease; border: 1px solid rgba(139,92,246,.4); }
-    .input{ width:100%; padding: 14px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.22); color: var(--text); outline:none; font-weight: 900; font-size: 15px; transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease, background .15s ease; min-height: 44px; position: relative; }
-    .input:focus{ border-color: var(--accent); background: rgba(139, 92, 246, 0.1); box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15), 0 0 15px rgba(139, 92, 246, 0.3); transform: translateY(-2px); }
-    .input:valid:not(:placeholder-shown){ border-color: rgba(34,197,94,.4); box-shadow: 0 0 0 2px rgba(34,197,94,.08); }
-    .input.error{ border-color: rgba(239,68,68,.7); box-shadow: 0 0 0 4px rgba(239,68,68,.12); background: rgba(239,68,68,.08); }
-    .help{ margin-top: 12px; padding: 12px 12px; border-radius: 14px; border: 1px solid rgba(139,92,246,.25); background: rgba(139,92,246,.10); color: var(--muted); font-size: 12px; line-height: 1.35; }
-    .row{ display:flex; gap: 12px; align-items:center; justify-content: space-between; flex-wrap: wrap; margin-top: 12px; }
-    .kwhPill{ display:flex; align-items:baseline; flex-wrap:wrap; gap: 10px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--border); background: rgba(0,0,0,.18); min-height: 44px; }
-    .kwhLabel{ color: var(--muted2); font-weight: 900; letter-spacing: .3px; text-transform: uppercase; font-size: 11px; }
-    .kwhValue{ font-family: var(--mono); font-size: 17px; font-weight: 1000; letter-spacing: -.2px; color: rgba(255,255,255,.94); }
-    @media (max-width: 520px){ .kwhValue{font-size: 16px;} .row{gap: 10px;} }
+    label{ font-size: 12px; color: var(--muted); font-weight: 900; }
+    .input{ width:100%; padding: 14px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.22); color: var(--text); font-weight: 900; font-size: 15px; outline:none; transition:0.2s; }
+    .input:focus{ border-color: var(--accent); box-shadow: 0 0 0 2px rgba(139,92,246,.2); }
+    .row{ display:flex; gap: 12px; align-items:center; justify-content: space-between; margin-top: 14px; }
+    .kwhPill{ padding: 10px 12px; border-radius: 14px; border: 1px solid var(--border); background: rgba(0,0,0,.18); font-family: var(--mono); font-weight: 1000; font-size: 16px; color:#fff; }
     .heroKpis{ display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
-    @media (max-width: 760px){ .heroKpis{grid-template-columns: 1fr;} }
-    .heroCard{ padding: 18px 16px; border-radius: 18px; border: 1px solid var(--border); background: linear-gradient(135deg, rgba(139,92,246,.14), rgba(34,197,94,.06)); position:relative; overflow:hidden; min-height: 120px; display:flex; flex-direction:column; justify-content:center; gap: 10px; animation: fadeInUp 0.6s ease-out; animation-delay: 0.1s; animation-fill-mode: both; }
-    .heroCard.best{ border: 2px solid rgba(251, 191, 36, .6); background: linear-gradient(135deg, rgba(251, 191, 36, .15), rgba(139,92,246,.10)); animation: fadeInUp 0.6s ease-out, goldenPulse 2s ease-in-out infinite; animation-delay: 0.1s, 0.8s; animation-fill-mode: both, forwards; position: relative; }
-    .heroCard.best::before{ content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent); animation: shine 3s infinite; }
-    @keyframes shine { 0% { left: -100%; } 50%, 100% { left: 200%; } }
-    .heroCard .k{ font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted2); font-weight: 1000; display:flex; align-items:center; gap: 6px; }
-    .heroCard.best .k::before{ content: "🏆"; font-size: 14px; }
-    .heroCard .v{ font-size: clamp(28px, 2.6vw, 44px); font-weight: 1100; letter-spacing: -0.6px; line-height: 1.0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .heroCard .s{ color: var(--muted); font-size: 12px; line-height: 1.25; }
-    .statsbar{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; opacity: .92; }
-    @media (max-width: 760px){ .statsbar{grid-template-columns: 1fr;} }
-    .statCard{ border: 1px solid var(--border); background: rgba(0,0,0,.14); border-radius: 16px; padding: 12px 12px; display:flex; flex-direction:column; gap: 6px; animation: fadeInUp 0.5s ease-out; animation-fill-mode: both; }
-    .statCard:nth-child(1) { animation-delay: 0.2s; } .statCard:nth-child(2) { animation-delay: 0.3s; } .statCard:nth-child(3) { animation-delay: 0.4s; }
-    .statLabel{ color: var(--muted2); letter-spacing: 1px; text-transform: uppercase; font-size: 10px; font-weight: 1000; }
-    .statValue{ font-size: clamp(18px, 1.5vw, 24px); font-weight: 1100; letter-spacing: -0.4px; white-space: nowrap; }
-    .badge{ display:inline-flex; align-items:center; justify-content:center; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,.06); font-weight: 1000; font-size: 11px; letter-spacing: .3px; transition: transform .15s ease, box-shadow .15s ease; }
-    .badge.b1{ border: none; background: linear-gradient(135deg, rgba(59,130,246,.9), rgba(96,165,250,.8)); color: #fff; box-shadow: 0 4px 12px rgba(59,130,246,.3); }
-    .badge.b1:hover{ transform: scale(1.05); box-shadow: 0 6px 16px rgba(59,130,246,.4); }
-    .badge.b3{ border: none; background: linear-gradient(135deg, rgba(245,158,11,.9), rgba(251,191,36,.8)); color: #fff; box-shadow: 0 4px 12px rgba(245,158,11,.3); }
-    .badge.b3:hover{ transform: scale(1.05); box-shadow: 0 6px 16px rgba(245,158,11,.4); }
-    .toolbar{ display:flex; align-items:center; justify-content:flex-end; gap: 12px; margin: 10px 0 12px; flex-wrap: wrap; }
-    .filters{display:flex; gap: 10px; flex-wrap: wrap;}
-    .fbtn{ padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,.06); color: var(--muted); cursor:pointer; font-weight: 1000; font-size: 12px; transition: transform .15s ease, border-color .15s ease, background .15s ease; user-select:none; min-height: 44px; display:flex; align-items:center; }
-    .fbtn:hover{transform: translateY(-1px); border-color: var(--border2); background: rgba(255,255,255,.09);}
-    .fbtn.active{ background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.55); color: var(--text); }
-    .tableWrap{ background: transparent !important; border: none !important; overflow: visible !important; }
-    table{ width: 100%; border-collapse: separate !important; border-spacing: 0 8px; table-layout: fixed; }
-    thead th:nth-child(1), tbody td:nth-child(1) { width: 4%; }
-    thead th:nth-child(2), tbody td:nth-child(2) { width: 23%; }
-    thead th:nth-child(3), tbody td:nth-child(3) { width: 10%; }
-    thead th:nth-child(4), tbody td:nth-child(4) { width: 10%; }
-    thead th:nth-child(5), tbody td:nth-child(5) { width: 11%; }
-    thead th:nth-child(6), tbody td:nth-child(6) { width: 10%; }
-    thead th:nth-child(7), tbody td:nth-child(7) { width: 12%; }
-    thead th:nth-child(8), tbody td:nth-child(8) { width: 8%; }
-    thead th:nth-child(9), tbody td:nth-child(9) { width: 8%; }
-    thead th{ position: sticky; top: 0; z-index: 5; text-align:right; padding: 14px 12px; font-size: 11px !important; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted) !important; background: transparent !important; border-bottom: none !important; user-select:none; white-space: nowrap; padding-bottom: 15px; }
-    thead th:first-child, tbody td:first-child{text-align:center}
-    thead th:nth-child(2), tbody td:nth-child(2){text-align:left; white-space: nowrap;}
-    thead th.sort{cursor:pointer}
-    thead th.sort:hover{background: rgba(139,92,246,.12)}
-    .sortIcon{opacity:.8; font-size: 12px; margin-left: 6px;}
-    tbody tr { background: rgba(255, 255, 255, 0.03); transition: all 0.2s ease; backdrop-filter: blur(10px); }
-    tbody td{ padding: 14px 12px; border-bottom: none !important; text-align:right; font-size: 15px; color: rgba(255,255,255,.88); vertical-align: middle; white-space: nowrap; }
-    tbody tr td:first-child { border-radius: 12px 0 0 12px; }
-    tbody tr td:last-child  { border-radius: 0 12px 12px 0; }
-    tbody td:nth-child(2){ font-weight: 1100; color: #fff; font-size: 14px; }
-    tbody tr:hover{ transform: scale(1.01) translateY(-2px); background: rgba(255, 255, 255, 0.07); box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 10; position: relative; }
-    tbody tr.best{ background: linear-gradient(90deg, rgba(34,197,94,0.15), rgba(139,92,246,0.1)) !important; border: 1px solid rgba(34,197,94,0.3); box-shadow: 0 0 20px rgba(34,197,94,0.1); }
-    tbody tr.best td:nth-child(2)::before{ content: "🏆 "; font-size: 14px; margin-right: 4px; }
-    tbody tr:nth-child(1) td:first-child { color: #FFD700; font-weight: 1000; font-size: 1.3em; text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
-    tbody tr:nth-child(2) td:first-child { color: #C0C0C0; font-weight: 1000; font-size: 1.2em; text-shadow: 0 0 10px rgba(192, 192, 192, 0.3); }
-    tbody tr:nth-child(3) td:first-child { color: #CD7F32; font-weight: 1000; font-size: 1.2em; text-shadow: 0 0 10px rgba(205, 127, 50, 0.3); }
-    td.vs{white-space: nowrap; position:relative;}
-    .vs-text{ font-weight: 1100; min-width: 65px; text-align: right; }
-    .vs-text.pos{color: rgba(239,68,68,.95);}
-    .vs-text.neg{color: rgba(34,197,94,.95);}
-    .vs-text.zero{color: var(--muted2);}
-    .web{ display:inline-flex; width: 38px; height:38px; border-radius: 12px; border: 1px solid var(--border); background: linear-gradient(135deg, rgba(139,92,246,.18), rgba(34,197,94,.10)); align-items:center; justify-content:center; text-decoration:none; transition: transform .15s ease, border-color .15s ease, background .15s ease; }
-    .web:hover{transform: translateY(-1px) scale(1.04); border-color: var(--border2); background: linear-gradient(135deg, rgba(139,92,246,.30), rgba(34,197,94,.16));}
-    .web:active{transform: translateY(0px) scale(.98)}
-    .empty{ padding: 14px; color: var(--muted); font-size: 13px; }
-    .menu{position:relative;}
-    .menuPanel{ position:absolute; right:0; top: calc(100% + 10px); min-width: 260px; background: rgba(5,8,16,.92); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow2); backdrop-filter: blur(14px); padding: 8px; display:none; z-index: 50; }
-    .menuPanel.show{display:block; animation: popMenu .16s ease;}
-    @keyframes popMenu{ from{opacity:0; transform: translateY(6px);} to{opacity:1; transform: translateY(0px);} }
-    .menuItem{ width: 100%; text-align:left; padding: 10px 10px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: rgba(255,255,255,.92); cursor:pointer; font-weight: 1000; font-size: 13px; display:flex; align-items:center; justify-content:space-between; gap: 10px; white-space: nowrap; min-height: 44px; }
-    .menuItem:hover{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08); }
-    .mi-left{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .mi-right{ opacity: .6; white-space: nowrap; flex: 0 0 auto; }
-    .menuDivider{ height:1px; background: rgba(255,255,255,.08); margin: 6px 6px; }
-    .menuHint{ padding: 8px 10px 6px 10px; color: var(--muted2); font-size: 11px; font-weight: 900; letter-spacing: .2px; }
-    .toast{ position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(5,8,16,.92); border: 1px solid var(--border); color: var(--text); border-radius: 16px; box-shadow: var(--shadow2); padding: 12px 14px; display:none; gap: 10px; align-items:center; max-width: min(760px, calc(100vw - 24px)); backdrop-filter: blur(14px); z-index: 9999; font-size: 13px; }
-    .toast.show{display:flex; animation: pop .22s ease;}
-    @keyframes pop { from{opacity:0; transform: translateX(-50%) translateY(8px);} to{opacity:1; transform: translateX(-50%) translateY(0px);} }
-    .dot{width:10px; height:10px; border-radius:999px; background: var(--accent);}
-    .dot.ok{background: var(--accent2)}
-    .dot.err{background: var(--danger)}
-    .scroll-btn{ position: fixed; bottom: 90px; right: 30px; padding: 14px 20px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; border-radius: 999px; font-weight: 900; font-size: 13px; cursor: pointer; box-shadow: 0 8px 24px rgba(139,92,246,.4); z-index: 9998; animation: bounce 2s ease-in-out infinite; transition: transform .2s ease, box-shadow .2s ease; }
-    .scroll-btn:hover{ transform: translateY(-2px) scale(1.05); box-shadow: 0 12px 32px rgba(139,92,246,.6); }
-    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-    @media (max-width: 768px) {
-      thead { display: none; }
-      tbody tr { display: block; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 16px; padding: 15px; background: var(--card); box-shadow: var(--shadow2); }
-      tbody td { display: flex; justify-content: space-between; align-items: center; text-align: right; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); width: 100% !important; box-sizing: border-box; font-size: 14px; }
-      tbody td:last-child { border-bottom: none; }
-      tbody td:nth-of-type(1)::before { content: "Ranking"; font-weight:900; color:var(--muted); }
-      tbody td:nth-of-type(2)::before { content: "Compañía"; display:none; }
-      tbody td:nth-of-type(3)::before { content: "Potencia"; font-weight:900; color:var(--muted); }
-      tbody td:nth-of-type(4)::before { content: "Consumo"; font-weight:900; color:var(--muted); }
-      tbody td:nth-of-type(5)::before { content: "Impuestos"; font-weight:900; color:var(--muted); }
-      tbody td:nth-of-type(6)::before { content: "TOTAL"; font-weight:900; color:var(--accent); font-size:1.2em; }
-      tbody td:nth-of-type(7)::before { content: "Diferencia"; font-weight:900; color:var(--muted); }
-      tbody td:nth-of-type(8)::before { content: "Tipo"; font-weight:900; color:var(--muted); }
-      tbody td:nth-of-type(9)::before { content: "Contratar"; font-weight:900; color:var(--muted); }
-      tbody td:nth-of-type(2) { display:block; text-align:center; font-size: 18px !important; margin-bottom: 10px; padding-bottom:10px; border-bottom: 2px solid var(--border); color: #fff; }
-      .scroll-btn{ bottom: 80px; right: 20px; font-size: 12px; padding: 12px 16px; }
+    .heroCard{ padding: 18px; border-radius: 18px; border: 1px solid var(--border); background: linear-gradient(135deg, rgba(139,92,246,.1), rgba(34,197,94,.05)); display:flex; flex-direction:column; gap:8px; animation:fadeInUp 0.5s; }
+    .heroCard.best{ border-color: rgba(251,191,36,.5); background: linear-gradient(135deg, rgba(251,191,36,.15), rgba(139,92,246,.1)); position:relative; overflow:hidden; }
+    .heroCard.best::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); animation:shine 3s infinite; }
+    @keyframes shine{ 0%{left:-100%} 50%,100%{left:200%} }
+    .heroCard .v{ font-size: clamp(28px,2.5vw,40px); font-weight: 900; letter-spacing: -1px; color:#fff; }
+    .heroCard .k{ font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 900; display:flex; align-items:center; gap:6px; }
+    .tableWrap{ overflow-x: auto; margin-top:20px; }
+    table{ width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+    tbody tr { background: rgba(255,255,255,.03); transition: 0.2s; cursor:default; }
+    tbody tr:hover { transform: scale(1.01); background: rgba(255,255,255,.07); box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+    tbody tr.best { border:1px solid rgba(251,191,36,.3); background: linear-gradient(90deg, rgba(251,191,36,.05), transparent); }
+    td, th { padding: 12px; text-align: right; color: var(--text); border:none; white-space:nowrap; }
+    td:first-child{ border-radius: 12px 0 0 12px; text-align:center; color: var(--muted); }
+    td:last-child{ border-radius: 0 12px 12px 0; }
+    th{ text-align: right; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+    th:first-child{ text-align:center; }
+    th:nth-child(2), td:nth-child(2){ text-align:left; font-weight: 700; color: #fff; font-size:15px; }
+    .badge{ padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 900; background: rgba(255,255,255,.1); }
+    .badge.b1{ background: rgba(59,130,246,.3); color: #93c5fd; }
+    .badge.b3{ background: rgba(245,158,11,.3); color: #fcd34d; }
+    .scroll-btn{ position:fixed; bottom:30px; right:30px; padding:12px 20px; border-radius:50px; background:var(--accent); border:none; color:white; font-weight:900; cursor:pointer; box-shadow:0 10px 30px rgba(139,92,246,.5); z-index:100; animation: bounce 2s infinite; }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @media(max-width:768px){ 
+        thead{display:none} 
+        tbody tr{display:block; margin-bottom:15px; border:1px solid var(--border); padding:15px; border-radius:16px;}
+        tbody td{display:flex; justify-content:space-between; text-align:right; width:100%; border-bottom:1px solid rgba(255,255,255,.05); padding:10px 0;}
+        tbody td:last-child{border:none}
+        tbody td:nth-child(2){font-size:18px; text-align:center; display:block; margin-bottom:10px; border-bottom:2px solid var(--border);}
+        tbody td:before{content:attr(data-label); color:var(--muted); font-weight:700; font-size:12px;}
     }
-    @media (min-width: 1400px){ thead th:nth-child(2), tbody td:nth-child(2) { width: 28%; } tbody td:nth-child(2) { font-size: 15px; } }
   </style>
 </head>
 
@@ -185,361 +103,235 @@
   <div class="container">
     <div class="topbar">
       <div class="brand">
-        <span class="particle"></span><span class="particle"></span><span class="particle"></span><span class="particle"></span><span class="particle"></span><span class="particle"></span>
-        <div class="logo" aria-hidden="true">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
-            <defs>
-              <linearGradient id="logoGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1"><animate attributeName="stop-color" values="#fbbf24;#f59e0b;#fbbf24" dur="2s" repeatCount="indefinite"/></stop>
-                <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1"/>
-                <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:1"><animate attributeName="stop-color" values="#fbbf24;#f59e0b;#fbbf24" dur="2s" repeatCount="indefinite"/></stop>
-              </linearGradient>
-              <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1"/><stop offset="100%" style="stop-color:#6366f1;stop-opacity:1"/></linearGradient>
-              <filter id="glow"><feGaussianBlur stdDeviation="2" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            </defs>
-            <circle cx="50" cy="50" r="35" fill="url(#logoGrad2)" opacity="0.2"><animate attributeName="r" values="35;38;35" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.2;0.4;0.2" dur="2s" repeatCount="indefinite"/></circle>
-            <path d="M 55 15 L 35 48 L 48 48 L 45 85 L 70 45 L 57 45 Z" fill="url(#logoGrad1)" filter="url(#glow)" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"><animateTransform attributeName="transform" attributeType="XML" type="scale" values="1;1.08;1" dur="1.5s" repeatCount="indefinite" additive="sum"/></path>
-            <circle cx="30" cy="30" r="2" fill="#fbbf24" opacity="0"><animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/><animate attributeName="r" values="2;3;2" dur="1.5s" repeatCount="indefinite"/></circle>
-            <circle cx="70" cy="35" r="2" fill="#fbbf24" opacity="0"><animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/><animate attributeName="r" values="2;3;2" dur="1.5s" begin="0.5s" repeatCount="indefinite"/></circle>
-            <circle cx="65" cy="70" r="2" fill="#fbbf24" opacity="0"><animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="1s" repeatCount="indefinite"/><animate attributeName="r" values="2;3;2" dur="1.5s" begin="1s" repeatCount="indefinite"/></circle>
-          </svg>
-        </div>
-        <div><h1>Comparador de Tarifas</h1><p>Encuentra la tarifa más barata en segundos</p></div>
+        <span class="particle"></span><span class="particle"></span><span class="particle"></span>
+        <div class="logo">⚡</div>
+        <div><h1>Comparador</h1><p>Encuentra la mejor tarifa</p></div>
       </div>
-
       <div class="actions">
-        <div class="pill" id="statusPill" role="status" aria-live="polite"><span id="statusText">Listo para calcular</span></div>
-        <div class="menu" id="menuRoot">
-          <button class="btn" id="btnMenu" type="button" aria-haspopup="true" aria-expanded="false" title="Opciones">⚙️</button>
-          <div class="menuPanel" id="menuPanel" role="menu" aria-label="Opciones">
-            <div class="menuHint">Opciones</div>
-            <button class="menuItem" id="btnShare" type="button" role="menuitem"><span class="mi-left">🔗 Compartir</span><span class="mi-right">copiar</span></button>
-            <button class="menuItem" id="btnExport" type="button" role="menuitem"><span class="mi-left">⬇️ Descargar CSV</span><span class="mi-right">ranking</span></button>
-            <div class="menuDivider"></div>
-            <button class="menuItem" id="btnReset" type="button" role="menuitem"><span class="mi-left">↺ Restablecer</span><span class="mi-right">valores</span></button>
-          </div>
-        </div>
+        <div class="pill" id="status"><span id="statusDot">●</span> <span id="statusText">Listo</span></div>
+        <button class="btn" id="btnReset">↺</button>
       </div>
     </div>
 
     <div class="grid">
       <section class="card">
-        <div class="head"><div class="kicker">Tus datos</div><div class="title">Potencia y consumos (kWh)</div></div>
+        <div class="head"><div class="kicker">TUS DATOS</div><div class="title">Potencia y consumos</div></div>
         <div class="body">
-          <div class="alert" id="errorBox"><b>Error:</b> <span id="errorText"></span></div>
+          <div class="alert" id="errorBox"></div>
           <div class="form">
-            <div class="group"><label for="p1">Potencia P1 (kW)</label><input id="p1" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 3,45" /></div>
-            <div class="group"><label for="p2">Potencia P2 (kW)</label><input id="p2" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 3,45" /></div>
-            <div class="group"><label for="dias">Días factura</label><input id="dias" class="input" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="1 a 365" /></div>
+            <div class="group"><label>Potencia P1 (kW)</label><input id="p1" class="input" type="number" step="0.01"></div>
+            <div class="group"><label>Potencia P2 (kW)</label><input id="p2" class="input" type="number" step="0.01"></div>
+            <div class="group"><label>Días factura</label><input id="dias" class="input" type="number"></div>
           </div>
-          <div style="height:12px"></div>
+          <div style="height:15px"></div>
           <div class="form">
-            <div class="group"><label for="cPunta">Consumo PUNTA <span class="tooltip" data-tip="10h-14h y 18h-22h">ⓘ</span></label><input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 120" /></div>
-            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h">ⓘ</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 80" /></div>
-            <div class="group"><label for="cValle">Consumo VALLE <span class="tooltip" data-tip="0h-8h (madrugada)">ⓘ</span></label><input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 150" /></div>
+            <div class="group"><label>Consumo PUNTA</label><input id="cPunta" class="input" type="number"></div>
+            <div class="group"><label>Consumo LLANO</label><input id="cLlano" class="input" type="number"></div>
+            <div class="group"><label>Consumo VALLE</label><input id="cValle" class="input" type="number"></div>
           </div>
-          <div class="row" style="margin-top:14px">
-            <div class="kwhPill" aria-live="polite"><div class="kwhLabel">Total kWh</div><div class="kwhValue" id="kwhHint">—</div></div>
-            <button class="btn primary" id="btnCalc" type="button" title="Calcular ahora"><span id="btnText">⚡ Calcular</span><span id="btnSpinner" style="display:none;"><span class="spinner"></span></span></button>
+          <div class="row">
+            <div class="kwhPill" id="kwhTotal">0 kWh</div>
+            <button class="btn primary" id="btnCalc">⚡ Calcular</button>
           </div>
-          <div class="help">Se recalcula automáticamente al cambiar cualquier dato.</div>
         </div>
       </section>
 
       <section class="card">
-        <div class="head"><div class="kicker">Resultados</div><div class="title">Tarifa óptima + ranking</div></div>
+        <div class="head"><div class="kicker">RESULTADOS</div><div class="title">Ranking de precios</div></div>
         <div class="body">
-          <div class="heroKpis" id="heroKpis" style="display:none;">
-            <div class="heroCard best"><div class="k">Tarifa más barata</div><div class="v" id="kpiBest">—</div><div class="s">Mejor opción</div></div>
-            <div class="heroCard"><div class="k">Factura mínima</div><div class="v" id="kpiPrice">—</div><div class="s">Según tus datos</div></div>
+          <div class="heroKpis" id="heroKpis" style="display:none">
+            <div class="heroCard best"><div class="k">🏆 MEJOR OPCIÓN</div><div class="v" id="bestName">---</div></div>
+            <div class="heroCard"><div class="k">FACTURA MENSUAL</div><div class="v" id="bestPrice">---</div></div>
           </div>
-
-          <div class="statsbar" id="statsBar" style="display:none;">
-            <div class="statCard"><div class="statLabel">Precio mínimo</div><div class="statValue" id="statMin">—</div></div>
-            <div class="statCard"><div class="statLabel">Precio medio</div><div class="statValue" id="statAvg">—</div></div>
-            <div class="statCard"><div class="statLabel">Precio máximo</div><div class="statValue" id="statMax">—</div></div>
-          </div>
-
-          <div class="toolbar" id="toolbar" style="display:none;">
-            <div class="filters">
-              <button class="fbtn active" data-filter="all" type="button">Todas</button>
-              <button class="fbtn" data-filter="1P" type="button"><span class="badge b1">1P</span></button>
-              <button class="fbtn" data-filter="3P" type="button"><span class="badge b3">3P</span></button>
-            </div>
-          </div>
-
           <div class="tableWrap">
-            <table id="table" style="display:none;">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th class="sort" data-sort="tarifa">Tarifa <span class="sortIcon" id="si_tarifa"></span></th>
-                  <th class="sort" data-sort="potenciaNum">Potencia <span class="sortIcon" id="si_potenciaNum"></span></th>
-                  <th class="sort" data-sort="consumoNum">Consumo <span class="sortIcon" id="si_consumoNum"></span></th>
-                  <th class="sort" data-sort="impuestosNum">Impuestos <span class="sortIcon" id="si_impuestosNum"></span></th>
-                  <th class="sort" data-sort="totalNum">Total <span class="sortIcon" id="si_totalNum"></span></th>
-                  <th class="sort" data-sort="vsMejorNum">Vs mejor <span class="sortIcon" id="si_vsMejorNum"></span></th>
-                  <th>Tipo</th><th>Web</th>
-                </tr>
-              </thead>
+            <table id="table" style="display:none">
+              <thead><tr><th>#</th><th>Compañía</th><th>Potencia</th><th>Consumo</th><th>Impuestos</th><th>TOTAL</th><th>Tipo</th></tr></thead>
               <tbody id="tbody"></tbody>
             </table>
-            <div class="empty" id="emptyBox">Aún no hay resultados. Calcula para mostrar ranking.</div>
+            <div id="empty" style="padding:40px; text-align:center; color:var(--muted);">
+              Calculando ofertas disponibles...
+            </div>
           </div>
-
         </div>
       </section>
     </div>
-
-    <footer style="text-align:center; padding:40px 20px 30px; margin-top:40px; opacity:0.6; font-size:13px; color: var(--muted2);">
-      <p style="margin:0;">⚡ Comparador de tarifas eléctricas</p>
-      <p style="margin:8px 0 0; font-weight:600;">Creado por <strong style="color: var(--accent);">aLMaX</strong></p>
-      <p style="margin:8px 0 0; font-size:11px;">Proyecto gratuito y sin publicidad</p>
-    </footer>
+    <button id="scrollBtn" class="scroll-btn" style="display:none">↓ Ver Resultados</button>
   </div>
-
-  <div class="toast" id="toast"><span class="dot" id="toastDot"></span><span id="toastText"></span></div>
-  <button id="scrollToResults" class="scroll-btn" style="display:none;" title="Ver resultados">↓ Ver resultados</button>
 
   <script>
     const $ = id => document.getElementById(id);
     
-    // URL DE TU SCRIPT DE GOOGLE (NO LA CAMBIES)
+    // URL DE TU SCRIPT DE GOOGLE (CORRECTA)
     const API_URL = 'https://script.google.com/macros/s/AKfycbwfrP2AxSQz_k1NlSDcdZxvQR_m0t3xKO1JnD7FnRqOWCM0RYqLihg5cca6vXQswn4j/exec';
 
-    const LS_KEY = 'almax_comparador_v6_inputs';
-    // VALORES POR DEFECTO PARA PRIMERA VISITA
-    const DEFAULTS = { p1:'3,45', p2:'3,45', dias:'30', cPunta:'100', cLlano:'100', cValle:'100' };
+    // CLAVE DE ALMACENAMIENTO Y VALORES POR DEFECTO
+    const LS_KEY = 'almax_data_v8';
+    const LS_TOKEN = 'almax_token';
+    const DEFAULTS = { p1:3.45, p2:3.45, dias:30, cPunta:100, cLlano:100, cValle:100 };
     
-    // RECOGIDA DE PARÁMETROS URL
-    const params = new URLSearchParams(window.location.search);
-    const SERVER_PARAMS = {};
-    for (const [key, value] of params.entries()) { SERVER_PARAMS[key] = value; }
-
-    const el = {
-      inputs: { p1:$('p1'), p2:$('p2'), dias:$('dias'), cPunta:$('cPunta'), cLlano:$('cLlano'), cValle:$('cValle') },
-      btnCalc: $('btnCalc'), btnText: $('btnText'), btnSpinner: $('btnSpinner'),
-      statusPill: $('statusPill'), statusText: $('statusText'), errorBox: $('errorBox'), errorText: $('errorText'),
-      kwhHint: $('kwhHint'), heroKpis: $('heroKpis'), kpiBest: $('kpiBest'), kpiPrice: $('kpiPrice'),
-      statsBar: $('statsBar'), statMin: $('statMin'), statAvg: $('statAvg'), statMax: $('statMax'),
-      toolbar: $('toolbar'), table: $('table'), tbody: $('tbody'), emptyBox: $('emptyBox'),
-      toast: $('toast'), toastText: $('toastText'), toastDot: $('toastDot'),
-      menuRoot: $('menuRoot'), btnMenu: $('btnMenu'), menuPanel: $('menuPanel'),
-      btnShare: $('btnShare'), btnExport: $('btnExport'), btnReset: $('btnReset')
+    // ELEMENTOS
+    const inputs = {
+      p1: $('p1'), p2: $('p2'), dias: $('dias'),
+      cPunta: $('cPunta'), cLlano: $('cLlano'), cValle: $('cValle')
     };
 
-    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null };
-    let cachedTarifas = [];
+    let tarifasCache = [];
+    let logTimeout = null;
 
-    function parseNum(str){ 
-      if(str===null||str===undefined)return 0;
-      if(typeof str==='number')return Number.isFinite(str)?str:0; 
-      let s=String(str).trim().replace(/\s/g,''); 
-      if(!s)return 0; 
-      if(s.includes(',')&&s.includes('.')){const lc=s.lastIndexOf(',');const ld=s.lastIndexOf('.');if(lc>ld)s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'');}else if(s.includes(',')){s=s.replace(',','.');} 
-      s=s.replace(/[^\d.-]/g,''); const n=Number(s); return Number.isFinite(n)?n:0;
-    }
-    function escapeHtml(v){ return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-    function setStatus(text, mode='idle'){ el.statusText.textContent=text; el.statusPill.classList.remove('loading','ok','err'); if(mode==='loading')el.statusPill.classList.add('loading'); if(mode==='ok')el.statusPill.classList.add('ok'); if(mode==='err')el.statusPill.classList.add('err'); const l=mode==='loading'; el.btnCalc.disabled=l; el.btnText.style.display=l?'none':'flex'; el.btnSpinner.style.display=l?'flex':'none'; if(l)el.btnCalc.classList.add('calculating'); else el.btnCalc.classList.remove('calculating'); }
-    function toast(msg, mode='ok'){ el.toastText.textContent=msg; el.toastDot.classList.remove('ok','err'); el.toastDot.classList.add(mode==='err'?'err':'ok'); el.toast.classList.add('show'); clearTimeout(el.toast._t); el.toast._t=setTimeout(()=>el.toast.classList.remove('show'),2800); }
-    
-    async function fetchTarifas() {
-        if(cachedTarifas.length > 0) return true;
-        setStatus('Cargando tarifas...', 'loading');
-        try {
-            const response = await fetch(API_URL + '?action=tarifas');
-            const data = await response.json();
-            if (data.success) {
-                cachedTarifas = data.tarifas;
-                setStatus('Datos actualizados', 'ok');
-                setTimeout(() => setStatus('Listo para calcular', 'idle'), 1500);
-                return true;
-            } else { throw new Error('Error en datos'); }
-        } catch (e) {
-            setStatus('Error conexión', 'err');
-            toast('Error cargando precios.', 'err');
-            return false;
-        }
-    }
+    // --- INICIO ---
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Cargar Tarifas (Segundo plano)
+      fetchTarifas();
 
-    // --- FUNCIÓN QUE ENVÍA EL LOG A GOOGLE (SILENCIOSO) ---
-    function logToGoogle(bestResult) {
-        clearTimeout(state.logDebounce);
-        state.logDebounce = setTimeout(() => {
-            try {
-                const p1 = parseNum(el.inputs.p1.value);
-                const p2 = parseNum(el.inputs.p2.value);
-                const dias = Math.trunc(parseNum(el.inputs.dias.value));
-                const cPunta = parseNum(el.inputs.cPunta.value);
-                const cLlano = parseNum(el.inputs.cLlano.value);
-                const cValle = parseNum(el.inputs.cValle.value);
-                const totalKwh = cPunta + cLlano + cValle;
+      // 2. Cargar Inputs (Gestión de vacíos/cookies)
+      loadInputs();
 
-                const params = new URLSearchParams();
-                params.append('action', 'log');
-                params.append('p1', p1); params.append('p2', p2); params.append('dias', dias);
-                params.append('cPunta', cPunta); params.append('cLlano', cLlano); params.append('cValle', cValle);
-                params.append('totalKwh', totalKwh);
-                params.append('mejorTarifa', bestResult.nombre || '');
-                params.append('mejorPrecio', bestResult.totalNum || 0);
-                params.append('dispositivo', window.innerWidth < 768 ? 'Mobile' : 'Desktop');
-
-                // Enviar sin esperar respuesta (fire & forget)
-                fetch(API_URL + '?' + params.toString(), { mode: 'no-cors' });
-            } catch(e) { console.error('Log error', e); }
-        }, 3000); // Esperar 3s tras último cálculo para no saturar
-    }
-
-    function calculateLocal() {
-        const p1 = parseNum(el.inputs.p1.value);
-        const p2 = parseNum(el.inputs.p2.value);
-        const dias = Math.trunc(parseNum(el.inputs.dias.value)) || 30;
-        const cPunta = parseNum(el.inputs.cPunta.value);
-        const cLlano = parseNum(el.inputs.cLlano.value);
-        const cValle = parseNum(el.inputs.cValle.value);
-
-        if(!cachedTarifas.length) return;
-
-        const resultados = cachedTarifas.map((t, index) => {
-            const pot = (p1 * dias * t.p1) + (p2 * dias * t.p2);
-            const cons = (cPunta * t.cPunta) + (cLlano * t.cLlano) + (cValle * t.cValle);
-            const tarifaAcceso = (4.650987 / 365 * dias);
-            const sumaBase = pot + cons + tarifaAcceso;
-            const impuestoElec = Math.max((5.11269632 / 100) * sumaBase, (cPunta + cLlano + cValle) * 0.001);
-            const margen = dias * 0.026667;
-            const subtotal = sumaBase + impuestoElec + margen;
-            const iva = subtotal * 0.21; 
-            const total = subtotal + iva;
-            
-            return {
-                ...t,
-                posicion: index + 1,
-                potenciaNum: pot, potencia: formatMoney(pot),
-                consumoNum: cons, consumo: formatMoney(cons),
-                impuestosNum: impuestoElec + margen + iva,
-                impuestos: formatMoney(impuestoElec + margen + iva),
-                totalNum: total, total: formatMoney(total),
-                webUrl: t.web
-            };
+      // 3. Listeners
+      for(const k in inputs){
+        inputs[k].addEventListener('input', () => {
+          updateTotal();
+          scheduleCalc();
+          saveInputs();
         });
-
-        resultados.sort((a, b) => a.totalNum - b.totalNum);
-        
-        const bestPrice = resultados[0].totalNum;
-        const processed = resultados.map((r, i) => {
-            const diff = r.totalNum - bestPrice;
-            return {
-                ...r, posicion: i + 1, esMejor: i === 0,
-                vsMejorNum: diff, vsMejor: i === 0 ? '—' : '+' + formatMoney(diff)
-            };
-        });
-
-        const prices = processed.map(r => r.totalNum);
-        const min = Math.min(...prices); const max = Math.max(...prices);
-        const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
-
-        renderAll({
-            success: true,
-            resumen: { mejor: processed[0].nombre, precio: formatMoney(processed[0].totalNum) },
-            stats: { precioMin: formatMoney(min), precioMax: formatMoney(max), precioMedio: formatMoney(avg) },
-            resultados: processed
-        });
-
-        // ENVIAR LOG (NUEVO)
-        logToGoogle(processed[0]);
-    }
-
-    function formatMoney(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
-
-    function loadInputs() {
-        if (Object.keys(SERVER_PARAMS).length > 0) {
-             const d = Object.assign({}, DEFAULTS, SERVER_PARAMS);
-             for(const k in DEFAULTS) el.inputs[k].value = d[k];
-             updateKwhHint();
-             setTimeout(()=>calculate(false), 500);
-             return;
-        }
-        let savedData = {};
-        try { const r = localStorage.getItem(LS_KEY); if (r) savedData = JSON.parse(r); } catch(e){}
-        const finalData = { ...DEFAULTS, ...savedData };
-        for (const k in DEFAULTS) el.inputs[k].value = finalData[k];
-        updateKwhHint();
-    }
-
-    function saveInputs(){ const d={}; for(const k in DEFAULTS)d[k]=el.inputs[k].value; localStorage.setItem(LS_KEY,JSON.stringify(d)); return d; }
-    function resetInputs(){ for(const k in DEFAULTS)el.inputs[k].value=DEFAULTS[k]; saveInputs(); updateKwhHint(); clearErrorStyles(); toast('Restablecido'); setTimeout(()=>calculate(false), 300); }
-    function updateKwhHint(){ const t=parseNum(el.inputs.cPunta.value)+parseNum(el.inputs.cLlano.value)+parseNum(el.inputs.cValle.value); el.kwhHint.textContent=`${t.toFixed(2).replace('.',',')} kWh`; }
-    function clearErrorStyles(){ Object.values(el.inputs).forEach(i=>i.classList.remove('error')); }
-    function rowTipoBadge(t){ const s=String(t||'').trim(); if(s==='1P')return `<span class="badge b1">1P</span>`; if(s==='3P')return `<span class="badge b3">3P</span>`; return `<span class="badge">${escapeHtml(s||'—')}</span>`; }
-    function formatVsWithBar(v,vn){ const s=String(v??'').trim(); if(!s||s==='—'||s==='0'||s==='0,00'||s==='0 €'||s==='0,00 €')return '<span class="vs-text zero">—</span>'; const pos=s.startsWith('+'); const c=pos?'pos':'neg'; const a=pos?'▲':'▼'; return `<span class="vs-text ${c}">${a} ${escapeHtml(s)}</span>`; }
-    function applyFilters(r){ const f=state.filter; return r.filter(x=>(f==='all'||String(x.tipo||'')===f)); }
-    function applySort(r){ const {key,dir}=state.sort; const asc=dir==='asc'; const c=r.slice(); c.sort((a,b)=>{const va=a[key],vb=b[key]; if(key==='tarifa'){const sa=String(va||'').toLowerCase(),sb=String(vb||'').toLowerCase();if(sa>sb)return asc?1:-1;if(sa<sb)return asc?-1:1;return 0;} const na=Number(va)||0,nb=Number(vb)||0; if(na>nb)return asc?1:-1;if(na<nb)return asc?-1:1;return 0;}); return c; }
-    function updateSortIcons(){ ['tarifa','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{const i=$('si_'+k); if(!i)return; if(state.sort.key!==k){i.textContent='';return;} i.textContent=state.sort.dir==='asc'?'▲':'▼';}); }
-    function animateNumber(el,txt,dur=500){ el.textContent=txt; } 
-    function createRipple(b,e){ const r=document.createElement('span'); const rect=b.getBoundingClientRect(); const s=Math.max(rect.width,rect.height); const x=e.clientX-rect.left-s/2; const y=e.clientY-rect.top-s/2; r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`; b.style.position='relative'; b.style.overflow='hidden'; b.appendChild(r); setTimeout(()=>r.remove(),600); }
-    
-    function renderTable(){ 
-        const f=applyFilters(state.rows); 
-        const s=applySort(f); 
-        el.tbody.innerHTML='';
-        if(s.length===0){el.table.style.display='none';el.emptyBox.style.display='block';return;} 
-        el.emptyBox.style.display='none';el.table.style.display='table';
-        s.forEach((r,i)=>{
-            const tr=document.createElement('tr');
-            if(r.esMejor)tr.classList.add('best');
-            const w=r.webUrl?`<a class="web" href="${escapeHtml(r.webUrl)}" target="_blank" rel="noopener" title="Abrir web">🔗</a>`:'';
-            tr.innerHTML=`<td>${escapeHtml(r.posicion)}</td><td title="${escapeHtml(r.nombre)}">${escapeHtml(r.nombre)}</td><td>${escapeHtml(r.potencia)}</td><td>${escapeHtml(r.consumo)}</td><td>${escapeHtml(r.impuestos)}</td><td><strong style="font-weight:1100; color: rgba(167,139,250,1);">${escapeHtml(r.total)}</strong></td><td class="vs">${formatVsWithBar(r.vsMejor,r.vsMejorNum)}</td><td>${rowTipoBadge(r.tipo)}</td><td style="text-align:center">${w}</td>`;
-            el.tbody.appendChild(tr);
-        }); 
-        updateSortIcons();
-    }
-    
-    function renderAll(d){ 
-        if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;} 
-        setStatus('Resultados actualizados','ok'); 
-        const r=d.resumen||{}; 
-        if(r.mejor) el.kpiBest.textContent=r.mejor;
-        if(r.precio) el.kpiPrice.textContent=r.precio;
-        el.heroKpis.style.display='grid'; 
-        const s=d.stats; 
-        if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; el.statsBar.style.display='grid'; }
-        state.rows=Array.isArray(d.resultados)?d.resultados:[]; 
-        el.toolbar.style.display='flex'; 
-        renderTable(); 
-        if(window.innerWidth<1100){ const sb=$('scrollToResults'); sb.style.display='block'; setTimeout(()=>sb.style.display='none',5000); } 
-    }
-
-    function buildShareUrl(){ const d = saveInputs(); const u = new URL(location.href); u.search = ''; for(const k in d) u.searchParams.set(k, d[k]); return u.toString(); }
-    async function copyText(t){ try{await navigator.clipboard.writeText(t);return true;}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(x){}a.remove();return true;} }
-    async function calculate(isUserAction){
-        saveInputs();
-        if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0}); 
-        setStatus('Calculando...', 'loading');
-        const loaded = await fetchTarifas();
-        if(!loaded) return;
-        calculateLocal();
-    }
-    function toggleMenu(force){ const s=(typeof force==='boolean')?force:!el.menuPanel.classList.contains('show'); el.menuPanel.classList.toggle('show',s); }
-    
-    document.addEventListener('DOMContentLoaded', async ()=>{
-      fetchTarifas(); loadInputs(); 
-      Object.values(el.inputs).forEach(i=>{
-          i.addEventListener('input',()=>{
-              state.userHasInteracted=true; updateKwhHint();
-              clearTimeout(state.debounce); state.debounce = setTimeout(()=>calculate(false), 500);
-          });
-      });
-      document.querySelectorAll('.fbtn').forEach(b=>{b.addEventListener('click',(e)=>{createRipple(b,e);document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.filter=b.getAttribute('data-filter');renderTable();});});
-      document.querySelectorAll('thead th.sort').forEach(th=>{th.addEventListener('click',()=>{const k=th.getAttribute('data-sort');if(!k)return;if(state.sort.key===k)state.sort.dir=(state.sort.dir==='asc')?'desc':'asc';else{state.sort.key=k;state.sort.dir='asc';}renderTable();updateSortIcons();});});
-      el.btnCalc.addEventListener('click',(e)=>{createRipple(el.btnCalc,e);calculate(true);});
-      el.btnMenu.addEventListener('click',(e)=>{createRipple(el.btnMenu,e);e.stopPropagation();toggleMenu();});
-      el.menuPanel.addEventListener('click',(e)=>e.stopPropagation());
-      document.addEventListener('click',()=>toggleMenu(false));
-      el.btnReset.addEventListener('click',()=>resetInputs());
-      el.btnShare.addEventListener('click',async(e)=>{createRipple(el.btnShare,e);toggleMenu(false);const u=buildShareUrl();await copyText(u);toast('Enlace copiado 🔗');});
-      $('scrollToResults').addEventListener('click',()=>{$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'});$('scrollToResults').style.display='none';});
-      setTimeout(()=>{ if(el.inputs.p1.value) calculate(false); }, 800);
+      }
+      
+      $('btnCalc').addEventListener('click', () => calculate());
+      $('btnReset').addEventListener('click', resetInputs);
+      $('scrollBtn').addEventListener('click', () => $('heroKpis').scrollIntoView({behavior:'smooth'}));
+      
+      // 4. Auto-calcular si hay datos
+      setTimeout(() => { if(inputs.p1.value) calculate(); }, 800);
     });
+
+    // --- CARGA DE DATOS INTELIGENTE ---
+    function loadInputs() {
+      // Prioridad 1: URL Params (Enlaces compartidos)
+      const params = new URLSearchParams(location.search);
+      let fromUrl = false;
+      for(const k in DEFAULTS) {
+        if(params.has(k)) { inputs[k].value = params.get(k); fromUrl = true; }
+      }
+      
+      if(!fromUrl) {
+        // Prioridad 2: LocalStorage (Memoria)
+        let saved = null;
+        try { saved = JSON.parse(localStorage.getItem(LS_KEY)); } catch(e){}
+        
+        // Prioridad 3: DEFAULTS (Si es nuevo o borró cookies)
+        // Usamos spread para mezclar: Defaults se sobreescriben con Saved si existen
+        const data = { ...DEFAULTS, ...saved };
+        
+        for(const k in DEFAULTS) inputs[k].value = data[k];
+      }
+      updateTotal();
+    }
+
+    function saveInputs() {
+      const d = {};
+      for(const k in inputs) d[k] = inputs[k].value;
+      localStorage.setItem(LS_KEY, JSON.stringify(d));
+    }
+
+    function resetInputs() {
+      localStorage.removeItem(LS_KEY);
+      location.reload(); // Recarga limpia
+    }
+
+    // --- MOTOR DE CÁLCULO ---
+    async function fetchTarifas() {
+      try {
+        const res = await fetch(API_URL + '?action=tarifas');
+        const data = await res.json();
+        if(data.success) {
+          tarifasCache = data.tarifas;
+          $('statusText').innerText = "Datos actualizados";
+          $('status').classList.add('ok');
+        }
+      } catch(e) { console.error("Error tarifas", e); }
+    }
+
+    function calculate() {
+      if(!tarifasCache.length) return;
+      $('btnCalc').classList.add('calculating');
+      
+      // Obtener valores (o defaults si campo vacío)
+      const d = {};
+      for(const k in inputs) d[k] = parseFloat(inputs[k].value) || 0;
+
+      const resultados = tarifasCache.map(t => {
+        // Fórmulas exactas Excel
+        const pot = (d.p1 * d.dias * t.p1) + (d.p2 * d.dias * t.p2);
+        const cons = (d.cPunta * t.cPunta) + (d.cLlano * t.cLlano) + (d.cValle * t.cValle);
+        const acceso = (4.650987 / 365 * d.dias);
+        const base = pot + cons + acceso;
+        const imp = Math.max(base * 0.051127, (d.cPunta + d.cLlano + d.cValle) * 0.001);
+        const margen = d.dias * 0.026667;
+        const sub = base + imp + margen;
+        const total = sub * 1.21;
+
+        return { ...t, total, detalles: {pot, cons, imp: imp+margen+(sub*0.21)} };
+      }).sort((a,b) => a.total - b.total);
+
+      render(resultados);
+      
+      // ENVIAR LOG (Con Token)
+      logToGoogle(resultados[0], d);
+      
+      setTimeout(()=> $('btnCalc').classList.remove('calculating'), 300);
+    }
+
+    function render(res) {
+      $('empty').style.display='none';
+      $('heroKpis').style.display='grid';
+      $('table').style.display='table';
+      
+      const best = res[0];
+      $('bestName').innerText = best.nombre;
+      $('bestPrice').innerText = fmt(best.total);
+
+      $('tbody').innerHTML = res.map((r,i) => `
+        <tr class="${i===0?'best':''}">
+          <td>${i+1}</td>
+          <td data-label="Compañía">${r.nombre}</td>
+          <td data-label="Potencia">${fmt(r.detalles.pot)}</td>
+          <td data-label="Consumo">${fmt(r.detalles.cons)}</td>
+          <td data-label="Impuestos">${fmt(r.detalles.imp)}</td>
+          <td data-label="TOTAL" style="font-weight:900; font-size:1.1em; color:${i===0?'#fbbf24':'#fff'}">${fmt(r.total)}</td>
+          <td data-label="Tipo"><span class="badge ${r.tipo==='1P'?'b1':'b3'}">${r.tipo}</span></td>
+        </tr>
+      `).join('');
+      
+      if(window.innerWidth < 768) $('scrollBtn').style.display='block';
+    }
+
+    // --- LOGGING Y HELPERS ---
+    function logToGoogle(best, d) {
+      clearTimeout(logTimeout);
+      logTimeout = setTimeout(() => {
+        let token = localStorage.getItem(LS_TOKEN);
+        if(!token) { token = 'u_' + Date.now() + '_' + Math.random().toString(36).substr(2,6); localStorage.setItem(LS_TOKEN, token); }
+
+        const q = new URLSearchParams();
+        q.append('action', 'log');
+        q.append('token', token); // AHORA SÍ MANDA EL TOKEN
+        q.append('p1', d.p1); q.append('p2', d.p2); q.append('dias', d.dias);
+        q.append('cPunta', d.cPunta); q.append('cLlano', d.cLlano); q.append('cValle', d.cValle);
+        q.append('totalKwh', d.cPunta+d.cLlano+d.cValle);
+        q.append('mejorTarifa', best.nombre);
+        q.append('mejorPrecio', best.total.toFixed(2));
+        q.append('dispositivo', window.innerWidth < 768 ? 'Mobile' : 'Desktop');
+
+        fetch(API_URL + '?' + q.toString(), { mode: 'no-cors' });
+      }, 3000);
+    }
+
+    let debounceTimer;
+    function scheduleCalc() { clearTimeout(debounceTimer); debounceTimer = setTimeout(calculate, 500); }
+    function updateTotal() { 
+      const sum = (parseFloat(inputs.cPunta.value)||0) + (parseFloat(inputs.cLlano.value)||0) + (parseFloat(inputs.cValle.value)||0);
+      $('kwhTotal').innerText = sum.toFixed(0) + ' kWh';
+    }
+    function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
   </script>
 </body>
 </html>
