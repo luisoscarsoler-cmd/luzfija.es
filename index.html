@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
   <style>
-    /* === TU DISEÑO ORIGINAL EXACTO === */
+    /* === ESTILOS VISUALES (TU DISEÑO OSCURO) === */
     :root{
       --bg0:#070A12;
       --bg1:#0B1020;
@@ -534,26 +534,31 @@
     }
 
     function loadInputs() {
-        // Carga de URL Params primero
+        // 1. Prioridad: Parámetros URL
         if (Object.keys(SERVER_PARAMS).length > 0) {
-             for(const k in DEFAULTS) {
-                 if(SERVER_PARAMS[k]) el.inputs[k].value = SERVER_PARAMS[k];
-             }
+             const d = Object.assign({}, DEFAULTS, SERVER_PARAMS);
+             for(const k in DEFAULTS) el.inputs[k].value = d[k];
              updateKwhHint();
-             // Autocalcular si vienen params
              setTimeout(()=>calculate(false), 500);
              return;
         }
 
-        const r = localStorage.getItem(LS_KEY);
-        if (r) {
-            try {
-                const d = JSON.parse(r);
-                for (const k in DEFAULTS) if(d[k]) el.inputs[k].value = d[k];
-            } catch(e){}
+        // 2. Fallback: LocalStorage o Defaults
+        let savedData = {};
+        try {
+            const r = localStorage.getItem(LS_KEY);
+            if (r) savedData = JSON.parse(r);
+        } catch(e){}
+
+        // Mezclamos: Defaults + Guardado (lo guardado manda)
+        const finalData = { ...DEFAULTS, ...savedData };
+        
+        for (const k in DEFAULTS) {
+            el.inputs[k].value = finalData[k];
         }
         updateKwhHint();
     }
+
     function saveInputs(){ 
         const d={}; for(const k in DEFAULTS)d[k]=el.inputs[k].value; 
         localStorage.setItem(LS_KEY,JSON.stringify(d));
@@ -562,6 +567,7 @@
     function resetInputs(){ 
         for(const k in DEFAULTS)el.inputs[k].value=DEFAULTS[k]; 
         saveInputs(); updateKwhHint(); clearErrorStyles(); toast('Restablecido'); 
+        setTimeout(()=>calculate(false), 300);
     }
 
     function updateKwhHint(){ 
@@ -649,15 +655,18 @@
     function toggleMenu(force){ const s=(typeof force==='boolean')?force:!el.menuPanel.classList.contains('show'); el.menuPanel.classList.toggle('show',s); }
     
     // STARTUP
-    document.addEventListener('DOMContentLoaded', ()=>{
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      // 1. Cargar tarifas en segundo plano
+      fetchTarifas(); 
+
+      // 2. Cargar inputs (y calcular si corresponde)
       loadInputs(); 
-      fetchTarifas(); // Carga silenciosa al inicio
       
+      // 3. Listeners
       Object.values(el.inputs).forEach(i=>{
           i.addEventListener('input',()=>{
               state.userHasInteracted=true;
               updateKwhHint();
-              // Debounce cálculo instantáneo
               clearTimeout(state.debounce);
               state.debounce = setTimeout(()=>calculate(false), 500);
           });
@@ -678,6 +687,11 @@
       el.btnShare.addEventListener('click',async(e)=>{createRipple(el.btnShare,e);toggleMenu(false);const u=buildShareUrl();await copyText(u);toast('Enlace copiado 🔗');});
       
       $('scrollToResults').addEventListener('click',()=>{$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'});$('scrollToResults').style.display='none';});
+      
+      // Auto-calcular si ya hay valores (hack para primera carga)
+      setTimeout(()=>{
+          if(el.inputs.p1.value) calculate(false);
+      }, 800);
     });
   </script>
 </body>
