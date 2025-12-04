@@ -517,10 +517,11 @@
           createRipple(el.btnExport,e);
           toggleMenu(false);
           if(!state.rows || state.rows.length === 0){ toast('No hay datos para descargar','err'); return; }
-          const headers = ['#','Tarifa','Potencia','Consumo','Impuestos','Total','Vs Mejor','Tipo'];
-          const rows = state.rows.map(r=>[r.posicion,r.nombre,r.potencia,r.consumo,r.impuestos,r.total,r.vsMejor,r.tipo]);
-          const csv = [headers, ...rows].map(r=>r.map(c=>`"${String(c??'').replace(/"/g,'""')}"`).join(',')).join('\n');
-          const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+          const headers = ['#','Tarifa','Potencia','Consumo','Impuestos','Total','Vs Mejor','Tipo','Web'];
+          const rows = state.rows.map(r=>[r.posicion,r.nombre,r.potencia,r.consumo,r.impuestos,r.total,r.vsMejor,r.tipo,r.webUrl||'']);
+          const csv = [headers, ...rows].map(r=>r.join(',')).join('\n');
+          const BOM = '\uFEFF';
+          const blob = new Blob([BOM + csv], {type:'text/csv;charset=utf-8;'});
           const link = document.createElement('a');
           const url = URL.createObjectURL(blob);
           link.setAttribute('href',url);
