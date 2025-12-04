@@ -576,8 +576,8 @@
     // SERVER_PARAMS: Parámetros URL capturados por doGet (ej: ?cValle=200)
     // GOOGLE_URL: URL pública del script para compartir (ej: script.google.com/...)
     // --------------------------------------------------------------------------------
-    const SERVER_PARAMS = <?!= JSON.stringify(params || {}) ?>;
-    const GOOGLE_URL = "<?= pubUrl ?>";
+    const SERVER_PARAMS = {};
+    const GOOGLE_URL = "";
 
     const LS_KEY = 'almax_comparador_v6_inputs';
     const LS_TOKEN_KEY = 'almax_user_token';
@@ -743,6 +743,22 @@
       el.btnExport.addEventListener('click',(e)=>{createRipple(el.btnExport,e);toggleMenu(false);exportCSV();});
       el.btnShare.addEventListener('click',async(e)=>{createRipple(el.btnShare,e);toggleMenu(false);const u=buildShareUrl();await copyText(u);toast('Enlace copiado 🔗');});
       $('scrollToResults').addEventListener('click',()=>{$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'});$('scrollToResults').style.display='none';});
+    });
+      
+      // 🔧 CARGAR VALORES POR DEFECTO AL INICIAR (GitHub Pages)
+      setTimeout(() => {
+        const saved = localStorage.getItem('almax_comparador_v6_inputs');
+        if (!saved) {
+          // Primer acceso: cargar defectos
+          el.inputs.p1.value = '3,45';
+          el.inputs.p2.value = '3,45';
+          el.inputs.dias.value = '30';
+          el.inputs.cPunta.value = '120';
+          el.inputs.cLlano.value = '80';
+          el.inputs.cValle.value = '150';
+          updateKwhHint();
+        }
+      }, 100);
     });
   </script>
 </body>
