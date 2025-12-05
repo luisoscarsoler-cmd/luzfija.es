@@ -364,6 +364,9 @@
     // URL DE TU SCRIPT DE GOOGLE (NO LA CAMBIES)
     const API_URL = 'https://script.google.com/macros/s/AKfycbwfrP2AxSQz_k1NlSDcdZxvQR_m0t3xKO1JnD7FnRqOWCM0RYqLihg5cca6vXQswn4j/exec';
 
+    // NUEVO: JSON ESTÁTICO DE TARIFAS SERVIDO DESDE GITHUB/NETLIFY
+    const JSON_URL = 'tarifas.json';
+
     const LS_KEY = 'almax_comparador_v6_inputs';
     // VALORES POR DEFECTO PARA PRIMERA VISITA
     const DEFAULTS = { p1:'3,45', p2:'3,45', dias:'30', cPunta:'100', cLlano:'100', cValle:'100' };
@@ -400,30 +403,41 @@
     function setStatus(text, mode='idle'){ el.statusText.textContent=text; el.statusPill.classList.remove('loading','ok','err'); if(mode==='loading')el.statusPill.classList.add('loading'); if(mode==='ok')el.statusPill.classList.add('ok'); if(mode==='err')el.statusPill.classList.add('err'); const l=mode==='loading'; el.btnCalc.disabled=l; el.btnText.style.display=l?'none':'flex'; el.btnSpinner.style.display=l?'flex':'none'; if(l)el.btnCalc.classList.add('calculating'); else el.btnCalc.classList.remove('calculating'); }
     function toast(msg, mode='ok'){ el.toastText.textContent=msg; el.toastDot.classList.remove('ok','err'); el.toastDot.classList.add(mode==='err'?'err':'ok'); el.toast.classList.add('show'); clearTimeout(el.toast._t); el.toast._t=setTimeout(()=>el.toast.classList.remove('show'),2800); }
     
+    // ⚡ NUEVA VERSIÓN: LEER TARIFAS DESDE tarifas.json EN EL MISMO HOST
     async function fetchTarifas() {
-        if(cachedTarifas.length > 0) return true;
+        if (cachedTarifas.length > 0) return true;
         setStatus('Cargando tarifas...', 'loading');
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 15000);
             
-            const response = await fetch(API_URL + '?action=tarifas', { signal: controller.signal });
+            // Cache bust suave: añade timestamp para evitar caché agresivo del navegador/CDN
+            const url = JSON_URL + '?v=' + Date.now();
+            const response = await fetch(url, { signal: controller.signal });
             clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
             
             const data = await response.json();
-            if (data.success) {
-                cachedTarifas = data.tarifas;
+            const tarifas = Array.isArray(data.tarifas) ? data.tarifas : null;
+
+            if (tarifas && tarifas.length) {
+                cachedTarifas = tarifas;
                 setStatus('Datos actualizados', 'ok');
                 setTimeout(() => setStatus('Listo para calcular', 'idle'), 1500);
                 return true;
-            } else { throw new Error('Error en datos'); }
+            } else {
+                throw new Error('JSON sin tarifas válidas');
+            }
         } catch (e) {
+            console.error('Error cargando tarifas JSON:', e);
             setStatus('Error conexión', 'err');
-            toast('Error cargando precios.', 'err');
+            toast('Error cargando tarifas desde el servidor.', 'err');
             return false;
         }
     }
-
 
     function calculateLocal() {
         const p1 = parseNum(el.inputs.p1.value);
@@ -585,7 +599,7 @@
           document.body.removeChild(link);
           toast('Ranking descargado');
       });
-      $('scrollToResults').addEventListener('click',()=>{$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'});$('scrollToResults').style.display='none';});
+      $('scrollToResults').addEventListener('click',()=>$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'}));
     });
   </script>
   <!-- Cloudflare Web Analytics -->
