@@ -700,19 +700,20 @@
       setTimeout(()=>r.remove(),600); 
     }
     
-    function renderTable(){ 
-        const f=applyFilters(state.rows); 
-        const s=applySort(f); 
-        el.tbody.innerHTML='';
-        if(s.length===0){el.table.style.display='none';el.emptyBox.style.display='block';return;} 
+    function renderTable(){
+        const f=applyFilters(state.rows);
+        const s=applySort(f);
+        if(s.length===0){el.tbody.replaceChildren();el.table.style.display='none';el.emptyBox.style.display='block';return;}
         el.emptyBox.style.display='none';el.table.style.display='table';
+        const frag=document.createDocumentFragment();
         s.forEach((r,i)=>{
             const tr=document.createElement('tr');
             if(r.esMejor)tr.classList.add('best');
             const w=r.webUrl?`<a class="web" href="${escapeHtml(r.webUrl)}" target="_blank" rel="noopener" title="Abrir web">🔗</a>`:'';
             tr.innerHTML=`<td>${escapeHtml(r.posicion)}</td><td title="${escapeHtml(r.nombre)}">${escapeHtml(r.nombre)}</td><td>${escapeHtml(r.potencia)}</td><td>${escapeHtml(r.consumo)}</td><td>${escapeHtml(r.impuestos)}</td><td><strong style="font-weight:1100; color: rgba(167,139,250,1);">${escapeHtml(r.total)}</strong></td><td class="vs">${formatVsWithBar(r.vsMejor,r.vsMejorNum)}</td><td>${rowTipoBadge(r.tipo)}</td><td style="text-align:center">${w}</td>`;
-            el.tbody.appendChild(tr);
-        }); 
+            frag.appendChild(tr);
+        });
+        el.tbody.replaceChildren(frag);
         updateSortIcons();
     }
     
