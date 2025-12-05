@@ -299,7 +299,11 @@
             <div class="kwhPill" aria-live="polite"><div class="kwhLabel">Total kWh</div><div class="kwhValue" id="kwhHint">—</div></div>
             <button class="btn primary" id="btnCalc" type="button" title="Calcular ahora"><span id="btnText">⚡ Calcular</span><span id="btnSpinner" style="display:none;"><span class="spinner"></span></span></button>
           </div>
-          <div class="help">Pulsa Calcular o modifica un valor. Luego se actualiza automáticamente.</div>
+
+          <!-- ✅ COPY ACTUALIZADO -->
+          <div class="help">
+            Los resultados se calculan automáticamente con los valores de arriba. Modifica cualquier dato para actualizar el ranking.
+          </div>
         </div>
       </section>
 
@@ -361,10 +365,10 @@
   <script>
     const $ = id => document.getElementById(id);
     
-    // URL DE TU SCRIPT DE GOOGLE (NO LA CAMBIES)
+    // URL DE TU SCRIPT DE GOOGLE (NO LA CAMBIES) (en esta versión GitHub no se usa, pero no molesta)
     const API_URL = 'https://script.google.com/macros/s/AKfycbwfrP2AxSQz_k1NlSDcdZxvQR_m0t3xKO1JnD7FnRqOWCM0RYqLihg5cca6vXQswn4j/exec';
 
-    // NUEVO: JSON ESTÁTICO DE TARIFAS SERVIDO DESDE GITHUB/NETLIFY
+    // JSON ESTÁTICO DE TARIFAS SERVIDO DESDE GITHUB/NETLIFY
     const JSON_URL = 'tarifas.json';
 
     const LS_KEY = 'almax_comparador_v6_inputs';
@@ -403,7 +407,7 @@
     function setStatus(text, mode='idle'){ el.statusText.textContent=text; el.statusPill.classList.remove('loading','ok','err'); if(mode==='loading')el.statusPill.classList.add('loading'); if(mode==='ok')el.statusPill.classList.add('ok'); if(mode==='err')el.statusPill.classList.add('err'); const l=mode==='loading'; el.btnCalc.disabled=l; el.btnText.style.display=l?'none':'flex'; el.btnSpinner.style.display=l?'flex':'none'; if(l)el.btnCalc.classList.add('calculating'); else el.btnCalc.classList.remove('calculating'); }
     function toast(msg, mode='ok'){ el.toastText.textContent=msg; el.toastDot.classList.remove('ok','err'); el.toastDot.classList.add(mode==='err'?'err':'ok'); el.toast.classList.add('show'); clearTimeout(el.toast._t); el.toast._t=setTimeout(()=>el.toast.classList.remove('show'),2800); }
     
-    // ⚡ NUEVA VERSIÓN: LEER TARIFAS DESDE tarifas.json EN EL MISMO HOST
+    // LEER TARIFAS DESDE tarifas.json EN EL MISMO HOST
     async function fetchTarifas() {
         if (cachedTarifas.length > 0) return true;
         setStatus('Cargando tarifas...', 'loading');
@@ -411,7 +415,7 @@
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 15000);
             
-            // Cache bust suave: añade timestamp para evitar caché agresivo del navegador/CDN
+            // Cache bust suave
             const url = JSON_URL + '?v=' + Date.now();
             const response = await fetch(url, { signal: controller.signal });
             clearTimeout(timeoutId);
@@ -497,12 +501,13 @@
 
     function formatMoney(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
 
+    // ✅ MODIFICACIÓN: autocálculo también cuando entra sin parámetros
     function loadInputs() {
         if (Object.keys(SERVER_PARAMS).length > 0) {
              const d = Object.assign({}, DEFAULTS, SERVER_PARAMS);
              for(const k in DEFAULTS) el.inputs[k].value = d[k];
              updateKwhHint();
-             setTimeout(()=>calculate(false), 500);
+             setTimeout(()=>calculate(false), 350);
              return;
         }
         let savedData = {};
@@ -510,6 +515,7 @@
         const finalData = { ...DEFAULTS, ...savedData };
         for (const k in DEFAULTS) el.inputs[k].value = finalData[k];
         updateKwhHint();
+        setTimeout(()=>calculate(false), 350);
     }
 
     function saveInputs(){ const d={}; for(const k in DEFAULTS)d[k]=el.inputs[k].value; localStorage.setItem(LS_KEY,JSON.stringify(d)); return d; }
@@ -549,7 +555,7 @@
         el.heroKpis.style.display='grid'; 
         const s=d.stats; 
         if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; el.statsBar.style.display='grid'; }
-        state.rows=Array.isArray(d.resultados)?d.resultados:[]; 
+        state.rows=Array.isArray(d.resultados)?d.resultados:[];
         el.toolbar.style.display='flex'; 
         renderTable(); 
         if(window.innerWidth<1100){ const sb=$('scrollToResults'); sb.style.display='block'; setTimeout(()=>sb.style.display='none',5000); } 
@@ -557,7 +563,6 @@
 
     async function calculate(isUserAction){
         saveInputs();
-        if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0}); 
         setStatus('Calculando...', 'loading');
         const loaded = await fetchTarifas();
         if(!loaded) return;
