@@ -152,7 +152,7 @@
     .heroCard .s{ color: var(--muted); font-size: 12px; line-height: 1.25; }
     .statsbar{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; opacity: .92; }
     @media (max-width: 760px){ .statsbar{grid-template-columns: 1fr;} }
-    .statCard{ border: 1px solid var(--border); background: rgba(0,0,0,.14); border-radius: 16px; padding: 12px 12px; display:flex; flex-direction:column; gap: 6px; animation: fadeInUp 0.5s ease-out; animation-fill-mode: both; }
+    .statCard{ border: 1px solid var(--border); background: rgba(0,0,0,.14); border-radius: 16px; padding: 12px 12px; display:flex; flex-direction:column; gap: 6px; animation: fadeInUp 0.5s ease-out; animation-fill-mode: both; align-items: center; text-align: center; }
     .statCard:nth-child(1) { animation-delay: 0.2s; } .statCard:nth-child(2) { animation-delay: 0.3s; } .statCard:nth-child(3) { animation-delay: 0.4s; }
     .statLabel{ color: var(--muted2); letter-spacing: 1px; text-transform: uppercase; font-size: 10px; font-weight: 1000; }
     .statValue{ font-size: clamp(18px, 1.5vw, 24px); font-weight: 1100; letter-spacing: -0.4px; white-space: nowrap; }
