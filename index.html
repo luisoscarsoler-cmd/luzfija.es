@@ -250,6 +250,17 @@
     .web:hover {
       will-change: transform;
     }
+
+    .fade-container {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+    }
+
+    .fade-container.show {
+      opacity: 1;
+      visibility: visible;
+    }
   </style>
 </head>
 
@@ -330,18 +341,18 @@
       <section class="card">
         <div class="head"><div class="kicker">Resultados</div><div class="title">Tarifa óptima + ranking</div></div>
         <div class="body">
-          <div class="heroKpis" id="heroKpis" style="display:none;">
+          <div class="heroKpis fade-container" id="heroKpis">
             <div class="heroCard best"><div class="k">Tarifa más barata</div><div class="v" id="kpiBest">—</div><div class="s">Mejor opción</div></div>
             <div class="heroCard"><div class="k">Factura mínima</div><div class="v" id="kpiPrice">—</div><div class="s">Según tus datos</div></div>
           </div>
 
-          <div class="statsbar" id="statsBar" style="display:none;">
+          <div class="statsbar fade-container" id="statsBar">
             <div class="statCard"><div class="statLabel">Precio mínimo</div><div class="statValue" id="statMin">—</div></div>
             <div class="statCard"><div class="statLabel">Precio medio</div><div class="statValue" id="statAvg">—</div></div>
             <div class="statCard"><div class="statLabel">Precio máximo</div><div class="statValue" id="statMax">—</div></div>
           </div>
 
-          <div class="toolbar" id="toolbar" style="display:none;">
+          <div class="toolbar fade-container" id="toolbar">
             <div class="filters">
               <button class="fbtn active" data-filter="all" type="button">Todas</button>
               <button class="fbtn" data-filter="1P" type="button"><span class="badge b1">1P</span></button>
@@ -350,7 +361,7 @@
           </div>
 
           <div class="tableWrap">
-            <table id="table" style="display:none;">
+            <table id="table" class="fade-container">
               <thead>
                 <tr>
                   <th>#</th>
@@ -365,7 +376,7 @@
               </thead>
               <tbody id="tbody"></tbody>
             </table>
-            <div class="empty" id="emptyBox">Aún no hay resultados. Calcula para mostrar ranking.</div>
+            <div class="empty fade-container" id="emptyBox">Aún no hay resultados. Calcula para mostrar ranking.</div>
           </div>
 
         </div>
@@ -729,14 +740,14 @@
 
       if (s.length === 0) {
         el.tbody.replaceChildren();
-        el.table.style.display = 'none';
-        el.emptyBox.style.display = 'block';
+        el.table.classList.remove('show');
+        el.emptyBox.classList.add('show');
         return;
       }
 
       requestAnimationFrame(() => {
-        el.emptyBox.style.display = 'none';
-        el.table.style.display = 'table';
+        el.emptyBox.classList.remove('show');
+        el.table.classList.add('show');
 
         const frag = document.createDocumentFragment();
         s.forEach((r, i) => {
@@ -760,12 +771,12 @@
         const r=d.resumen||{}; 
         if(r.mejor) el.kpiBest.textContent=r.mejor;
         if(r.precio) el.kpiPrice.textContent=r.precio;
-        el.heroKpis.style.display='grid'; 
-        const s=d.stats; 
-        if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; el.statsBar.style.display='grid'; }
-        state.rows=Array.isArray(d.resultados)?d.resultados:[]; 
-        el.toolbar.style.display='flex'; 
-        renderTable(); 
+        el.heroKpis.classList.add('show');
+        const s=d.stats;
+        if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; el.statsBar.classList.add('show'); }
+        state.rows=Array.isArray(d.resultados)?d.resultados:[];
+        el.toolbar.classList.add('show');
+        renderTable();
         if(window.innerWidth<1100){ 
           const sb=$('scrollToResults'); 
           sb.style.display='block'; 
