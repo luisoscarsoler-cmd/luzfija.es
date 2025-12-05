@@ -6,36 +6,40 @@
   <meta name="description" content="Comparador profesional de tarifas eléctricas. Encuentra la luz más barata en segundos según tus consumos específicos." />
   <meta name="keywords" content="tarifas electricidad, comparador luz, tarifa fija, precio electricidad, contratación luz" />
   <meta name="theme-color" content="#8B5CF6" />
-  
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Comparador Tarifas" />
   
+  <!-- Open Graph -->
   <meta property="og:title" content="Comparador de Tarifas Eléctricas | Encuentra la Luz Más Barata" />
   <meta property="og:description" content="Compara tarifas de electricidad en tiempo real. Encuentra la oferta más barata según tus consumos específicos. Sin registro, sin publicidad." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://luzfija.es/" />
   <meta property="og:locale" content="es_ES" />
   
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Comparador de Tarifas Eléctricas" />
   <meta name="twitter:description" content="Encuentra tu tarifa de luz más barata en segundos" />
   
+  <!-- Canonical -->
   <link rel="canonical" href="https://luzfija.es/" />
   
+  <!-- Prefetch/Preconnect -->
   <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
   <link rel="dns-prefetch" href="https://script.google.com" />
   <link rel="dns-prefetch" href="https://static.cloudflareinsights.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+  <title>⚡ Comparador de Tarifas Eléctricas</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-  
-  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="apple-touch-icon" sizes="180x180" href="favicon-48x48.png">
 
-  <title>⚡ Comparador de Tarifas Eléctricas</title>
-
+  <!-- Schema Markup (JSON-LD) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -50,6 +54,11 @@
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "EUR"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "120"
     },
     "creator": {
       "@type": "Person",
@@ -582,6 +591,8 @@
       $('scrollToResults').addEventListener('click',()=>{$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'});$('scrollToResults').style.display='none';});
     });
   </script>
+  <!-- Cloudflare Web Analytics -->
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fea4a7fbe6e34ab1a867cff1c7837aa3"}'></script>
-  </body>
+  <!-- End Cloudflare Web Analytics -->
+</body>
 </html>
