@@ -728,17 +728,25 @@
       ['tarifa','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{const i=$('si_'+k); if(!i)return; if(state.sort.key!==k){i.textContent='';return;} i.textContent=state.sort.dir==='asc'?'▲':'▼';});
     }
 
-    function createRipple(b,e){ 
-      const r=document.createElement('span'); 
-      const rect=b.getBoundingClientRect(); 
-      const s=Math.max(rect.width,rect.height); 
-      const x=e.clientX-rect.left-s/2; 
-      const y=e.clientY-rect.top-s/2; 
-      r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`; 
-      b.style.position='relative'; 
-      b.style.overflow='hidden'; 
-      b.appendChild(r); 
-      setTimeout(()=>r.remove(),600); 
+    const rippleHosts=new WeakSet();
+
+    function prepareRippleHost(b){
+      if(rippleHosts.has(b)) return;
+      b.style.position='relative';
+      b.style.overflow='hidden';
+      rippleHosts.add(b);
+    }
+
+    function createRipple(b,e){
+      prepareRippleHost(b);
+      const {width,height,left,top}=b.getBoundingClientRect();
+      const r=document.createElement('span');
+      const s=Math.max(width,height);
+      const x=e.clientX-left-s/2;
+      const y=e.clientY-top-s/2;
+      r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`;
+      b.appendChild(r);
+      setTimeout(()=>r.remove(),600);
     }
     
     function renderTable(){
