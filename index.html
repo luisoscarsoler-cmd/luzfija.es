@@ -649,6 +649,21 @@
 
     function clearErrorStyles(){ Object.values(el.inputs).forEach(i=>i.classList.remove('error')); }
 
+    const TABLE_COLUMNS = [
+      'posicion','nombre','potencia','consumo','impuestos','total','vsMejor','tipo','webUrl'
+    ];
+
+    function rowTipoBadge(t){
+      const s=String(t||'').trim();
+      const badge=document.createElement('span');
+      badge.classList.add('badge');
+      if(s==='1P') badge.classList.add('b1');
+      else if(s==='3P') badge.classList.add('b3');
+      badge.textContent=s||'—';
+      return badge;
+    }
+
+    function formatVsWithBar(v){
     const rowTemplate=document.createElement('template');
     rowTemplate.innerHTML = `
       <tr>
@@ -687,6 +702,18 @@
       span.classList.add(pos?'pos':'neg');
       span.textContent=`${pos?'▲':'▼'} ${s}`;
       return span;
+    }
+
+    function createWebLink(url){
+      if(!url) return document.createTextNode('');
+      const a=document.createElement('a');
+      a.className='web';
+      a.href=url;
+      a.target='_blank';
+      a.rel='noopener';
+      a.title='Abrir web';
+      a.textContent='🔗';
+      return a;
     }
 
     function applyFilters(r){
@@ -761,6 +788,30 @@
             const tr=rowTemplate.content.firstElementChild.cloneNode(true);
             const [posCell,nameCell,potenciaCell,consumoCell,impuestosCell,totalCell,vsCell,tipoCell,webCell]=tr.children;
             if(r.esMejor)tr.classList.add('best');
+            TABLE_COLUMNS.forEach((key,index)=>{
+              const td=document.createElement('td');
+              if(index===6) td.classList.add('vs');
+              if(index===8) td.style.textAlign='center';
+              if(key==='total'){
+                const strong=document.createElement('strong');
+                strong.style.fontWeight='1100';
+                strong.style.color='rgba(167,139,250,1)';
+                strong.textContent=r.total;
+                td.appendChild(strong);
+              } else if(key==='nombre'){
+                td.textContent=r.nombre;
+                td.title=r.nombre;
+              } else if(key==='vsMejor'){
+                td.appendChild(formatVsWithBar(r.vsMejor));
+              } else if(key==='tipo'){
+                td.appendChild(rowTipoBadge(r.tipo));
+              } else if(key==='webUrl'){
+                td.appendChild(createWebLink(r.webUrl));
+              } else {
+                td.textContent=String(r[key]??'');
+              }
+              tr.appendChild(td);
+            });
 
             posCell.textContent = String(r.posicion ?? '');
             nameCell.textContent = r.nombre || '';
