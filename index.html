@@ -3,13 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Comparador profesional de tarifas eléctricas. Encuentra la luz más barata en segundos." />
-  <title>⚡ Comparador de Tarifas Eléctricas</title>
+  <meta name="description" content="Comparador profesional de tarifas eléctricas. Encuentra la luz más barata en segundos según tus consumos específicos." />
+  <meta name="keywords" content="tarifas electricidad, comparador luz, tarifa fija, precio electricidad, contratación luz" />
+  <meta name="theme-color" content="#8B5CF6" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Comparador Tarifas" />
   
+  <meta property="og:title" content="Comparador de Tarifas Eléctricas | Encuentra la Luz Más Barata" />
+  <meta property="og:description" content="Compara tarifas de electricidad en tiempo real. Encuentra la oferta más barata según tus consumos específicos. Sin registro, sin publicidad." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://luzfija.es/" />
+  <meta property="og:locale" content="es_ES" />
+  
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Comparador de Tarifas Eléctricas" />
+  <meta name="twitter:description" content="Encuentra tu tarifa de luz más barata en segundos" />
+  
+  <link rel="canonical" href="https://luzfija.es/" />
+  
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="https://script.google.com" />
+  <link rel="dns-prefetch" href="https://static.cloudflareinsights.com" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <title>⚡ Comparador de Tarifas Eléctricas</title>
+  
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-48x48.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Comparador de Tarifas Eléctricas",
+    "description": "Herramienta profesional para comparar tarifas de electricidad en España. Encuentra la oferta más barata según tus consumos específicos.",
+    "url": "https://luzfija.es",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "inLanguage": "es",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR"
+    },
+    "creator": {
+      "@type": "Person",
+      "name": "aLMaX"
+    }
+  }
+  </script>
 
   <style>
     /* === TU DISEÑO ORIGINAL EXACTO (NO TOCAR) === */
@@ -129,7 +176,7 @@
     tbody tr { background: rgba(255, 255, 255, 0.03); transition: all 0.2s ease; backdrop-filter: blur(10px); }
     tbody td{ padding: 14px 12px; border-bottom: none !important; text-align:right; font-size: 15px; color: rgba(255,255,255,.88); vertical-align: middle; white-space: nowrap; }
     tbody tr td:first-child { border-radius: 12px 0 0 12px; }
-    tbody tr td:last-child  { border-radius: 0 12px 12px 0; }
+    tbody tr td:last-child  { border-radius: 0 12px 12px 0; }
     tbody td:nth-child(2){ font-weight: 1100; color: #fff; font-size: 14px; }
     tbody tr:hover{ transform: scale(1.01) translateY(-2px); background: rgba(255, 255, 255, 0.07); box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 10; position: relative; }
     tbody tr.best{ background: linear-gradient(90deg, rgba(34,197,94,0.15), rgba(139,92,246,0.1)) !important; border: 1px solid rgba(34,197,94,0.3); box-shadow: 0 0 20px rgba(34,197,94,0.1); }
@@ -344,199 +391,4 @@
       s=s.replace(/[^\d.-]/g,''); const n=Number(s); return Number.isFinite(n)?n:0;
     }
     function escapeHtml(v){ return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-    function setStatus(text, mode='idle'){ el.statusText.textContent=text; el.statusPill.classList.remove('loading','ok','err'); if(mode==='loading')el.statusPill.classList.add('loading'); if(mode==='ok')el.statusPill.classList.add('ok'); if(mode==='err')el.statusPill.classList.add('err'); const l=mode==='loading'; el.btnCalc.disabled=l; el.btnText.style.display=l?'none':'flex'; el.btnSpinner.style.display=l?'flex':'none'; if(l)el.btnCalc.classList.add('calculating'); else el.btnCalc.classList.remove('calculating'); }
-    function toast(msg, mode='ok'){ el.toastText.textContent=msg; el.toastDot.classList.remove('ok','err'); el.toastDot.classList.add(mode==='err'?'err':'ok'); el.toast.classList.add('show'); clearTimeout(el.toast._t); el.toast._t=setTimeout(()=>el.toast.classList.remove('show'),2800); }
-    
-    async function fetchTarifas() {
-        if(cachedTarifas.length > 0) return true;
-        setStatus('Cargando tarifas...', 'loading');
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
-            
-            const response = await fetch(API_URL + '?action=tarifas', { signal: controller.signal });
-            clearTimeout(timeoutId);
-            
-            const data = await response.json();
-            if (data.success) {
-                cachedTarifas = data.tarifas;
-                setStatus('Datos actualizados', 'ok');
-                setTimeout(() => setStatus('Listo para calcular', 'idle'), 1500);
-                return true;
-            } else { throw new Error('Error en datos'); }
-        } catch (e) {
-            setStatus('Error conexión', 'err');
-            toast('Error cargando precios.', 'err');
-            return false;
-        }
-    }
-
-
-    function calculateLocal() {
-        const p1 = parseNum(el.inputs.p1.value);
-        const p2 = parseNum(el.inputs.p2.value);
-        const dias = Math.trunc(parseNum(el.inputs.dias.value)) || 30;
-        const cPunta = parseNum(el.inputs.cPunta.value);
-        const cLlano = parseNum(el.inputs.cLlano.value);
-        const cValle = parseNum(el.inputs.cValle.value);
-
-        if(!cachedTarifas.length) return;
-
-        const resultados = cachedTarifas.map((t, index) => {
-            const pot = (p1 * dias * t.p1) + (p2 * dias * t.p2);
-            const cons = (cPunta * t.cPunta) + (cLlano * t.cLlano) + (cValle * t.cValle);
-            const tarifaAcceso = (4.650987 / 365 * dias);
-            const sumaBase = pot + cons + tarifaAcceso;
-            const impuestoElec = Math.max((5.11269632 / 100) * sumaBase, (cPunta + cLlano + cValle) * 0.001);
-            const margen = dias * 0.026667;
-            const subtotal = sumaBase + impuestoElec + margen;
-            const iva = subtotal * 0.21; 
-            const total = subtotal + iva;
-            
-            return {
-                ...t,
-                posicion: index + 1,
-                potenciaNum: pot, potencia: formatMoney(pot),
-                consumoNum: cons, consumo: formatMoney(cons),
-                impuestosNum: impuestoElec + margen + iva,
-                impuestos: formatMoney(impuestoElec + margen + iva),
-                totalNum: total, total: formatMoney(total),
-                webUrl: t.web
-            };
-        });
-
-        resultados.sort((a, b) => a.totalNum - b.totalNum);
-        
-        const bestPrice = resultados[0].totalNum;
-        const processed = resultados.map((r, i) => {
-            const diff = r.totalNum - bestPrice;
-            return {
-                ...r, posicion: i + 1, esMejor: i === 0,
-                vsMejorNum: diff, vsMejor: i === 0 ? '—' : '+' + formatMoney(diff)
-            };
-        });
-
-        const prices = processed.map(r => r.totalNum);
-        const min = Math.min(...prices); const max = Math.max(...prices);
-        const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
-
-        renderAll({
-            success: true,
-            resumen: { mejor: processed[0].nombre, precio: formatMoney(processed[0].totalNum) },
-            stats: { precioMin: formatMoney(min), precioMax: formatMoney(max), precioMedio: formatMoney(avg) },
-            resultados: processed
-        });
-    }
-
-    function formatMoney(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
-
-    function loadInputs() {
-        if (Object.keys(SERVER_PARAMS).length > 0) {
-             const d = Object.assign({}, DEFAULTS, SERVER_PARAMS);
-             for(const k in DEFAULTS) el.inputs[k].value = d[k];
-             updateKwhHint();
-             setTimeout(()=>calculate(false), 500);
-             return;
-        }
-        let savedData = {};
-        try { const r = localStorage.getItem(LS_KEY); if (r) savedData = JSON.parse(r); } catch(e){}
-        const finalData = { ...DEFAULTS, ...savedData };
-        for (const k in DEFAULTS) el.inputs[k].value = finalData[k];
-        updateKwhHint();
-    }
-
-    function saveInputs(){ const d={}; for(const k in DEFAULTS)d[k]=el.inputs[k].value; localStorage.setItem(LS_KEY,JSON.stringify(d)); return d; }
-    function resetInputs(){ for(const k in DEFAULTS)el.inputs[k].value=DEFAULTS[k]; saveInputs(); updateKwhHint(); clearErrorStyles(); toast('Restablecido'); setTimeout(()=>calculate(false), 300); }
-    function updateKwhHint(){ const t=parseNum(el.inputs.cPunta.value)+parseNum(el.inputs.cLlano.value)+parseNum(el.inputs.cValle.value); el.kwhHint.textContent=`${t.toFixed(2).replace('.',',')} kWh`; }
-    function clearErrorStyles(){ Object.values(el.inputs).forEach(i=>i.classList.remove('error')); }
-    function rowTipoBadge(t){ const s=String(t||'').trim(); if(s==='1P')return `<span class="badge b1">1P</span>`; if(s==='3P')return `<span class="badge b3">3P</span>`; return `<span class="badge">${escapeHtml(s||'—')}</span>`; }
-    function formatVsWithBar(v,vn){ const s=String(v??'').trim(); if(!s||s==='—'||s==='0'||s==='0,00'||s==='0 €'||s==='0,00 €')return '<span class="vs-text zero">—</span>'; const pos=s.startsWith('+'); const c=pos?'pos':'neg'; const a=pos?'▲':'▼'; return `<span class="vs-text ${c}">${a} ${escapeHtml(s)}</span>`; }
-    function applyFilters(r){ const f=state.filter; return r.filter(x=>(f==='all'||String(x.tipo||'')===f)); }
-    function applySort(r){ const {key,dir}=state.sort; const asc=dir==='asc'; const c=r.slice(); c.sort((a,b)=>{const va=a[key],vb=b[key]; if(key==='tarifa'){const sa=String(va||'').toLowerCase(),sb=String(vb||'').toLowerCase();if(sa>sb)return asc?1:-1;if(sa<sb)return asc?-1:1;return 0;} const na=Number(va)||0,nb=Number(vb)||0; if(na>nb)return asc?1:-1;if(na<nb)return asc?-1:1;return 0;}); return c; }
-    function updateSortIcons(){ ['tarifa','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{const i=$('si_'+k); if(!i)return; if(state.sort.key!==k){i.textContent='';return;} i.textContent=state.sort.dir==='asc'?'▲':'▼';}); }
-    function animateNumber(el,txt,dur=500){ el.textContent=txt; } 
-    function createRipple(b,e){ const r=document.createElement('span'); const rect=b.getBoundingClientRect(); const s=Math.max(rect.width,rect.height); const x=e.clientX-rect.left-s/2; const y=e.clientY-rect.top-s/2; r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`; b.style.position='relative'; b.style.overflow='hidden'; b.appendChild(r); setTimeout(()=>r.remove(),600); }
-    
-    function renderTable(){ 
-        const f=applyFilters(state.rows); 
-        const s=applySort(f); 
-        el.tbody.innerHTML='';
-        if(s.length===0){el.table.style.display='none';el.emptyBox.style.display='block';return;} 
-        el.emptyBox.style.display='none';el.table.style.display='table';
-        s.forEach((r,i)=>{
-            const tr=document.createElement('tr');
-            if(r.esMejor)tr.classList.add('best');
-            const w=r.webUrl?`<a class="web" href="${escapeHtml(r.webUrl)}" target="_blank" rel="noopener" title="Abrir web">🔗</a>`:'';
-            tr.innerHTML=`<td>${escapeHtml(r.posicion)}</td><td title="${escapeHtml(r.nombre)}">${escapeHtml(r.nombre)}</td><td>${escapeHtml(r.potencia)}</td><td>${escapeHtml(r.consumo)}</td><td>${escapeHtml(r.impuestos)}</td><td><strong style="font-weight:1100; color: rgba(167,139,250,1);">${escapeHtml(r.total)}</strong></td><td class="vs">${formatVsWithBar(r.vsMejor,r.vsMejorNum)}</td><td>${rowTipoBadge(r.tipo)}</td><td style="text-align:center">${w}</td>`;
-            el.tbody.appendChild(tr);
-        }); 
-        updateSortIcons();
-    }
-    
-    function renderAll(d){ 
-        if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;} 
-        setStatus('Resultados actualizados','ok'); 
-        const r=d.resumen||{}; 
-        if(r.mejor) el.kpiBest.textContent=r.mejor;
-        if(r.precio) el.kpiPrice.textContent=r.precio;
-        el.heroKpis.style.display='grid'; 
-        const s=d.stats; 
-        if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; el.statsBar.style.display='grid'; }
-        state.rows=Array.isArray(d.resultados)?d.resultados:[]; 
-        el.toolbar.style.display='flex'; 
-        renderTable(); 
-        if(window.innerWidth<1100){ const sb=$('scrollToResults'); sb.style.display='block'; setTimeout(()=>sb.style.display='none',5000); } 
-    }
-
-    async function calculate(isUserAction){
-        saveInputs();
-        if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0}); 
-        setStatus('Calculando...', 'loading');
-        const loaded = await fetchTarifas();
-        if(!loaded) return;
-        calculateLocal();
-    }
-    function toggleMenu(force){ const s=(typeof force==='boolean')?force:!el.menuPanel.classList.contains('show'); el.menuPanel.classList.toggle('show',s); }
-    
-    document.addEventListener('DOMContentLoaded', async ()=>{
-      loadInputs(); 
-      Object.values(el.inputs).forEach(i=>{
-          i.addEventListener('input',()=>{
-              state.userHasInteracted=true; updateKwhHint();
-              clearTimeout(state.debounce); state.debounce = setTimeout(()=>calculate(false), 500);
-          });
-      });
-      document.querySelectorAll('.fbtn').forEach(b=>{b.addEventListener('click',(e)=>{createRipple(b,e);document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.filter=b.getAttribute('data-filter');renderTable();});});
-      document.querySelectorAll('thead th.sort').forEach(th=>{th.addEventListener('click',()=>{const k=th.getAttribute('data-sort');if(!k)return;if(state.sort.key===k)state.sort.dir=(state.sort.dir==='asc')?'desc':'asc';else{state.sort.key=k;state.sort.dir='asc';}renderTable();updateSortIcons();});});
-      el.btnCalc.addEventListener('click',(e)=>{createRipple(el.btnCalc,e);calculate(true);});
-      el.btnMenu.addEventListener('click',(e)=>{createRipple(el.btnMenu,e);e.stopPropagation();toggleMenu();});
-      el.menuPanel.addEventListener('click',(e)=>e.stopPropagation());
-      document.addEventListener('click',()=>toggleMenu(false));
-      el.btnReset.addEventListener('click',()=>resetInputs());
-      el.btnExport.addEventListener('click',(e)=>{
-          createRipple(el.btnExport,e);
-          toggleMenu(false);
-          if(!state.rows || state.rows.length === 0){ toast('No hay datos para descargar','err'); return; }
-          const headers = ['#','Tarifa','Potencia','Consumo','Impuestos','Total','Vs Mejor','Tipo','Web'];
-          const rows = state.rows.map(r=>[r.posicion,r.nombre,r.potencia,r.consumo,r.impuestos,r.total,r.vsMejor,r.tipo,r.webUrl||'']);
-          const csv = [headers, ...rows].map(r=>r.join(';')).join('\n');
-          const BOM = '\uFEFF';
-          const blob = new Blob([BOM + csv], {type:'text/csv;charset=utf-8;'});
-          const link = document.createElement('a');
-          const url = URL.createObjectURL(blob);
-          link.setAttribute('href',url);
-          link.setAttribute('download',`ranking_tarifas_${new Date().toISOString().split('T')[0]}.csv`);
-          link.style.visibility='hidden';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          toast('Ranking descargado');
-      });
-      $('scrollToResults').addEventListener('click',()=>{$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'});$('scrollToResults').style.display='none';});
-    });
-  </script>
-  <!-- Cloudflare Web Analytics -->
-  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fea4a7fbe6e34ab1a867cff1c7837aa3"}'></script>
-  <!-- End Cloudflare Web Analytics -->
-</body>
-</html>
+    function setStatus(text, mode='idle'){ el.statusText.textContent=text; el.statusPill.classList.remove('loading','ok','err'); if(mode==='loading')el.statusPill.classList.add('loading'); if(mode==
