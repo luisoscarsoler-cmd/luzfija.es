@@ -647,20 +647,45 @@
 
     function clearErrorStyles(){ Object.values(el.inputs).forEach(i=>i.classList.remove('error')); }
 
-    function rowTipoBadge(t){ 
-      const s=String(t||'').trim(); 
-      if(s==='1P')return `<span class="badge b1">1P</span>`; 
-      if(s==='3P')return `<span class="badge b3">3P</span>`; 
-      return `<span class="badge">${escapeHtml(s||'—')}</span>`; 
+    const TABLE_COLUMNS = [
+      'posicion','nombre','potencia','consumo','impuestos','total','vsMejor','tipo','webUrl'
+    ];
+
+    function rowTipoBadge(t){
+      const s=String(t||'').trim();
+      const badge=document.createElement('span');
+      badge.classList.add('badge');
+      if(s==='1P') badge.classList.add('b1');
+      else if(s==='3P') badge.classList.add('b3');
+      badge.textContent=s||'—';
+      return badge;
     }
 
-    function formatVsWithBar(v,vn){ 
-      const s=String(v??'').trim(); 
-      if(!s||s==='—'||s==='0'||s==='0,00'||s==='0 €'||s==='0,00 €')return '<span class="vs-text zero">—</span>'; 
-      const pos=s.startsWith('+'); 
-      const c=pos?'pos':'neg'; 
-      const a=pos?'▲':'▼'; 
-      return `<span class="vs-text ${c}">${a} ${escapeHtml(s)}</span>`; 
+    function formatVsWithBar(v){
+      const s=String(v??'').trim();
+      const span=document.createElement('span');
+      span.classList.add('vs-text');
+      if(!s||s==='—'||s==='0'||s==='0,00'||s==='0 €'||s==='0,00 €'){
+        span.classList.add('zero');
+        span.textContent='—';
+        return span;
+      }
+      const pos=s.startsWith('+');
+      span.classList.add(pos?'pos':'neg');
+      span.textContent=`${pos?'▲':'▼'} ${s}`;
+      return span;
+    }
+
+    function createWebLink(url){
+      if(!url) return document.createTextNode('');
+      const a=document.createElement('a');
+      a.className='web';
+      a.href=url;
+      a.target='_blank';
+      a.rel='noopener';
+      a.title='Abrir web';
+      a.textContent='🔗';
+      return a;
     }
 
     function applyFilters(r){
@@ -726,8 +751,30 @@
         rows.forEach((r)=>{
             const tr=document.createElement('tr');
             if(r.esMejor)tr.classList.add('best');
-            const w=r.webUrl?`<a class="web" href="${escapeHtml(r.webUrl)}" target="_blank" rel="noopener" title="Abrir web">🔗</a>`:'';
-            tr.innerHTML=`<td>${escapeHtml(r.posicion)}</td><td title="${escapeHtml(r.nombre)}">${escapeHtml(r.nombre)}</td><td>${escapeHtml(r.potencia)}</td><td>${escapeHtml(r.consumo)}</td><td>${escapeHtml(r.impuestos)}</td><td><strong style="font-weight:1100; color: rgba(167,139,250,1);">${escapeHtml(r.total)}</strong></td><td class="vs">${formatVsWithBar(r.vsMejor,r.vsMejorNum)}</td><td>${rowTipoBadge(r.tipo)}</td><td style="text-align:center">${w}</td>`;
+            TABLE_COLUMNS.forEach((key,index)=>{
+              const td=document.createElement('td');
+              if(index===6) td.classList.add('vs');
+              if(index===8) td.style.textAlign='center';
+              if(key==='total'){
+                const strong=document.createElement('strong');
+                strong.style.fontWeight='1100';
+                strong.style.color='rgba(167,139,250,1)';
+                strong.textContent=r.total;
+                td.appendChild(strong);
+              } else if(key==='nombre'){
+                td.textContent=r.nombre;
+                td.title=r.nombre;
+              } else if(key==='vsMejor'){
+                td.appendChild(formatVsWithBar(r.vsMejor));
+              } else if(key==='tipo'){
+                td.appendChild(rowTipoBadge(r.tipo));
+              } else if(key==='webUrl'){
+                td.appendChild(createWebLink(r.webUrl));
+              } else {
+                td.textContent=String(r[key]??'');
+              }
+              tr.appendChild(td);
+            });
             frag.appendChild(tr);
         });
         el.tbody.replaceChildren(frag);
