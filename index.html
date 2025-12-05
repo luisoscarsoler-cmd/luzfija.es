@@ -121,8 +121,9 @@
     .group{display:flex; flex-direction:column; gap: 7px;}
     label{ font-size: 12px; color: var(--muted); font-weight: 900; letter-spacing: .2px; position: relative; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; overflow: visible; text-overflow: ellipsis; min-height: 16px; }
     .tooltip{ position: relative; cursor: help; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(139,92,246,.2); color: var(--accent); font-size: 10px; font-weight: 900; }
-    .tooltip::after{ content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translate(-50%, 4px); padding: 8px 12px; background: rgba(5,8,16,.95); color: #fff; border-radius: 8px; font-size: 11px; font-weight: 600; max-width: 240px; line-height: 1.35; white-space: normal; overflow-wrap: break-word; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 100; border: 1px solid rgba(139,92,246,.4); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .15s ease, transform .15s ease, visibility .15s ease; }
-    .tooltip:hover::after, .tooltip:focus-visible::after, .tooltip.is-open::after{ opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+    .tooltip::after{ display: none !important; }
+    #globalTooltip{ position: fixed; top: 0; left: 0; max-width: 240px; padding: 10px 12px; background: rgba(5,8,16,.95); color: #fff; border-radius: 10px; font-size: 11px; font-weight: 600; line-height: 1.5; white-space: normal; word-break: normal; overflow-wrap: break-word; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 9999; border: 1px solid rgba(139,92,246,.4); opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-4px); transition: opacity .15s ease, transform .15s ease, visibility .15s ease; }
+    #globalTooltip.visible{ opacity: 1; visibility: visible; transform: translateY(0); }
     .input{ width:100%; padding: 14px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.22); color: var(--text); outline:none; font-weight: 900; font-size: 15px; transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease, background .15s ease; min-height: 44px; position: relative; }
     .input:focus{ border-color: var(--accent); background: rgba(139, 92, 246, 0.1); box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15), 0 0 15px rgba(139, 92, 246, 0.3); transform: translateY(-2px); }
     .input:valid:not(:placeholder-shown){ border-color: rgba(34,197,94,.4); box-shadow: 0 0 0 2px rgba(34,197,94,.08); }
@@ -910,27 +911,78 @@
       calculate(false);
 
       const tooltipEls = Array.from(document.querySelectorAll('.tooltip'));
-      const closeTooltips = (except)=>{
-        tooltipEls.forEach(tp=>{ if(tp!==except) tp.classList.remove('is-open'); });
+      const ensureGlobalTooltip = ()=>{
+        let tip = document.getElementById('globalTooltip');
+        if(!tip){
+          tip = document.createElement('div');
+          tip.id = 'globalTooltip';
+          tip.setAttribute('role','tooltip');
+          document.body.appendChild(tip);
+        }
+        return tip;
+      };
+
+      const globalTooltip = ensureGlobalTooltip();
+      let activeTooltip = null;
+      let isPinned = false;
+
+      const clamp = (v,min,max)=>Math.min(Math.max(v,min),max);
+
+      const hideTooltip = ()=>{
+        activeTooltip = null;
+        isPinned = false;
+        globalTooltip.classList.remove('visible');
+        globalTooltip.style.visibility = 'hidden';
+      };
+
+      const showTooltip = (el, pinned=false)=>{
+        activeTooltip = el;
+        isPinned = pinned;
+        const text = el.getAttribute('data-tip') || '';
+        globalTooltip.textContent = text;
+        globalTooltip.classList.remove('visible');
+        globalTooltip.style.visibility = 'hidden';
+
+        const rect = el.getBoundingClientRect();
+        const tipRect = globalTooltip.getBoundingClientRect();
+        const margin = 8;
+        const spacing = 10;
+        let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+        left = clamp(left, margin, window.innerWidth - tipRect.width - margin);
+        let top = rect.top - tipRect.height - spacing;
+        if(top < margin){
+          top = rect.bottom + spacing;
+        }
+        top = clamp(top, margin, window.innerHeight - tipRect.height - margin);
+
+        globalTooltip.style.left = `${left}px`;
+        globalTooltip.style.top = `${top}px`;
+        globalTooltip.style.visibility = 'visible';
+        requestAnimationFrame(()=>globalTooltip.classList.add('visible'));
       };
 
       tooltipEls.forEach(tp=>{
+        tp.addEventListener('pointerenter',()=>showTooltip(tp,false), {passive:true});
+        tp.addEventListener('pointerleave',()=>{ if(!isPinned) hideTooltip(); }, {passive:true});
+        tp.addEventListener('focus',()=>showTooltip(tp,true));
+        tp.addEventListener('blur',hideTooltip);
         tp.addEventListener('click',(e)=>{
           e.stopPropagation();
-          const isOpen = tp.classList.contains('is-open');
-          closeTooltips();
-          if(!isOpen) tp.classList.add('is-open');
-        }, {passive:true});
-        tp.addEventListener('focus',()=>{ closeTooltips(tp); tp.classList.add('is-open'); });
-        tp.addEventListener('blur',()=>tp.classList.remove('is-open'));
+          if(activeTooltip===tp && isPinned){ hideTooltip(); return; }
+          showTooltip(tp,true);
+        });
         tp.addEventListener('keydown',(e)=>{
-          if(e.key==='Enter' || e.key===' '){ e.preventDefault(); tp.click(); }
-          if(e.key==='Escape'){ tp.classList.remove('is-open'); tp.blur(); }
+          if(e.key==='Enter' || e.key===' '){ e.preventDefault(); showTooltip(tp,true); }
+          if(e.key==='Escape'){ hideTooltip(); tp.blur(); }
         });
       });
 
-      document.addEventListener('click',()=>closeTooltips(), {passive:true});
-      document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeTooltips(); });
+      document.addEventListener('pointerdown',(e)=>{
+        if(isPinned && activeTooltip && !e.target.closest('.tooltip')) hideTooltip();
+      }, {passive:true});
+      document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') hideTooltip(); });
+      window.addEventListener('resize',()=>{ if(activeTooltip) showTooltip(activeTooltip, isPinned); }, {passive:true});
+      window.addEventListener('scroll',()=>{ if(activeTooltip && !isPinned) hideTooltip(); }, {passive:true});
 
       Object.values(el.inputs).forEach(i=>{
           i.addEventListener('input',()=>{
