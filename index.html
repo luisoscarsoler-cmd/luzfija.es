@@ -399,7 +399,7 @@
       globalTooltip: $('globalTooltip')
     };
 
-    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null };
+    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null, lastSignature: null };
     let cachedTarifas = [];
 
     let activeTooltip = null;
@@ -555,13 +555,23 @@
 
     function formatMoney(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
 
-    function calculateLocal() {
-        const p1 = parseNum(el.inputs.p1.value);
-        const p2 = parseNum(el.inputs.p2.value);
-        const dias = Math.trunc(parseNum(el.inputs.dias.value)) || 30;
-        const cPunta = parseNum(el.inputs.cPunta.value);
-        const cLlano = parseNum(el.inputs.cLlano.value);
-        const cValle = parseNum(el.inputs.cValle.value);
+    function getInputValues() {
+        return {
+            p1: parseNum(el.inputs.p1.value),
+            p2: parseNum(el.inputs.p2.value),
+            dias: Math.trunc(parseNum(el.inputs.dias.value)) || 30,
+            cPunta: parseNum(el.inputs.cPunta.value),
+            cLlano: parseNum(el.inputs.cLlano.value),
+            cValle: parseNum(el.inputs.cValle.value)
+        };
+    }
+
+    function signatureFromValues(v) {
+        return [v.p1, v.p2, v.dias, v.cPunta, v.cLlano, v.cValle].join('|');
+    }
+
+    function calculateLocal(values) {
+        const { p1, p2, dias, cPunta, cLlano, cValle } = values || getInputValues();
 
         if(!cachedTarifas.length) return;
 
@@ -717,7 +727,7 @@
         updateSortIcons();
     }
     
-    function renderAll(d){ 
+    function renderAll(d){
         if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;} 
         setStatus('Resultados actualizados','ok'); 
         const r=d.resumen||{}; 
@@ -733,16 +743,30 @@
           const sb=$('scrollToResults'); 
           sb.style.display='block'; 
           setTimeout(()=>sb.style.display='none',5000); 
-        } 
+        }
+    }
+
+    function scheduleCalculateDebounced(){
+      clearTimeout(state.debounce);
+      state.debounce = setTimeout(()=>calculate(false, false), 500);
     }
 
     async function calculate(isUserAction, forceRefresh = false){
+        const values = getInputValues();
+        const signature = signatureFromValues(values);
+
+        if(!forceRefresh && state.lastSignature === signature){
+          setStatus('Listo para calcular', 'idle');
+          return;
+        }
+
         saveInputs();
         if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0});
         setStatus('Calculando...', 'loading');
         const loaded = await fetchTarifas(forceRefresh);
         if(!loaded) return;
-        calculateLocal();
+        calculateLocal(values);
+        state.lastSignature = signature;
     }
 
     function toggleMenu(force){ 
@@ -761,7 +785,7 @@
       Object.values(el.inputs).forEach(i=>{
           i.addEventListener('input',()=>{
               state.userHasInteracted=true; updateKwhHint();
-              clearTimeout(state.debounce); state.debounce = setTimeout(()=>calculate(false, false), 500);
+              scheduleCalculateDebounced();
           });
       });
 
