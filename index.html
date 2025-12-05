@@ -341,7 +341,7 @@
               <thead>
                 <tr>
                   <th>#</th>
-                  <th class="sort" data-sort="tarifa">Tarifa <span class="sortIcon" id="si_tarifa"></span></th>
+                  <th class="sort" data-sort="nombre">Tarifa <span class="sortIcon" id="si_nombre"></span></th>
                   <th class="sort" data-sort="potenciaNum">Potencia <span class="sortIcon" id="si_potenciaNum"></span></th>
                   <th class="sort" data-sort="consumoNum">Consumo <span class="sortIcon" id="si_consumoNum"></span></th>
                   <th class="sort" data-sort="impuestosNum">Impuestos <span class="sortIcon" id="si_impuestosNum"></span></th>
@@ -671,20 +671,20 @@
       return r.filter(x=>(f==='all'||String(x.tipo||'')===f)); 
     }
 
-    function applySort(r){ 
-      const {key,dir}=state.sort; 
-      const asc=dir==='asc'; 
-      const c=r.slice(); 
-      c.sort((a,b)=>{const va=a[key],vb=b[key]; 
-        if(key==='tarifa'){const sa=String(va||'').toLowerCase(),sb=String(vb||'').toLowerCase();if(sa>sb)return asc?1:-1;if(sa<sb)return asc?-1:1;return 0;} 
-        const na=Number(va)||0,nb=Number(vb)||0; 
+    function applySort(r){
+      const {key,dir}=state.sort;
+      const asc=dir==='asc';
+      const c=r.slice();
+      c.sort((a,b)=>{const va=a[key],vb=b[key];
+        if(key==='nombre'){const sa=String(va||'').toLowerCase(),sb=String(vb||'').toLowerCase();if(sa>sb)return asc?1:-1;if(sa<sb)return asc?-1:1;return 0;}
+        const na=Number(va)||0,nb=Number(vb)||0;
         if(na>nb)return asc?1:-1;if(na<nb)return asc?-1:1;return 0;
-      }); 
-      return c; 
+      });
+      return c;
     }
 
-    function updateSortIcons(){ 
-      ['tarifa','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{const i=$('si_'+k); if(!i)return; if(state.sort.key!==k){i.textContent='';return;} i.textContent=state.sort.dir==='asc'?'▲':'▼';}); 
+    function updateSortIcons(){
+      ['nombre','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{const i=$('si_'+k); if(!i)return; if(state.sort.key!==k){i.textContent='';return;} i.textContent=state.sort.dir==='asc'?'▲':'▼';});
     }
 
     function createRipple(b,e){ 
