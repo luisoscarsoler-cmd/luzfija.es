@@ -520,16 +520,14 @@
     }
     
     // ⚡ LEER TARIFAS DESDE tarifas.json EN EL MISMO HOST
-    async function fetchTarifas() {
-        if (cachedTarifas.length > 0) return true;
+    async function fetchTarifas(forceRefresh = false) {
+        if (!forceRefresh && cachedTarifas.length > 0) return true;
         setStatus('Cargando tarifas...', 'loading');
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 15000);
-            
-            // Cache bust suave
-            const url = JSON_URL + '?v=' + Date.now();
-            const response = await fetch(url, { signal: controller.signal });
+
+            const response = await fetch(JSON_URL, { signal: controller.signal, cache: forceRefresh ? 'no-cache' : 'default' });
             clearTimeout(timeoutId);
 
             if (!response.ok) {
@@ -737,11 +735,11 @@
         } 
     }
 
-    async function calculate(isUserAction){
+    async function calculate(isUserAction, forceRefresh = false){
         saveInputs();
-        if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0}); 
+        if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0});
         setStatus('Calculando...', 'loading');
-        const loaded = await fetchTarifas();
+        const loaded = await fetchTarifas(forceRefresh);
         if(!loaded) return;
         calculateLocal();
     }
@@ -757,12 +755,12 @@
       loadInputs();
 
       // Cálculo inicial automático con los datos precargados
-      calculate(false);
+      calculate(false, true);
 
       Object.values(el.inputs).forEach(i=>{
           i.addEventListener('input',()=>{
               state.userHasInteracted=true; updateKwhHint();
-              clearTimeout(state.debounce); state.debounce = setTimeout(()=>calculate(false), 500);
+              clearTimeout(state.debounce); state.debounce = setTimeout(()=>calculate(false, false), 500);
           });
       });
 
@@ -788,7 +786,7 @@
 
       el.btnCalc.addEventListener('click',(e)=>{
         createRipple(el.btnCalc,e);
-        calculate(true);
+        calculate(true, true);
       });
 
       el.btnMenu.addEventListener('click',(e)=>{
