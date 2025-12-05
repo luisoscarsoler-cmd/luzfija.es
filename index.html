@@ -399,7 +399,7 @@
       globalTooltip: $('globalTooltip')
     };
 
-    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null, lastSignature: null };
+    const state = { filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], lastSignature: null };
     let cachedTarifas = [];
 
     let activeTooltip = null;
@@ -462,7 +462,7 @@
         if(!evt.target.closest('.tooltip')) hideTooltip(true);
       });
 
-      window.addEventListener('scroll', () => { if(activeTooltip) positionTooltip(activeTooltip); }, true);
+      window.addEventListener('scroll', () => { if(activeTooltip) positionTooltip(activeTooltip); }, {capture:true, passive:true});
       window.addEventListener('resize', () => { if(activeTooltip) positionTooltip(activeTooltip); });
       document.addEventListener('keydown', (evt) => { if(evt.key==='Escape') hideTooltip(true); });
     }
@@ -761,7 +761,6 @@
         }
 
         saveInputs();
-        if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0});
         setStatus('Calculando...', 'loading');
         const loaded = await fetchTarifas(forceRefresh);
         if(!loaded) return;
@@ -784,7 +783,7 @@
 
       Object.values(el.inputs).forEach(i=>{
           i.addEventListener('input',()=>{
-              state.userHasInteracted=true; updateKwhHint();
+              updateKwhHint();
               scheduleCalculateDebounced();
           });
       });
