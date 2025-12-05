@@ -735,6 +735,7 @@
     
     function renderTable(){
         const rows=getPreparedRows();
+        updateSortIcons();
         if(rows.length===0){
           hideBlock(el.table); el.emptyBox.style.display='block'; el.tbody.replaceChildren();
           return;
@@ -749,7 +750,6 @@
             frag.appendChild(tr);
         });
         el.tbody.replaceChildren(frag);
-        updateSortIcons();
     }
     
     function renderAll(d){ 
