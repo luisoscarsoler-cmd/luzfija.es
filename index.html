@@ -404,8 +404,21 @@
       btnExport: $('btnExport'), btnReset: $('btnReset'), btnShare: $('btnShare')
     };
 
+    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null, rowsVersion: 0, preparedKey: null, preparedRows: [], lastInputSnapshot: null, lastCalcVersion: null, cachedInputs: null, tarifasMeta: { version: null, nextVersion: null }, lastSortIconKey: null, renderJob: null, filteredCache: { key: null, rows: [] } };
     const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null, rowsVersion: 0, preparedKey: null, preparedRows: [], lastInputSnapshot: null, lastCalcVersion: null, cachedInputs: null, tarifasMeta: { version: null, nextVersion: null }, lastSortIconKey: null, pendingInputs: null, hasPendingWork: false, inputWorkHandle: null, pendingWorkSnapshot: null, lastNormalizedSnapshot: null };
     let cachedTarifas = [];
+
+    const scheduleUiWork = (fn)=>{
+      if(!fn) return;
+      if(state.renderJob){
+        clearTimeout(state.renderJob);
+        state.renderJob=null;
+      }
+      state.renderJob = setTimeout(()=>{
+        state.renderJob=null;
+        fn();
+      },0);
+    };
 
     function showBlock(el){ if(el) el.classList.remove('is-hidden'); }
     function hideBlock(el){ if(el) el.classList.add('is-hidden'); }
@@ -738,11 +751,20 @@
       return c;
     }
 
+    function getFilteredRows(){
+      if(!state.rows.length) return [];
+      const cacheKey=`${state.rowsVersion}|${state.filter}`;
+      if(state.filteredCache.key===cacheKey) return state.filteredCache.rows;
+      const filtered=applyFilters(state.rows);
+      state.filteredCache={ key: cacheKey, rows: filtered };
+      return filtered;
+    }
+
     function getPreparedRows(){
       if(!state.rows.length) return [];
       const cacheKey = `${state.rowsVersion}|${state.filter}|${state.sort.key}|${state.sort.dir}`;
       if(state.preparedKey===cacheKey) return state.preparedRows;
-      const filtered = applyFilters(state.rows);
+      const filtered = getFilteredRows();
       const sorted = applySort(filtered);
       state.preparedKey = cacheKey;
       state.preparedRows = sorted;
@@ -779,6 +801,7 @@
     
     function renderTable(){
         const rows=getPreparedRows();
+        updateSortIcons();
         if(rows.length===0){
           hideBlock(el.table); el.emptyBox.style.display='block'; el.tbody.replaceChildren();
           return;
@@ -840,7 +863,6 @@
             frag.appendChild(tr);
         });
         el.tbody.replaceChildren(frag);
-        updateSortIcons();
     }
     
     function renderAll(d){ 
@@ -855,13 +877,14 @@
         state.rows=Array.isArray(d.resultados)?d.resultados:[];
         state.rowsVersion += 1;
         state.preparedKey=null;
+        state.filteredCache={ key:null, rows: [] };
         showBlock(el.toolbar);
-        renderTable();
+        scheduleUiWork(renderTable);
         if(window.innerWidth<1100){
           const sb=$('scrollToResults');
           sb.style.display='block';
-          setTimeout(()=>sb.style.display='none',5000); 
-        } 
+          setTimeout(()=>sb.style.display='none',5000);
+        }
     }
 
     function scheduleHeavyTask(task){
@@ -997,10 +1020,12 @@
       document.querySelectorAll('.fbtn').forEach(b=>{
         b.addEventListener('click',(e)=>{
           createRipple(b,e);
+          const nextFilter=b.getAttribute('data-filter');
+          if(!nextFilter || nextFilter===state.filter) return;
           document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));
           b.classList.add('active');
-          state.filter=b.getAttribute('data-filter');
-          renderTable();
+          state.filter=nextFilter;
+          scheduleUiWork(renderTable);
         }, {passive:true});
       });
 
@@ -1008,9 +1033,11 @@
         th.addEventListener('click',()=>{
           const k=th.getAttribute('data-sort');
           if(!k)return;
+          const prevKey=state.sort.key, prevDir=state.sort.dir;
           if(state.sort.key===k)state.sort.dir=(state.sort.dir==='asc')?'desc':'asc';
           else{state.sort.key=k;state.sort.dir='asc';}
-          renderTable();updateSortIcons();
+          if(prevKey===state.sort.key && prevDir===state.sort.dir) return;
+          scheduleUiWork(renderTable);
         });
       });
 
