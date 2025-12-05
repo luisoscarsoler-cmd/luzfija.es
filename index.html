@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+reemplaza el index.html por este @DOCTYPE html
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -10,22 +10,22 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Comparador Tarifas" />
   
-  <!-- Open Graph -->
+  @-- Open Graph --
   <meta property="og:title" content="Comparador de Tarifas Eléctricas | Encuentra la Luz Más Barata" />
   <meta property="og:description" content="Compara tarifas de electricidad en tiempo real. Encuentra la oferta más barata según tus consumos específicos. Sin registro, sin publicidad." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://luzfija.es/" />
   <meta property="og:locale" content="es_ES" />
   
-  <!-- Twitter Card -->
+  @-- Twitter Card --
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Comparador de Tarifas Eléctricas" />
   <meta name="twitter:description" content="Encuentra tu tarifa de luz más barata en segundos" />
   
-  <!-- Canonical -->
+  @-- Canonical --
   <link rel="canonical" href="https://luzfija.es/" />
   
-  <!-- Prefetch/Preconnect -->
+  @-- Prefetch/Preconnect --
   <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
   <link rel="dns-prefetch" href="https://script.google.com" />
   <link rel="dns-prefetch" href="https://static.cloudflareinsights.com" />
@@ -34,12 +34,14 @@
   
   <title>⚡ Comparador de Tarifas Eléctricas</title>
   
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="48x48" href="favicon.png">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
 
-  <!-- Schema Markup (JSON-LD) -->
+  @-- Schema Markup (JSON-LD) --
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -92,7 +94,7 @@
     .brand p{color: var(--muted); font-size: 13px; margin-top: 3px;}
     .actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; flex-shrink: 0;}
     @media (max-width: 520px){ .actions{ justify-content: center; width: 100%; } }
-    .pill{ display:flex; align-items:center; gap:10px; padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; backdrop-filter: blur(14px); box-shadow: 0 12px 50px rgba(0,0,0,.20); color: var(--muted); font-size: 13px; user-select:none; white-space: nowrap; min-height: 44px; min-width: clamp(190px, 20vw, 260px); line-height: 1.2; }
+    .pill{ display:flex; align-items:center; gap:10px; padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; backdrop-filter: blur(14px); box-shadow: 0 12px 50px rgba(0,0,0,.20); color: var(--muted); font-size: 13px; user-select:none; white-space: nowrap; }
     .pill.loading{border-color: rgba(139,92,246,.55); box-shadow: 0 0 0 4px rgba(139,92,246,.12), 0 18px 55px rgba(0,0,0,.35);}
     .pill.ok{border-color: rgba(34,197,94,.55); box-shadow: 0 0 0 4px rgba(34,197,94,.12), 0 18px 55px rgba(0,0,0,.35);}
     .pill.err{border-color: rgba(239,68,68,.55); box-shadow: 0 0 0 4px rgba(239,68,68,.12), 0 18px 55px rgba(0,0,0,.35);}
@@ -119,11 +121,9 @@
     .form{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     @media (max-width: 520px){ .form{grid-template-columns: repeat(2, 1fr);} }
     .group{display:flex; flex-direction:column; gap: 7px;}
-    label{ font-size: 12px; color: var(--muted); font-weight: 900; letter-spacing: .2px; position: relative; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; overflow: visible; text-overflow: ellipsis; min-height: 16px; }
+    label{ font-size: 12px; color: var(--muted); font-weight: 900; letter-spacing: .2px; position: relative; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 16px; }
     .tooltip{ position: relative; cursor: help; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(139,92,246,.2); color: var(--accent); font-size: 10px; font-weight: 900; }
-    .tooltip::after{ display: none !important; }
-    #globalTooltip{ position: fixed; top: 0; left: 0; max-width: 240px; padding: 10px 12px; background: rgba(5,8,16,.95); color: #fff; border-radius: 10px; font-size: 11px; font-weight: 600; line-height: 1.5; white-space: normal; word-break: normal; overflow-wrap: break-word; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 9999; border: 1px solid rgba(139,92,246,.4); opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-4px); transition: opacity .15s ease, transform .15s ease, visibility .15s ease; }
-    #globalTooltip.visible{ opacity: 1; visibility: visible; transform: translateY(0); }
+    .tooltip:hover::after{ content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 8px 12px; background: rgba(5,8,16,.95); color: #fff; border-radius: 8px; font-size: 11px; font-weight: 600; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 100; animation: fadeInUp 0.2s ease; border: 1px solid rgba(139,92,246,.4); }
     .input{ width:100%; padding: 14px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.22); color: var(--text); outline:none; font-weight: 900; font-size: 15px; transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease, background .15s ease; min-height: 44px; position: relative; }
     .input:focus{ border-color: var(--accent); background: rgba(139, 92, 246, 0.1); box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15), 0 0 15px rgba(139, 92, 246, 0.3); transform: translateY(-2px); }
     .input:valid:not(:placeholder-shown){ border-color: rgba(34,197,94,.4); box-shadow: 0 0 0 2px rgba(34,197,94,.08); }
@@ -162,11 +162,7 @@
     .fbtn{ padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,.06); color: var(--muted); cursor:pointer; font-weight: 1000; font-size: 12px; transition: transform .15s ease, border-color .15s ease, background .15s ease; user-select:none; min-height: 44px; display:flex; align-items:center; }
     .fbtn:hover{transform: translateY(-1px); border-color: var(--border2); background: rgba(255,255,255,.09);}
     .fbtn.active{ background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.55); color: var(--text); }
-    .resultsBody{ min-height: clamp(420px, 65vh, 720px); display:flex; flex-direction:column; gap: 0; }
-    .stableBlock{ opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .25s ease; }
-    .stableBlock.is-hidden{ opacity: 0; visibility: hidden; pointer-events: none; }
-    .tableWrap{ background: transparent !important; border: none !important; overflow: visible !important; min-height: clamp(320px, 50vh, 520px); display:flex; flex-direction:column; }
-    #table{ min-height: 220px; }
+    .tableWrap{ background: transparent !important; border: none !important; overflow: visible !important; }
     table{ width: 100%; border-collapse: separate !important; border-spacing: 0 8px; table-layout: fixed; }
     thead th:nth-child(1), tbody td:nth-child(1) { width: 4%; }
     thead th:nth-child(2), tbody td:nth-child(2) { width: 23%; }
@@ -240,9 +236,6 @@
       .scroll-btn{ bottom: 80px; right: 20px; font-size: 12px; padding: 12px 16px; }
     }
     @media (min-width: 1400px){ thead th:nth-child(2), tbody td:nth-child(2) { width: 28%; } tbody td:nth-child(2) { font-size: 15px; } }
-    @media (prefers-reduced-motion: reduce){
-      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
-    }
   </style>
 </head>
 
@@ -299,7 +292,7 @@
     <div class="grid">
       <section class="card">
         <div class="head"><div class="kicker">Tus datos</div><div class="title">Potencia y consumos (kWh)</div></div>
-        <div class="body resultsBody">
+        <div class="body">
           <div class="alert" id="errorBox"><b>Error:</b> <span id="errorText"></span></div>
           <div class="form">
             <div class="group"><label for="p1">Potencia P1 (kW)</label><input id="p1" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 3,45" /></div>
@@ -308,9 +301,9 @@
           </div>
           <div style="height:12px"></div>
           <div class="form">
-            <div class="group"><label for="cPunta">Consumo PUNTA <span class="tooltip" data-tip="10h-14h y 18h-22h" tabindex="0" role="button" aria-label="10h-14h y 18h-22h">ⓘ</span></label><input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 120" /></div>
-            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h" tabindex="0" role="button" aria-label="8h-10h, 14h-18h y 22h-24h">ⓘ</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 80" /></div>
-            <div class="group"><label for="cValle">Consumo VALLE <span class="tooltip" data-tip="0h-8h (madrugada)" tabindex="0" role="button" aria-label="0h-8h (madrugada)">ⓘ</span></label><input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 150" /></div>
+            <div class="group"><label for="cPunta">Consumo PUNTA <span class="tooltip" data-tip="10h-14h y 18h-22h">ⓘ</span></label><input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 120" /></div>
+            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h">ⓘ</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 80" /></div>
+            <div class="group"><label for="cValle">Consumo VALLE <span class="tooltip" data-tip="0h-8h (madrugada)">ⓘ</span></label><input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 150" /></div>
           </div>
           <div class="row" style="margin-top:14px">
             <div class="kwhPill" aria-live="polite"><div class="kwhLabel">Total kWh</div><div class="kwhValue" id="kwhHint">—</div></div>
@@ -323,18 +316,18 @@
       <section class="card">
         <div class="head"><div class="kicker">Resultados</div><div class="title">Tarifa óptima + ranking</div></div>
         <div class="body">
-          <div class="heroKpis stableBlock is-hidden" id="heroKpis">
+          <div class="heroKpis" id="heroKpis" style="display:none;">
             <div class="heroCard best"><div class="k">Tarifa más barata</div><div class="v" id="kpiBest">—</div><div class="s">Mejor opción</div></div>
             <div class="heroCard"><div class="k">Factura mínima</div><div class="v" id="kpiPrice">—</div><div class="s">Según tus datos</div></div>
           </div>
 
-          <div class="statsbar stableBlock is-hidden" id="statsBar">
+          <div class="statsbar" id="statsBar" style="display:none;">
             <div class="statCard"><div class="statLabel">Precio mínimo</div><div class="statValue" id="statMin">—</div></div>
             <div class="statCard"><div class="statLabel">Precio medio</div><div class="statValue" id="statAvg">—</div></div>
             <div class="statCard"><div class="statLabel">Precio máximo</div><div class="statValue" id="statMax">—</div></div>
           </div>
 
-          <div class="toolbar stableBlock is-hidden" id="toolbar">
+          <div class="toolbar" id="toolbar" style="display:none;">
             <div class="filters">
               <button class="fbtn active" data-filter="all" type="button">Todas</button>
               <button class="fbtn" data-filter="1P" type="button"><span class="badge b1">1P</span></button>
@@ -343,7 +336,7 @@
           </div>
 
           <div class="tableWrap">
-            <table id="table" class="stableBlock is-hidden">
+            <table id="table" style="display:none;">
               <thead>
                 <tr>
                   <th>#</th>
@@ -385,7 +378,6 @@
 
     // VALORES POR DEFECTO PARA PRIMERA VISITA
     const DEFAULTS = { p1:'3,45', p2:'3,45', dias:'30', cPunta:'100', cLlano:'100', cValle:'100' };
-    const INPUT_KEYS = Object.keys(DEFAULTS);
     
     // RECOGIDA DE PARÁMETROS URL (para enlaces compartidos)
     const params = new URLSearchParams(window.location.search);
@@ -404,39 +396,16 @@
       btnExport: $('btnExport'), btnReset: $('btnReset'), btnShare: $('btnShare')
     };
 
-    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null, rowsVersion: 0, preparedKey: null, preparedRows: [], lastInputSnapshot: null, lastCalcVersion: null, cachedInputs: null, tarifasMeta: { version: null, nextVersion: null }, lastSortIconKey: null, pendingInputs: null, hasPendingWork: false, inputWorkHandle: null, pendingWorkSnapshot: null, lastNormalizedSnapshot: null };
+    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null };
     let cachedTarifas = [];
 
-    function showBlock(el){ if(el) el.classList.remove('is-hidden'); }
-    function hideBlock(el){ if(el) el.classList.add('is-hidden'); }
-
-    function parseNum(str){
+    function parseNum(str){ 
       if(str===null||str===undefined)return 0;
-      if(typeof str==='number')return Number.isFinite(str)?str:0;
-      let s=String(str).trim().replace(/\s/g,'');
-      if(!s)return 0;
-      if(s.includes(',')&&s.includes('.')){const lc=s.lastIndexOf(',');const ld=s.lastIndexOf('.');if(lc>ld)s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'');}else if(s.includes(',')){s=s.replace(',','.');}
+      if(typeof str==='number')return Number.isFinite(str)?str:0; 
+      let s=String(str).trim().replace(/\s/g,''); 
+      if(!s)return 0; 
+      if(s.includes(',')&&s.includes('.')){const lc=s.lastIndexOf(',');const ld=s.lastIndexOf('.');if(lc>ld)s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'');}else if(s.includes(',')){s=s.replace(',','.');} 
       s=s.replace(/[^\d.-]/g,''); const n=Number(s); return Number.isFinite(n)?n:0;
-    }
-
-    function invalidateCachedInputs(){ state.cachedInputs=null; }
-
-    function getParsedInputs(){
-      if(state.cachedInputs) return state.cachedInputs;
-      const raw={};
-      INPUT_KEYS.forEach(k=>{ raw[k]=el.inputs[k].value; });
-      const numbers={
-        p1: parseNum(raw.p1),
-        p2: parseNum(raw.p2),
-        dias: Math.trunc(parseNum(raw.dias))||30,
-        cPunta: parseNum(raw.cPunta),
-        cLlano: parseNum(raw.cLlano),
-        cValle: parseNum(raw.cValle)
-      };
-      const normalizedSnapshot=INPUT_KEYS.map(k=>numbers[k]).join('|');
-      const snapshot=INPUT_KEYS.map(k=>raw[k]).join('|');
-      state.cachedInputs={ raw, numbers, snapshot, normalizedSnapshot };
-      return state.cachedInputs;
     }
 
     function escapeHtml(v){ return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
@@ -482,80 +451,53 @@
       return true;
     }
     
-    // ⚡ LEER TARIFAS DESDE tarifas.json EN EL MISMO HOST (siempre fresco)
+    // ⚡ LEER TARIFAS DESDE tarifas.json EN EL MISMO HOST
     async function fetchTarifas() {
-        const meta = state.tarifasMeta;
-        const headController = new AbortController();
-        const headTimeoutId = setTimeout(() => headController.abort(), 15000);
-        const headUrl = `${JSON_URL}?check=${Date.now()}`;
-        let shouldDownload = true;
-        let detectedVersion = null;
-
-        try {
-            const headResp = await fetch(headUrl, { method:'HEAD', cache:'no-store', signal: headController.signal });
-            clearTimeout(headTimeoutId);
-            if(headResp.ok){
-              detectedVersion = headResp.headers.get('ETag') || headResp.headers.get('etag') || headResp.headers.get('Last-Modified') || headResp.headers.get('last-modified');
-              if(detectedVersion){
-                meta.nextVersion = detectedVersion;
-                if(detectedVersion === meta.version && cachedTarifas.length){
-                  shouldDownload = false;
-                }
-              }
-            }
-        } catch(e){
-            clearTimeout(headTimeoutId);
-            shouldDownload = true;
-        }
-
-        if(!shouldDownload && cachedTarifas.length){
-          setStatus('Datos actualizados', 'ok');
-          return { ok:true, updated:false };
-        }
-
-        setStatus(cachedTarifas.length ? 'Comprobando nuevas tarifas...' : 'Cargando tarifas...', 'loading');
+        if (cachedTarifas.length > 0) return true;
+        setStatus('Cargando tarifas...', 'loading');
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 15000);
-            const url = `${JSON_URL}?v=${Date.now()}`;
-            const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
+            
+            // Cache bust suave
+            const url = JSON_URL + '?v=' + Date.now();
+            const response = await fetch(url, { signal: controller.signal });
             clearTimeout(timeoutId);
 
             if (!response.ok) {
                 throw new Error('HTTP ' + response.status);
             }
-
+            
             const data = await response.json();
             const tarifas = Array.isArray(data.tarifas) ? data.tarifas : null;
 
             if (tarifas && tarifas.length) {
                 cachedTarifas = tarifas;
-                meta.version = detectedVersion || meta.nextVersion || `ts-${Date.now()}`;
-                state.preparedKey=null;
                 setStatus('Datos actualizados', 'ok');
                 setTimeout(() => setStatus('Listo para calcular', 'idle'), 1500);
-                return { ok:true, updated:true };
+                return true;
             } else {
                 throw new Error('JSON sin tarifas válidas');
             }
         } catch (e) {
             console.error('Error cargando tarifas JSON:', e);
-            if(cachedTarifas.length){
-              setStatus('Usando datos guardados', 'ok');
-              return { ok:true, updated:false };
-            }
             setStatus('Error conexión', 'err');
             toast('Error cargando tarifas desde el servidor.', 'err');
-            return { ok:false, updated:false };
+            return false;
         }
     }
 
     function formatMoney(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
 
-    function calculateLocal(parsedInputs) {
+    function calculateLocal() {
+        const p1 = parseNum(el.inputs.p1.value);
+        const p2 = parseNum(el.inputs.p2.value);
+        const dias = Math.trunc(parseNum(el.inputs.dias.value)) || 30;
+        const cPunta = parseNum(el.inputs.cPunta.value);
+        const cLlano = parseNum(el.inputs.cLlano.value);
+        const cValle = parseNum(el.inputs.cValle.value);
+
         if(!cachedTarifas.length) return;
-        const parsed = parsedInputs || getParsedInputs();
-        const { p1, p2, dias, cPunta, cLlano, cValle } = parsed.numbers;
 
         const resultados = cachedTarifas.map((t, index) => {
             const pot = (p1 * dias * t.p1) + (p2 * dias * t.p2);
@@ -565,9 +507,9 @@
             const impuestoElec = Math.max((5.11269632 / 100) * sumaBase, (cPunta + cLlano + cValle) * 0.001);
             const margen = dias * 0.026667;
             const subtotal = sumaBase + impuestoElec + margen;
-            const iva = subtotal * 0.21;
+            const iva = subtotal * 0.21; 
             const total = subtotal + iva;
-
+            
             return {
                 ...t,
                 posicion: index + 1,
@@ -581,7 +523,7 @@
         });
 
         resultados.sort((a, b) => a.totalNum - b.totalNum);
-
+        
         const bestPrice = resultados[0].totalNum;
         const processed = resultados.map((r, i) => {
             const diff = r.totalNum - bestPrice;
@@ -592,13 +534,9 @@
         });
 
         const prices = processed.map(r => r.totalNum);
-        const min = Math.min(...prices);
+        const min = Math.min(...prices); 
         const max = Math.max(...prices);
         const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
-
-        state.lastInputSnapshot = parsed.normalizedSnapshot;
-        state.lastNormalizedSnapshot = parsed.normalizedSnapshot;
-        state.lastCalcVersion = state.tarifasMeta.version;
 
         renderAll({
             success: true,
@@ -613,7 +551,6 @@
         if (Object.keys(SERVER_PARAMS).length > 0) {
              const d = Object.assign({}, DEFAULTS, SERVER_PARAMS);
              for(const k in DEFAULTS) el.inputs[k].value = d[k];
-             invalidateCachedInputs();
              updateKwhHint();
              return;
         }
@@ -621,281 +558,124 @@
         try { const r = localStorage.getItem(LS_KEY); if (r) savedData = JSON.parse(r); } catch(e){}
         const finalData = { ...DEFAULTS, ...savedData };
         for (const k in DEFAULTS) el.inputs[k].value = finalData[k];
-        invalidateCachedInputs();
         updateKwhHint();
     }
 
-    function saveInputs(data){
-      const d=data?{...data}:(()=>{const o={}; INPUT_KEYS.forEach(k=>o[k]=el.inputs[k].value); return o;})();
-      try { localStorage.setItem(LS_KEY,JSON.stringify(d)); } catch(e){}
-      return d;
+    function saveInputs(){ 
+      const d={}; 
+      for(const k in DEFAULTS)d[k]=el.inputs[k].value; 
+      try { localStorage.setItem(LS_KEY,JSON.stringify(d)); } catch(e){} 
+      return d; 
     }
 
-    function resetInputs(){
-      INPUT_KEYS.forEach(k=>{ el.inputs[k].value=DEFAULTS[k]; });
-      invalidateCachedInputs();
-      const parsed=getParsedInputs();
-      saveInputs(parsed.raw);
-      updateKwhHint(parsed);
-      clearErrorStyles();
-      toast('Restablecido');
-      setTimeout(()=>calculate(false), 300);
+    function resetInputs(){ 
+      for(const k in DEFAULTS)el.inputs[k].value=DEFAULTS[k]; 
+      saveInputs(); 
+      updateKwhHint(); 
+      clearErrorStyles(); 
+      toast('Restablecido'); 
+      setTimeout(()=>calculate(false), 300); 
     }
 
-    function updateKwhHint(parsed){
-      const nums = (parsed && parsed.numbers) || getParsedInputs().numbers;
-      const t = nums.cPunta + nums.cLlano + nums.cValle;
-      el.kwhHint.textContent=`${t.toFixed(2).replace('.',',')} kWh`;
+    function updateKwhHint(){ 
+      const t=parseNum(el.inputs.cPunta.value)+parseNum(el.inputs.cLlano.value)+parseNum(el.inputs.cValle.value); 
+      el.kwhHint.textContent=`${t.toFixed(2).replace('.',',')} kWh`; 
     }
 
     function clearErrorStyles(){ Object.values(el.inputs).forEach(i=>i.classList.remove('error')); }
 
-    const TABLE_COLUMNS = [
-      'posicion','nombre','potencia','consumo','impuestos','total','vsMejor','tipo','webUrl'
-    ];
-
-    function rowTipoBadge(t){
-      const s=String(t||'').trim();
-      const badge=document.createElement('span');
-      badge.classList.add('badge');
-      if(s==='1P') badge.classList.add('b1');
-      else if(s==='3P') badge.classList.add('b3');
-      badge.textContent=s||'—';
-      return badge;
+    function rowTipoBadge(t){ 
+      const s=String(t||'').trim(); 
+      if(s==='1P')return `<span class="badge b1">1P</span>`; 
+      if(s==='3P')return `<span class="badge b3">3P</span>`; 
+      return `<span class="badge">${escapeHtml(s||'—')}</span>`; 
     }
 
-    function formatVsWithBar(v){
-    const rowTemplate=document.createElement('template');
-    rowTemplate.innerHTML = `
-      <tr>
-        <td class="pos"></td>
-        <td class="nombre" title=""></td>
-        <td class="potencia"></td>
-        <td class="consumo"></td>
-        <td class="impuestos"></td>
-        <td class="total"><strong style="font-weight:1100; color: rgba(167,139,250,1);"></strong></td>
-        <td class="vs"></td>
-        <td class="tipo"></td>
-        <td class="web" style="text-align:center"></td>
-      </tr>
-    `;
-
-    function rowTipoBadge(t){
-      const s=String(t||'').trim();
-      const span=document.createElement('span');
-      span.classList.add('badge');
-      if(s==='1P') span.classList.add('b1');
-      if(s==='3P') span.classList.add('b3');
-      span.textContent = s || '—';
-      return span;
+    function formatVsWithBar(v,vn){ 
+      const s=String(v??'').trim(); 
+      if(!s||s==='—'||s==='0'||s==='0,00'||s==='0 €'||s==='0,00 €')return '<span class="vs-text zero">—</span>'; 
+      const pos=s.startsWith('+'); 
+      const c=pos?'pos':'neg'; 
+      const a=pos?'▲':'▼'; 
+      return `<span class="vs-text ${c}">${a} ${escapeHtml(s)}</span>`; 
     }
 
-    function formatVsWithBar(v,vn){
-      const s=String(v??'').trim();
-      const span=document.createElement('span');
-      span.classList.add('vs-text');
-      if(!s||s==='—'||s==='0'||s==='0,00'||s==='0 €'||s==='0,00 €'){
-        span.classList.add('zero');
-        span.textContent='—';
-        return span;
-      }
-      const pos=s.startsWith('+');
-      span.classList.add(pos?'pos':'neg');
-      span.textContent=`${pos?'▲':'▼'} ${s}`;
-      return span;
+    function applyFilters(r){ 
+      const f=state.filter; 
+      return r.filter(x=>(f==='all'||String(x.tipo||'')===f)); 
     }
 
-    function createWebLink(url){
-      if(!url) return document.createTextNode('');
-      const a=document.createElement('a');
-      a.className='web';
-      a.href=url;
-      a.target='_blank';
-      a.rel='noopener';
-      a.title='Abrir web';
-      a.textContent='🔗';
-      return a;
-    }
-
-    function applyFilters(r){
-      if(!r || !r.length) return [];
-      const f=state.filter;
-      if(f==='all') return r;
-      return r.filter(x=>(f==='all'||String(x.tipo||'')===f));
-    }
-
-    function applySort(r){
-      if(!r || r.length===0) return [];
-      if(r.length===1) return r.slice();
-      const {key,dir}=state.sort;
-      const asc=dir==='asc';
-      const c=r.slice();
-      c.sort((a,b)=>{const va=a[key],vb=b[key];
-        if(key==='tarifa'){const sa=String(va||'').toLowerCase(),sb=String(vb||'').toLowerCase();if(sa>sb)return asc?1:-1;if(sa<sb)return asc?-1:1;return 0;}
-        const na=Number(va)||0,nb=Number(vb)||0;
+    function applySort(r){ 
+      const {key,dir}=state.sort; 
+      const asc=dir==='asc'; 
+      const c=r.slice(); 
+      c.sort((a,b)=>{const va=a[key],vb=b[key]; 
+        if(key==='tarifa'){const sa=String(va||'').toLowerCase(),sb=String(vb||'').toLowerCase();if(sa>sb)return asc?1:-1;if(sa<sb)return asc?-1:1;return 0;} 
+        const na=Number(va)||0,nb=Number(vb)||0; 
         if(na>nb)return asc?1:-1;if(na<nb)return asc?-1:1;return 0;
-      });
-      return c;
+      }); 
+      return c; 
     }
 
-    function getPreparedRows(){
-      if(!state.rows.length) return [];
-      const cacheKey = `${state.rowsVersion}|${state.filter}|${state.sort.key}|${state.sort.dir}`;
-      if(state.preparedKey===cacheKey) return state.preparedRows;
-      const filtered = applyFilters(state.rows);
-      const sorted = applySort(filtered);
-      state.preparedKey = cacheKey;
-      state.preparedRows = sorted;
-      return sorted;
+    function updateSortIcons(){ 
+      ['tarifa','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{const i=$('si_'+k); if(!i)return; if(state.sort.key!==k){i.textContent='';return;} i.textContent=state.sort.dir==='asc'?'▲':'▼';}); 
     }
 
-    function updateSortIcons(){
-      const currentKey = `${state.sort.key}|${state.sort.dir}`;
-      if(state.lastSortIconKey===currentKey) return;
-      state.lastSortIconKey=currentKey;
-      ['tarifa','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{const i=$('si_'+k); if(!i)return; if(state.sort.key!==k){i.textContent='';return;} i.textContent=state.sort.dir==='asc'?'▲':'▼';});
-    }
-
-    const rippleHosts=new WeakSet();
-
-    function prepareRippleHost(b){
-      if(rippleHosts.has(b)) return;
-      b.style.position='relative';
-      b.style.overflow='hidden';
-      rippleHosts.add(b);
-    }
-
-    function createRipple(b,e){
-      prepareRippleHost(b);
-      const {width,height,left,top}=b.getBoundingClientRect();
-      const r=document.createElement('span');
-      const s=Math.max(width,height);
-      const x=e.clientX-left-s/2;
-      const y=e.clientY-top-s/2;
-      r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`;
-      b.appendChild(r);
-      setTimeout(()=>r.remove(),600);
+    function createRipple(b,e){ 
+      const r=document.createElement('span'); 
+      const rect=b.getBoundingClientRect(); 
+      const s=Math.max(rect.width,rect.height); 
+      const x=e.clientX-rect.left-s/2; 
+      const y=e.clientY-rect.top-s/2; 
+      r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`; 
+      b.style.position='relative'; 
+      b.style.overflow='hidden'; 
+      b.appendChild(r); 
+      setTimeout(()=>r.remove(),600); 
     }
     
-    function renderTable(){
-        const rows=getPreparedRows();
-        if(rows.length===0){
-          hideBlock(el.table); el.emptyBox.style.display='block'; el.tbody.replaceChildren();
-          return;
-        }
-        el.emptyBox.style.display='none'; showBlock(el.table);
-        const frag=document.createDocumentFragment();
-        rows.forEach((r)=>{
-            const tr=rowTemplate.content.firstElementChild.cloneNode(true);
-            const [posCell,nameCell,potenciaCell,consumoCell,impuestosCell,totalCell,vsCell,tipoCell,webCell]=tr.children;
+    function renderTable(){ 
+        const f=applyFilters(state.rows); 
+        const s=applySort(f); 
+        el.tbody.innerHTML='';
+        if(s.length===0){el.table.style.display='none';el.emptyBox.style.display='block';return;} 
+        el.emptyBox.style.display='none';el.table.style.display='table';
+        s.forEach((r,i)=>{
+            const tr=document.createElement('tr');
             if(r.esMejor)tr.classList.add('best');
-            TABLE_COLUMNS.forEach((key,index)=>{
-              const td=document.createElement('td');
-              if(index===6) td.classList.add('vs');
-              if(index===8) td.style.textAlign='center';
-              if(key==='total'){
-                const strong=document.createElement('strong');
-                strong.style.fontWeight='1100';
-                strong.style.color='rgba(167,139,250,1)';
-                strong.textContent=r.total;
-                td.appendChild(strong);
-              } else if(key==='nombre'){
-                td.textContent=r.nombre;
-                td.title=r.nombre;
-              } else if(key==='vsMejor'){
-                td.appendChild(formatVsWithBar(r.vsMejor));
-              } else if(key==='tipo'){
-                td.appendChild(rowTipoBadge(r.tipo));
-              } else if(key==='webUrl'){
-                td.appendChild(createWebLink(r.webUrl));
-              } else {
-                td.textContent=String(r[key]??'');
-              }
-              tr.appendChild(td);
-            });
-
-            posCell.textContent = String(r.posicion ?? '');
-            nameCell.textContent = r.nombre || '';
-            nameCell.title = r.nombre || '';
-            potenciaCell.textContent = r.potencia || '';
-            consumoCell.textContent = r.consumo || '';
-            impuestosCell.textContent = r.impuestos || '';
-            totalCell.querySelector('strong').textContent = r.total || '';
-
-            vsCell.appendChild(formatVsWithBar(r.vsMejor,r.vsMejorNum));
-            tipoCell.appendChild(rowTipoBadge(r.tipo));
-
-            const url=String(r.webUrl||'').trim();
-            if(url){
-              const link=document.createElement('a');
-              link.className='web';
-              link.href=url;
-              link.target='_blank';
-              link.rel='noopener';
-              link.title='Abrir web';
-              link.textContent='🔗';
-              webCell.appendChild(link);
-            }
-
-            frag.appendChild(tr);
-        });
-        el.tbody.replaceChildren(frag);
+            const w=r.webUrl?`<a class="web" href="${escapeHtml(r.webUrl)}" target="_blank" rel="noopener" title="Abrir web">🔗</a>`:'';
+            tr.innerHTML=`<td>${escapeHtml(r.posicion)}</td><td title="${escapeHtml(r.nombre)}">${escapeHtml(r.nombre)}</td><td>${escapeHtml(r.potencia)}</td><td>${escapeHtml(r.consumo)}</td><td>${escapeHtml(r.impuestos)}</td><td><strong style="font-weight:1100; color: rgba(167,139,250,1);">${escapeHtml(r.total)}</strong></td><td class="vs">${formatVsWithBar(r.vsMejor,r.vsMejorNum)}</td><td>${rowTipoBadge(r.tipo)}</td><td style="text-align:center">${w}</td>`;
+            el.tbody.appendChild(tr);
+        }); 
         updateSortIcons();
     }
     
     function renderAll(d){ 
         if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;} 
-        setStatus('Resultados actualizados','ok');
-        const r=d.resumen||{};
+        setStatus('Resultados actualizados','ok'); 
+        const r=d.resumen||{}; 
         if(r.mejor) el.kpiBest.textContent=r.mejor;
         if(r.precio) el.kpiPrice.textContent=r.precio;
-        showBlock(el.heroKpis);
-        const s=d.stats;
-        if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; showBlock(el.statsBar); }
-        state.rows=Array.isArray(d.resultados)?d.resultados:[];
-        state.rowsVersion += 1;
-        state.preparedKey=null;
-        showBlock(el.toolbar);
-        renderTable();
-        if(window.innerWidth<1100){
-          const sb=$('scrollToResults');
-          sb.style.display='block';
+        el.heroKpis.style.display='grid'; 
+        const s=d.stats; 
+        if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; el.statsBar.style.display='grid'; }
+        state.rows=Array.isArray(d.resultados)?d.resultados:[]; 
+        el.toolbar.style.display='flex'; 
+        renderTable(); 
+        if(window.innerWidth<1100){ 
+          const sb=$('scrollToResults'); 
+          sb.style.display='block'; 
           setTimeout(()=>sb.style.display='none',5000); 
         } 
     }
 
-    function scheduleHeavyTask(task){
-      requestAnimationFrame(()=>queueMicrotask(task));
-    }
-
-    async function calculate(isUserAction, preParsed){
-        const parsed = preParsed || getParsedInputs();
-        saveInputs(parsed.raw);
-        if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0});
+    async function calculate(isUserAction){
+        saveInputs();
+        if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0}); 
         setStatus('Calculando...', 'loading');
-        const { ok, updated } = await fetchTarifas();
-        if(!ok) return;
-        const needsCalc = updated || state.lastInputSnapshot !== parsed.normalizedSnapshot || state.lastCalcVersion !== state.tarifasMeta.version || !state.rows.length;
-        if(!needsCalc){ setStatus('Resultados actualizados','ok'); return; }
-        scheduleHeavyTask(()=>calculateLocal(parsed));
-    }
-
-    function enqueueInputWork(parsed){
-      state.pendingInputs = parsed;
-      state.pendingWorkSnapshot = parsed.normalizedSnapshot;
-      state.hasPendingWork = true;
-      if(state.inputWorkHandle) return;
-      state.inputWorkHandle = requestAnimationFrame(()=>{
-        state.inputWorkHandle = null;
-        if(!state.hasPendingWork) return;
-        state.hasPendingWork = false;
-        const pending = state.pendingInputs || getParsedInputs();
-        const snapshot = state.pendingWorkSnapshot;
-        state.pendingInputs = null;
-        state.pendingWorkSnapshot = null;
-        if(snapshot === state.lastNormalizedSnapshot){ return; }
-        calculate(false, pending);
-      });
+        const loaded = await fetchTarifas();
+        if(!loaded) return;
+        calculateLocal();
     }
 
     function toggleMenu(force){ 
@@ -905,92 +685,15 @@
     }
     
     document.addEventListener('DOMContentLoaded', async ()=>{
-      loadInputs();
+      loadInputs(); 
 
       // Cálculo inicial automático con los datos precargados
       calculate(false);
 
-      const tooltipEls = Array.from(document.querySelectorAll('.tooltip'));
-      const ensureGlobalTooltip = ()=>{
-        let tip = document.getElementById('globalTooltip');
-        if(!tip){
-          tip = document.createElement('div');
-          tip.id = 'globalTooltip';
-          tip.setAttribute('role','tooltip');
-          document.body.appendChild(tip);
-        }
-        return tip;
-      };
-
-      const globalTooltip = ensureGlobalTooltip();
-      let activeTooltip = null;
-      let isPinned = false;
-
-      const clamp = (v,min,max)=>Math.min(Math.max(v,min),max);
-
-      const hideTooltip = ()=>{
-        activeTooltip = null;
-        isPinned = false;
-        globalTooltip.classList.remove('visible');
-        globalTooltip.style.visibility = 'hidden';
-      };
-
-      const showTooltip = (el, pinned=false)=>{
-        activeTooltip = el;
-        isPinned = pinned;
-        const text = el.getAttribute('data-tip') || '';
-        globalTooltip.textContent = text;
-        globalTooltip.classList.remove('visible');
-        globalTooltip.style.visibility = 'hidden';
-
-        const rect = el.getBoundingClientRect();
-        const tipRect = globalTooltip.getBoundingClientRect();
-        const margin = 8;
-        const spacing = 10;
-        let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
-        left = clamp(left, margin, window.innerWidth - tipRect.width - margin);
-        let top = rect.top - tipRect.height - spacing;
-        if(top < margin){
-          top = rect.bottom + spacing;
-        }
-        top = clamp(top, margin, window.innerHeight - tipRect.height - margin);
-
-        globalTooltip.style.left = `${left}px`;
-        globalTooltip.style.top = `${top}px`;
-        globalTooltip.style.visibility = 'visible';
-        requestAnimationFrame(()=>globalTooltip.classList.add('visible'));
-      };
-
-      tooltipEls.forEach(tp=>{
-        tp.addEventListener('pointerenter',()=>showTooltip(tp,false), {passive:true});
-        tp.addEventListener('pointerleave',()=>{ if(!isPinned) hideTooltip(); }, {passive:true});
-        tp.addEventListener('focus',()=>showTooltip(tp,true));
-        tp.addEventListener('blur',hideTooltip);
-        tp.addEventListener('click',(e)=>{
-          e.stopPropagation();
-          if(activeTooltip===tp && isPinned){ hideTooltip(); return; }
-          showTooltip(tp,true);
-        });
-        tp.addEventListener('keydown',(e)=>{
-          if(e.key==='Enter' || e.key===' '){ e.preventDefault(); showTooltip(tp,true); }
-          if(e.key==='Escape'){ hideTooltip(); tp.blur(); }
-        });
-      });
-
-      document.addEventListener('pointerdown',(e)=>{
-        if(isPinned && activeTooltip && !e.target.closest('.tooltip')) hideTooltip();
-      }, {passive:true});
-      document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') hideTooltip(); });
-      window.addEventListener('resize',()=>{ if(activeTooltip) showTooltip(activeTooltip, isPinned); }, {passive:true});
-      window.addEventListener('scroll',()=>{ if(activeTooltip && !isPinned) hideTooltip(); }, {passive:true});
-
       Object.values(el.inputs).forEach(i=>{
           i.addEventListener('input',()=>{
-              state.userHasInteracted=true;
-              invalidateCachedInputs();
-              const parsed = getParsedInputs();
-              updateKwhHint(parsed);
-              enqueueInputWork(parsed);
+              state.userHasInteracted=true; updateKwhHint();
+              clearTimeout(state.debounce); state.debounce = setTimeout(()=>calculate(false), 500);
           });
       });
 
@@ -1001,7 +704,7 @@
           b.classList.add('active');
           state.filter=b.getAttribute('data-filter');
           renderTable();
-        }, {passive:true});
+        });
       });
 
       document.querySelectorAll('thead th.sort').forEach(th=>{
@@ -1025,8 +728,8 @@
         toggleMenu();
       });
 
-      el.menuPanel.addEventListener('click',(e)=>e.stopPropagation(), {passive:true});
-      document.addEventListener('click',()=>toggleMenu(false), {passive:true});
+      el.menuPanel.addEventListener('click',(e)=>e.stopPropagation());
+      document.addEventListener('click',()=>toggleMenu(false));
       document.addEventListener('keydown',(e)=>{if(e.key==='Escape')toggleMenu(false);});
 
       el.btnReset.addEventListener('click',(e)=>{
@@ -1066,11 +769,11 @@
         toast('Enlace copiado al portapapeles');
       });
 
-      $('scrollToResults').addEventListener('click',()=>$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'}), {passive:true});
+      $('scrollToResults').addEventListener('click',()=>$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'}));
     });
   </script>
-  <!-- Cloudflare Web Analytics -->
+  @-- Cloudflare Web Analytics --
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fea4a7fbe6e34ab1a867cff1c7837aa3"}'></script>
-  <!-- End Cloudflare Web Analytics -->
+  @-- End Cloudflare Web Analytics --
 </body>
 </html>
