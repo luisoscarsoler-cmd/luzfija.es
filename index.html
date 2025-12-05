@@ -34,7 +34,9 @@
   <link rel="preload"
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap"
         as="style">
-  
+
+  <link rel="preload" href="tarifas.json" as="fetch" crossorigin="anonymous">
+
   <title>⚡ Comparador de Tarifas Eléctricas</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -261,6 +263,88 @@
       opacity: 1;
       visibility: visible;
     }
+
+    /* === GRÁFICO TOP 5 TARIFAS === */
+    .chartTop {
+      margin-bottom: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.18);
+      padding: 14px 14px 10px 14px;
+    }
+
+    .chartTop-header {
+      margin-bottom: 10px;
+    }
+
+    .chartTop-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chartTop-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 3fr) auto;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .chartTop-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .chartTop-barTrack {
+      position: relative;
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      overflow: hidden;
+    }
+
+    .chartTop-barFill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      width: 0%;
+      transition: width 0.6s ease;
+    }
+
+    .chartTop-value {
+      font-family: var(--mono);
+      font-weight: 900;
+      font-size: 13px;
+      white-space: nowrap;
+      color: var(--text);
+    }
+
+    .chartTop-row.best .chartTop-barTrack {
+      box-shadow: 0 0 14px rgba(34,197,94,.45);
+    }
+
+    .chartTop-row.best .chartTop-name {
+      color: var(--text);
+    }
+
+    .chartTop-row.best .chartTop-name::before {
+      content: "🏆 ";
+    }
+
+    @media (max-width: 768px) {
+      .chartTop-row {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+        font-size: 12px;
+      }
+      
+      .chartTop-value {
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 
@@ -350,6 +434,14 @@
             <div class="statCard"><div class="statLabel">Precio mínimo</div><div class="statValue" id="statMin">—</div></div>
             <div class="statCard"><div class="statLabel">Precio medio</div><div class="statValue" id="statAvg">—</div></div>
             <div class="statCard"><div class="statLabel">Precio máximo</div><div class="statValue" id="statMax">—</div></div>
+          </div>
+
+          <div class="chartTop fade-container" id="chartTop">
+            <div class="chartTop-header">
+              <div class="kicker">Comparación visual</div>
+              <div class="title">Top 5 tarifas (total factura)</div>
+            </div>
+            <div class="chartTop-body" id="chartTopBody"></div>
           </div>
 
           <div class="toolbar fade-container" id="toolbar">
@@ -764,9 +856,62 @@
         updateSortIcons();
       });
     }
-    
+
+    function renderTopChart() {
+      const c = document.getElementById('chartTop');
+      const body = document.getElementById('chartTopBody');
+      if (!c || !body) return;
+
+      const rows = state.rows || [];
+      if (!rows.length) {
+        c.classList.remove('show');
+        body.innerHTML = '';
+        return;
+      }
+
+      // Top 5 ordenadas por totalNum ascendente
+      const sorted = rows
+        .slice()
+        .sort((a, b) => a.totalNum - b.totalNum)
+        .slice(0, 5);
+
+      const max = sorted[sorted.length - 1].totalNum || 1;
+
+      const frag = document.createDocumentFragment();
+      sorted.forEach((r, idx) => {
+        const row = document.createElement('div');
+        row.className = 'chartTop-row';
+        if (idx === 0) row.classList.add('best');
+
+        const pct = Math.max(5, Math.round((r.totalNum / max) * 100));
+
+        row.innerHTML = `
+      <div class="chartTop-name" title="${escapeHtml(r.nombre)}">
+        ${escapeHtml(r.nombre)}
+      </div>
+      <div class="chartTop-barTrack">
+        <div class="chartTop-barFill" data-width="${pct}%"></div>
+      </div>
+      <div class="chartTop-value">${escapeHtml(r.total || '')}</div>
+    `;
+
+        frag.appendChild(row);
+      });
+
+      body.replaceChildren(frag);
+      c.classList.add('show');
+
+      // Animación de barras después de estar en el DOM
+      requestAnimationFrame(() => {
+        body.querySelectorAll('.chartTop-barFill').forEach(bar => {
+          const w = bar.getAttribute('data-width') || '0%';
+          bar.style.width = w;
+        });
+      });
+    }
+
     function renderAll(d){
-        if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;} 
+        if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;}
         setStatus('Resultados actualizados','ok'); 
         const r=d.resumen||{}; 
         if(r.mejor) el.kpiBest.textContent=r.mejor;
@@ -776,10 +921,11 @@
         if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; el.statsBar.classList.add('show'); }
         state.rows=Array.isArray(d.resultados)?d.resultados:[];
         el.toolbar.classList.add('show');
+        renderTopChart();
         renderTable();
-        if(window.innerWidth<1100){ 
-          const sb=$('scrollToResults'); 
-          sb.style.display='block'; 
+        if(window.innerWidth<1100){
+          const sb=$('scrollToResults');
+          sb.style.display='block';
           setTimeout(()=>sb.style.display='none',5000); 
         }
     }
