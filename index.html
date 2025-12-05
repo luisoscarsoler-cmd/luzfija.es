@@ -94,7 +94,7 @@
     .brand p{color: var(--muted); font-size: 13px; margin-top: 3px;}
     .actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; flex-shrink: 0;}
     @media (max-width: 520px){ .actions{ justify-content: center; width: 100%; } }
-    .pill{ display:flex; align-items:center; gap:10px; padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; backdrop-filter: blur(14px); box-shadow: 0 12px 50px rgba(0,0,0,.20); color: var(--muted); font-size: 13px; user-select:none; white-space: nowrap; }
+    .pill{ display:flex; align-items:center; gap:10px; padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; backdrop-filter: blur(14px); box-shadow: 0 12px 50px rgba(0,0,0,.20); color: var(--muted); font-size: 13px; user-select:none; white-space: nowrap; min-height: 44px; min-width: clamp(190px, 20vw, 260px); line-height: 1.2; }
     .pill.loading{border-color: rgba(139,92,246,.55); box-shadow: 0 0 0 4px rgba(139,92,246,.12), 0 18px 55px rgba(0,0,0,.35);}
     .pill.ok{border-color: rgba(34,197,94,.55); box-shadow: 0 0 0 4px rgba(34,197,94,.12), 0 18px 55px rgba(0,0,0,.35);}
     .pill.err{border-color: rgba(239,68,68,.55); box-shadow: 0 0 0 4px rgba(239,68,68,.12), 0 18px 55px rgba(0,0,0,.35);}
@@ -162,7 +162,11 @@
     .fbtn{ padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,.06); color: var(--muted); cursor:pointer; font-weight: 1000; font-size: 12px; transition: transform .15s ease, border-color .15s ease, background .15s ease; user-select:none; min-height: 44px; display:flex; align-items:center; }
     .fbtn:hover{transform: translateY(-1px); border-color: var(--border2); background: rgba(255,255,255,.09);}
     .fbtn.active{ background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.55); color: var(--text); }
-    .tableWrap{ background: transparent !important; border: none !important; overflow: visible !important; }
+    .resultsBody{ min-height: clamp(420px, 65vh, 720px); display:flex; flex-direction:column; gap: 0; }
+    .stableBlock{ opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .25s ease; }
+    .stableBlock.is-hidden{ opacity: 0; visibility: hidden; pointer-events: none; }
+    .tableWrap{ background: transparent !important; border: none !important; overflow: visible !important; min-height: clamp(320px, 50vh, 520px); display:flex; flex-direction:column; }
+    #table{ min-height: 220px; }
     table{ width: 100%; border-collapse: separate !important; border-spacing: 0 8px; table-layout: fixed; }
     thead th:nth-child(1), tbody td:nth-child(1) { width: 4%; }
     thead th:nth-child(2), tbody td:nth-child(2) { width: 23%; }
@@ -292,7 +296,7 @@
     <div class="grid">
       <section class="card">
         <div class="head"><div class="kicker">Tus datos</div><div class="title">Potencia y consumos (kWh)</div></div>
-        <div class="body">
+        <div class="body resultsBody">
           <div class="alert" id="errorBox"><b>Error:</b> <span id="errorText"></span></div>
           <div class="form">
             <div class="group"><label for="p1">Potencia P1 (kW)</label><input id="p1" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 3,45" /></div>
@@ -316,18 +320,18 @@
       <section class="card">
         <div class="head"><div class="kicker">Resultados</div><div class="title">Tarifa óptima + ranking</div></div>
         <div class="body">
-          <div class="heroKpis" id="heroKpis" style="display:none;">
+          <div class="heroKpis stableBlock is-hidden" id="heroKpis">
             <div class="heroCard best"><div class="k">Tarifa más barata</div><div class="v" id="kpiBest">—</div><div class="s">Mejor opción</div></div>
             <div class="heroCard"><div class="k">Factura mínima</div><div class="v" id="kpiPrice">—</div><div class="s">Según tus datos</div></div>
           </div>
 
-          <div class="statsbar" id="statsBar" style="display:none;">
+          <div class="statsbar stableBlock is-hidden" id="statsBar">
             <div class="statCard"><div class="statLabel">Precio mínimo</div><div class="statValue" id="statMin">—</div></div>
             <div class="statCard"><div class="statLabel">Precio medio</div><div class="statValue" id="statAvg">—</div></div>
             <div class="statCard"><div class="statLabel">Precio máximo</div><div class="statValue" id="statMax">—</div></div>
           </div>
 
-          <div class="toolbar" id="toolbar" style="display:none;">
+          <div class="toolbar stableBlock is-hidden" id="toolbar">
             <div class="filters">
               <button class="fbtn active" data-filter="all" type="button">Todas</button>
               <button class="fbtn" data-filter="1P" type="button"><span class="badge b1">1P</span></button>
@@ -336,7 +340,7 @@
           </div>
 
           <div class="tableWrap">
-            <table id="table" style="display:none;">
+            <table id="table" class="stableBlock is-hidden">
               <thead>
                 <tr>
                   <th>#</th>
@@ -398,6 +402,9 @@
 
     const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null };
     let cachedTarifas = [];
+
+    function showBlock(el){ if(el) el.classList.remove('is-hidden'); }
+    function hideBlock(el){ if(el) el.classList.add('is-hidden'); }
 
     function parseNum(str){ 
       if(str===null||str===undefined)return 0;
@@ -634,37 +641,37 @@
       setTimeout(()=>r.remove(),600); 
     }
     
-    function renderTable(){ 
-        const f=applyFilters(state.rows); 
-        const s=applySort(f); 
+    function renderTable(){
+        const f=applyFilters(state.rows);
+        const s=applySort(f);
         el.tbody.innerHTML='';
-        if(s.length===0){el.table.style.display='none';el.emptyBox.style.display='block';return;} 
-        el.emptyBox.style.display='none';el.table.style.display='table';
+        if(s.length===0){hideBlock(el.table); el.emptyBox.style.display='block'; return;}
+        el.emptyBox.style.display='none'; showBlock(el.table);
         s.forEach((r,i)=>{
             const tr=document.createElement('tr');
             if(r.esMejor)tr.classList.add('best');
             const w=r.webUrl?`<a class="web" href="${escapeHtml(r.webUrl)}" target="_blank" rel="noopener" title="Abrir web">🔗</a>`:'';
             tr.innerHTML=`<td>${escapeHtml(r.posicion)}</td><td title="${escapeHtml(r.nombre)}">${escapeHtml(r.nombre)}</td><td>${escapeHtml(r.potencia)}</td><td>${escapeHtml(r.consumo)}</td><td>${escapeHtml(r.impuestos)}</td><td><strong style="font-weight:1100; color: rgba(167,139,250,1);">${escapeHtml(r.total)}</strong></td><td class="vs">${formatVsWithBar(r.vsMejor,r.vsMejorNum)}</td><td>${rowTipoBadge(r.tipo)}</td><td style="text-align:center">${w}</td>`;
             el.tbody.appendChild(tr);
-        }); 
+        });
         updateSortIcons();
     }
     
     function renderAll(d){ 
         if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;} 
-        setStatus('Resultados actualizados','ok'); 
-        const r=d.resumen||{}; 
+        setStatus('Resultados actualizados','ok');
+        const r=d.resumen||{};
         if(r.mejor) el.kpiBest.textContent=r.mejor;
         if(r.precio) el.kpiPrice.textContent=r.precio;
-        el.heroKpis.style.display='grid'; 
-        const s=d.stats; 
-        if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; el.statsBar.style.display='grid'; }
-        state.rows=Array.isArray(d.resultados)?d.resultados:[]; 
-        el.toolbar.style.display='flex'; 
-        renderTable(); 
-        if(window.innerWidth<1100){ 
-          const sb=$('scrollToResults'); 
-          sb.style.display='block'; 
+        showBlock(el.heroKpis);
+        const s=d.stats;
+        if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; showBlock(el.statsBar); }
+        state.rows=Array.isArray(d.resultados)?d.resultados:[];
+        showBlock(el.toolbar);
+        renderTable();
+        if(window.innerWidth<1100){
+          const sb=$('scrollToResults');
+          sb.style.display='block';
           setTimeout(()=>sb.style.display='none',5000); 
         } 
     }
