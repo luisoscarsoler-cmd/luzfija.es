@@ -121,9 +121,10 @@
     .form{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     @media (max-width: 520px){ .form{grid-template-columns: repeat(2, 1fr);} }
     .group{display:flex; flex-direction:column; gap: 7px;}
-    label{ font-size: 12px; color: var(--muted); font-weight: 900; letter-spacing: .2px; position: relative; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 16px; }
+    label{ font-size: 12px; color: var(--muted); font-weight: 900; letter-spacing: .2px; position: relative; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; overflow: visible; text-overflow: ellipsis; min-height: 16px; }
     .tooltip{ position: relative; cursor: help; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(139,92,246,.2); color: var(--accent); font-size: 10px; font-weight: 900; }
-    .tooltip:hover::after{ content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 8px 12px; background: rgba(5,8,16,.95); color: #fff; border-radius: 8px; font-size: 11px; font-weight: 600; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 100; animation: fadeInUp 0.2s ease; border: 1px solid rgba(139,92,246,.4); }
+    .tooltip::after{ content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translate(-50%, 4px); padding: 8px 12px; background: rgba(5,8,16,.95); color: #fff; border-radius: 8px; font-size: 11px; font-weight: 600; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 100; border: 1px solid rgba(139,92,246,.4); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .15s ease, transform .15s ease, visibility .15s ease; }
+    .tooltip:hover::after, .tooltip:focus-visible::after, .tooltip.is-open::after{ opacity: 1; visibility: visible; transform: translate(-50%, 0); }
     .input{ width:100%; padding: 14px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.22); color: var(--text); outline:none; font-weight: 900; font-size: 15px; transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease, background .15s ease; min-height: 44px; position: relative; }
     .input:focus{ border-color: var(--accent); background: rgba(139, 92, 246, 0.1); box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15), 0 0 15px rgba(139, 92, 246, 0.3); transform: translateY(-2px); }
     .input:valid:not(:placeholder-shown){ border-color: rgba(34,197,94,.4); box-shadow: 0 0 0 2px rgba(34,197,94,.08); }
@@ -305,9 +306,9 @@
           </div>
           <div style="height:12px"></div>
           <div class="form">
-            <div class="group"><label for="cPunta">Consumo PUNTA <span class="tooltip" data-tip="10h-14h y 18h-22h">ⓘ</span></label><input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 120" /></div>
-            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h">ⓘ</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 80" /></div>
-            <div class="group"><label for="cValle">Consumo VALLE <span class="tooltip" data-tip="0h-8h (madrugada)">ⓘ</span></label><input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 150" /></div>
+            <div class="group"><label for="cPunta">Consumo PUNTA <span class="tooltip" data-tip="10h-14h y 18h-22h" tabindex="0" role="button" aria-label="10h-14h y 18h-22h">ⓘ</span></label><input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 120" /></div>
+            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h" tabindex="0" role="button" aria-label="8h-10h, 14h-18h y 22h-24h">ⓘ</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 80" /></div>
+            <div class="group"><label for="cValle">Consumo VALLE <span class="tooltip" data-tip="0h-8h (madrugada)" tabindex="0" role="button" aria-label="0h-8h (madrugada)">ⓘ</span></label><input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 150" /></div>
           </div>
           <div class="row" style="margin-top:14px">
             <div class="kwhPill" aria-live="polite"><div class="kwhLabel">Total kWh</div><div class="kwhValue" id="kwhHint">—</div></div>
@@ -692,10 +693,33 @@
     }
     
     document.addEventListener('DOMContentLoaded', async ()=>{
-      loadInputs(); 
+      loadInputs();
 
       // Cálculo inicial automático con los datos precargados
       calculate(false);
+
+      const tooltipEls = Array.from(document.querySelectorAll('.tooltip'));
+      const closeTooltips = (except)=>{
+        tooltipEls.forEach(tp=>{ if(tp!==except) tp.classList.remove('is-open'); });
+      };
+
+      tooltipEls.forEach(tp=>{
+        tp.addEventListener('click',(e)=>{
+          e.stopPropagation();
+          const isOpen = tp.classList.contains('is-open');
+          closeTooltips();
+          if(!isOpen) tp.classList.add('is-open');
+        });
+        tp.addEventListener('focus',()=>{ closeTooltips(tp); tp.classList.add('is-open'); });
+        tp.addEventListener('blur',()=>tp.classList.remove('is-open'));
+        tp.addEventListener('keydown',(e)=>{
+          if(e.key==='Enter' || e.key===' '){ e.preventDefault(); tp.click(); }
+          if(e.key==='Escape'){ tp.classList.remove('is-open'); tp.blur(); }
+        });
+      });
+
+      document.addEventListener('click',()=>closeTooltips());
+      document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeTooltips(); });
 
       Object.values(el.inputs).forEach(i=>{
           i.addEventListener('input',()=>{
