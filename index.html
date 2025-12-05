@@ -122,8 +122,9 @@
     @media (max-width: 520px){ .form{grid-template-columns: repeat(2, 1fr);} }
     .group{display:flex; flex-direction:column; gap: 7px;}
     label{ font-size: 12px; color: var(--muted); font-weight: 900; letter-spacing: .2px; position: relative; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 16px; }
-    .tooltip{ position: relative; cursor: help; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(139,92,246,.2); color: var(--accent); font-size: 10px; font-weight: 900; }
-    .tooltip:hover::after{ content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 8px 12px; background: rgba(5,8,16,.95); color: #fff; border-radius: 8px; font-size: 11px; font-weight: 600; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 100; animation: fadeInUp 0.2s ease; border: 1px solid rgba(139,92,246,.4); }
+    .tooltip{ position: relative; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(139,92,246,.2); color: var(--accent); font-size: 10px; font-weight: 900; flex-shrink: 0; transition: box-shadow .15s ease, transform .15s ease; }
+    .tooltip:focus-visible{ outline: none; box-shadow: 0 0 0 3px rgba(139,92,246,.25); transform: translateY(-1px); }
+    #globalTooltip{ position: fixed; display: none; padding: 8px 12px; background: rgba(5,8,16,.95); color: #fff; border-radius: 8px; font-size: 11px; font-weight: 600; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 9999; border: 1px solid rgba(139,92,246,.4); pointer-events: none; }
     .input{ width:100%; padding: 14px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.22); color: var(--text); outline:none; font-weight: 900; font-size: 15px; transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease, background .15s ease; min-height: 44px; position: relative; }
     .input:focus{ border-color: var(--accent); background: rgba(139, 92, 246, 0.1); box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15), 0 0 15px rgba(139, 92, 246, 0.3); transform: translateY(-2px); }
     .input:valid:not(:placeholder-shown){ border-color: rgba(34,197,94,.4); box-shadow: 0 0 0 2px rgba(34,197,94,.08); }
@@ -300,10 +301,10 @@
             <div class="group"><label for="dias">Días factura</label><input id="dias" class="input" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="1 a 365" /></div>
           </div>
           <div style="height:12px"></div>
-          <div class="form">
-            <div class="group"><label for="cPunta">Consumo PUNTA <span class="tooltip" data-tip="10h-14h y 18h-22h">ⓘ</span></label><input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 120" /></div>
-            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h">ⓘ</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 80" /></div>
-            <div class="group"><label for="cValle">Consumo VALLE <span class="tooltip" data-tip="0h-8h (madrugada)">ⓘ</span></label><input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 150" /></div>
+            <div class="form">
+            <div class="group"><label for="cPunta">Consumo PUNTA <span class="tooltip" data-tip="10h-14h y 18h-22h" role="button" tabindex="0" aria-label="Horario de consumo punta">i</span></label><input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 120" /></div>
+            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h" role="button" tabindex="0" aria-label="Horario de consumo llano">i</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 80" /></div>
+            <div class="group"><label for="cValle">Consumo VALLE <span class="tooltip" data-tip="0h-8h (madrugada)" role="button" tabindex="0" aria-label="Horario de consumo valle">i</span></label><input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 150" /></div>
           </div>
           <div class="row" style="margin-top:14px">
             <div class="kwhPill" aria-live="polite"><div class="kwhLabel">Total kWh</div><div class="kwhValue" id="kwhHint">—</div></div>
@@ -367,6 +368,7 @@
 
   <div class="toast" id="toast"><span class="dot" id="toastDot"></span><span id="toastText"></span></div>
   <button id="scrollToResults" class="scroll-btn" style="display:none;" title="Ver resultados">↓ Ver resultados</button>
+  <div id="globalTooltip" role="tooltip" aria-hidden="true"></div>
 
   <script>
     const $ = id => document.getElementById(id);
@@ -393,11 +395,77 @@
       toolbar: $('toolbar'), table: $('table'), tbody: $('tbody'), emptyBox: $('emptyBox'),
       toast: $('toast'), toastText: $('toastText'), toastDot: $('toastDot'),
       menuRoot: $('menuRoot'), btnMenu: $('btnMenu'), menuPanel: $('menuPanel'),
-      btnExport: $('btnExport'), btnReset: $('btnReset'), btnShare: $('btnShare')
+      btnExport: $('btnExport'), btnReset: $('btnReset'), btnShare: $('btnShare'),
+      globalTooltip: $('globalTooltip')
     };
 
     const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null };
     let cachedTarifas = [];
+
+    let activeTooltip = null;
+    let tooltipPinned = false;
+
+    function positionTooltip(target){
+      if(!target)return;
+      const tip = target.getAttribute('data-tip') || '';
+      el.globalTooltip.textContent = tip;
+      el.globalTooltip.style.display = 'block';
+      el.globalTooltip.style.visibility = 'hidden';
+      el.globalTooltip.style.opacity = '0';
+      el.globalTooltip.setAttribute('aria-hidden', tip ? 'false' : 'true');
+      const rect = target.getBoundingClientRect();
+      const ttRect = el.globalTooltip.getBoundingClientRect();
+      let top = rect.top - ttRect.height - 10;
+      if(top < 8) top = rect.bottom + 10;
+      let left = rect.left + rect.width / 2 - ttRect.width / 2;
+      const maxLeft = window.innerWidth - ttRect.width - 8;
+      left = Math.max(8, Math.min(maxLeft, left));
+      el.globalTooltip.style.top = `${top}px`;
+      el.globalTooltip.style.left = `${left}px`;
+      el.globalTooltip.style.visibility = 'visible';
+      el.globalTooltip.style.opacity = '1';
+    }
+
+    function hideTooltip(force=false){
+      if(!force && tooltipPinned)return;
+      el.globalTooltip.style.display = 'none';
+      el.globalTooltip.setAttribute('aria-hidden','true');
+      activeTooltip = null;
+      tooltipPinned = false;
+    }
+
+    function openTooltip(target){
+      activeTooltip = target;
+      positionTooltip(target);
+    }
+
+    function initTooltips(){
+      const tooltips = Array.from(document.querySelectorAll('.tooltip'));
+      tooltips.forEach(t => {
+        t.addEventListener('mouseenter', () => { tooltipPinned = false; openTooltip(t); });
+        t.addEventListener('mouseleave', () => { if(tooltipPinned && activeTooltip===t)return; hideTooltip(); });
+        t.addEventListener('focus', () => { tooltipPinned = false; openTooltip(t); });
+        t.addEventListener('blur', () => hideTooltip(true));
+        t.addEventListener('click', (evt) => {
+          evt.preventDefault();
+          if(activeTooltip===t && tooltipPinned){ hideTooltip(true); return; }
+          tooltipPinned = true;
+          openTooltip(t);
+        });
+        t.addEventListener('keydown', (evt) => {
+          if(evt.key==='Enter' || evt.key===' '){ evt.preventDefault(); t.click(); }
+        });
+      });
+
+      document.addEventListener('click', (evt) => {
+        if(!tooltipPinned)return;
+        if(!evt.target.closest('.tooltip')) hideTooltip(true);
+      });
+
+      window.addEventListener('scroll', () => { if(activeTooltip) positionTooltip(activeTooltip); }, true);
+      window.addEventListener('resize', () => { if(activeTooltip) positionTooltip(activeTooltip); });
+      document.addEventListener('keydown', (evt) => { if(evt.key==='Escape') hideTooltip(true); });
+    }
 
     function parseNum(str){ 
       if(str===null||str===undefined)return 0;
@@ -685,7 +753,8 @@
     }
     
     document.addEventListener('DOMContentLoaded', async ()=>{
-      loadInputs(); 
+      initTooltips();
+      loadInputs();
 
       // Cálculo inicial automático con los datos precargados
       calculate(false);
