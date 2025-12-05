@@ -84,6 +84,40 @@
   }
   </script>
 
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {
+        "@type":"Question",
+        "name":"¿Qué significan punta, llano y valle?",
+        "acceptedAnswer":{"@type":"Answer","text":"Son periodos horarios con precios distintos en tarifas 3P. En general, punta es más caro, valle más barato y llano intermedio (los horarios exactos dependen del calendario y la tarifa)."}
+      },
+      {
+        "@type":"Question",
+        "name":"¿Qué es P1 y P2 en la potencia contratada?",
+        "acceptedAnswer":{"@type":"Answer","text":"La potencia se paga por días y puede variar por periodo (P1/P2). En muchas viviendas se contrata la misma potencia en ambos, pero puedes optimizarla según tu uso."}
+      },
+      {
+        "@type":"Question",
+        "name":"¿El comparador incluye impuestos?",
+        "acceptedAnswer":{"@type":"Answer","text":"Sí: el cálculo muestra potencia, consumo y una estimación de impuestos/IVA según el modelo del comparador."}
+      },
+      {
+        "@type":"Question",
+        "name":"¿Necesito registrarme?",
+        "acceptedAnswer":{"@type":"Answer","text":"No. Es una herramienta gratuita, sin registro. Puedes además compartir tu configuración por URL."}
+      },
+      {
+        "@type":"Question",
+        "name":"¿De dónde salen los precios?",
+        "acceptedAnswer":{"@type":"Answer","text":"Las tarifas se cargan desde un archivo tarifas.json publicado en esta misma web."}
+      }
+    ]
+  }
+  </script>
+
 
   <style>
     /* === TU DISEÑO ORIGINAL EXACTO (NO TOCAR) === */
@@ -614,11 +648,43 @@
   </details>
 </section>
 
-    <footer style="text-align:center; padding:40px 20px 30px; margin-top:40px; opacity:0.6; font-size:13px; color: var(--muted2);">
-      <p style="margin:0;">⚡ Comparador de tarifas eléctricas</p>
-      <p style="margin:8px 0 0; font-weight:600;">Creado por <strong style="color: var(--accent);">aLMaX</strong></p>
-      <p style="margin:8px 0 0; font-size:11px;">Proyecto gratuito y sin publicidad</p>
-    </footer>
+<footer style="max-width:1400px; margin:0 auto; padding:40px clamp(22px, 4.5vw, 60px) 30px; border-top:1px solid var(--border);">
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:30px; margin-bottom:30px;">
+    <div>
+      <h3 style="font-size:14px; font-weight:900; margin-bottom:10px; color:var(--text);">Sobre el Comparador</h3>
+      <p style="color:var(--muted); font-size:12px; line-height:1.6; margin:0;">
+        Herramienta gratuita para <strong>comparar tarifas de luz</strong> en España.
+        Calcula tu factura según consumo real en horarios de punta, llano y valle.
+        Sin publicidad, sin registro.
+      </p>
+    </div>
+
+    <div>
+      <h3 style="font-size:14px; font-weight:900; margin-bottom:10px; color:var(--text);">Horarios Discriminación</h3>
+      <ul style="list-style:none; color:var(--muted); font-size:12px; line-height:1.8; margin:0; padding:0;">
+        <li><strong style="color:var(--danger);">Punta:</strong> 10h-14h y 18h-22h</li>
+        <li><strong style="color:var(--warn);">Llano:</strong> 8h-10h, 14h-18h, 22h-24h</li>
+        <li><strong style="color:var(--accent2);">Valle:</strong> 0h-8h + fines de semana</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 style="font-size:14px; font-weight:900; margin-bottom:10px; color:var(--text);">¿Qué Calculamos?</h3>
+      <ul style="list-style:none; color:var(--muted); font-size:12px; line-height:1.8; margin:0; padding:0;">
+        <li>✓ Coste potencia (P1/P2)</li>
+        <li>✓ Consumo por periodos</li>
+        <li>✓ Impuestos + IVA (21%)</li>
+        <li>✓ Comparación directa</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="text-align:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
+    <p style="margin:0; color:var(--muted2); font-size:12px;">⚡ Comparador de Tarifas Eléctricas · España</p>
+    <p style="margin:8px 0 0; font-weight:600; font-size:13px;">Creado por <strong style="color: var(--accent);">aLMaX</strong></p>
+    <p style="margin:8px 0 0; font-size:11px; color:var(--muted2);">Proyecto gratuito y sin publicidad · Datos actualizados regularmente</p>
+  </div>
+</footer>
   </div>
 
   <div class="toast" id="toast"><span class="dot" id="toastDot"></span><span id="toastText"></span></div>
