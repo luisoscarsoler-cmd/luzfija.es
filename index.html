@@ -403,7 +403,7 @@
       btnExport: $('btnExport'), btnReset: $('btnReset'), btnShare: $('btnShare')
     };
 
-    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null, rowsVersion: 0, preparedKey: null, preparedRows: [], lastInputSnapshot: null, lastCalcVersion: null, cachedInputs: null, tarifasMeta: { version: null, nextVersion: null }, lastSortIconKey: null };
+    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null, rowsVersion: 0, preparedKey: null, preparedRows: [], lastInputSnapshot: null, lastCalcVersion: null, cachedInputs: null, tarifasMeta: { version: null, nextVersion: null }, lastSortIconKey: null, pendingInputs: null, hasPendingWork: false, inputWorkHandle: null, pendingWorkSnapshot: null, lastNormalizedSnapshot: null };
     let cachedTarifas = [];
 
     function showBlock(el){ if(el) el.classList.remove('is-hidden'); }
@@ -432,8 +432,9 @@
         cLlano: parseNum(raw.cLlano),
         cValle: parseNum(raw.cValle)
       };
+      const normalizedSnapshot=INPUT_KEYS.map(k=>numbers[k]).join('|');
       const snapshot=INPUT_KEYS.map(k=>raw[k]).join('|');
-      state.cachedInputs={ raw, numbers, snapshot };
+      state.cachedInputs={ raw, numbers, snapshot, normalizedSnapshot };
       return state.cachedInputs;
     }
 
@@ -594,7 +595,8 @@
         const max = Math.max(...prices);
         const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
 
-        state.lastInputSnapshot = parsed.snapshot;
+        state.lastInputSnapshot = parsed.normalizedSnapshot;
+        state.lastNormalizedSnapshot = parsed.normalizedSnapshot;
         state.lastCalcVersion = state.tarifasMeta.version;
 
         renderAll({
@@ -662,6 +664,32 @@
     }
 
     function formatVsWithBar(v){
+    const rowTemplate=document.createElement('template');
+    rowTemplate.innerHTML = `
+      <tr>
+        <td class="pos"></td>
+        <td class="nombre" title=""></td>
+        <td class="potencia"></td>
+        <td class="consumo"></td>
+        <td class="impuestos"></td>
+        <td class="total"><strong style="font-weight:1100; color: rgba(167,139,250,1);"></strong></td>
+        <td class="vs"></td>
+        <td class="tipo"></td>
+        <td class="web" style="text-align:center"></td>
+      </tr>
+    `;
+
+    function rowTipoBadge(t){
+      const s=String(t||'').trim();
+      const span=document.createElement('span');
+      span.classList.add('badge');
+      if(s==='1P') span.classList.add('b1');
+      if(s==='3P') span.classList.add('b3');
+      span.textContent = s || '—';
+      return span;
+    }
+
+    function formatVsWithBar(v,vn){
       const s=String(v??'').trim();
       const span=document.createElement('span');
       span.classList.add('vs-text');
@@ -727,17 +755,25 @@
       ['tarifa','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{const i=$('si_'+k); if(!i)return; if(state.sort.key!==k){i.textContent='';return;} i.textContent=state.sort.dir==='asc'?'▲':'▼';});
     }
 
-    function createRipple(b,e){ 
-      const r=document.createElement('span'); 
-      const rect=b.getBoundingClientRect(); 
-      const s=Math.max(rect.width,rect.height); 
-      const x=e.clientX-rect.left-s/2; 
-      const y=e.clientY-rect.top-s/2; 
-      r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`; 
-      b.style.position='relative'; 
-      b.style.overflow='hidden'; 
-      b.appendChild(r); 
-      setTimeout(()=>r.remove(),600); 
+    const rippleHosts=new WeakSet();
+
+    function prepareRippleHost(b){
+      if(rippleHosts.has(b)) return;
+      b.style.position='relative';
+      b.style.overflow='hidden';
+      rippleHosts.add(b);
+    }
+
+    function createRipple(b,e){
+      prepareRippleHost(b);
+      const {width,height,left,top}=b.getBoundingClientRect();
+      const r=document.createElement('span');
+      const s=Math.max(width,height);
+      const x=e.clientX-left-s/2;
+      const y=e.clientY-top-s/2;
+      r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`;
+      b.appendChild(r);
+      setTimeout(()=>r.remove(),600);
     }
     
     function renderTable(){
@@ -749,7 +785,8 @@
         el.emptyBox.style.display='none'; showBlock(el.table);
         const frag=document.createDocumentFragment();
         rows.forEach((r)=>{
-            const tr=document.createElement('tr');
+            const tr=rowTemplate.content.firstElementChild.cloneNode(true);
+            const [posCell,nameCell,potenciaCell,consumoCell,impuestosCell,totalCell,vsCell,tipoCell,webCell]=tr.children;
             if(r.esMejor)tr.classList.add('best');
             TABLE_COLUMNS.forEach((key,index)=>{
               const td=document.createElement('td');
@@ -775,6 +812,30 @@
               }
               tr.appendChild(td);
             });
+
+            posCell.textContent = String(r.posicion ?? '');
+            nameCell.textContent = r.nombre || '';
+            nameCell.title = r.nombre || '';
+            potenciaCell.textContent = r.potencia || '';
+            consumoCell.textContent = r.consumo || '';
+            impuestosCell.textContent = r.impuestos || '';
+            totalCell.querySelector('strong').textContent = r.total || '';
+
+            vsCell.appendChild(formatVsWithBar(r.vsMejor,r.vsMejorNum));
+            tipoCell.appendChild(rowTipoBadge(r.tipo));
+
+            const url=String(r.webUrl||'').trim();
+            if(url){
+              const link=document.createElement('a');
+              link.className='web';
+              link.href=url;
+              link.target='_blank';
+              link.rel='noopener';
+              link.title='Abrir web';
+              link.textContent='🔗';
+              webCell.appendChild(link);
+            }
+
             frag.appendChild(tr);
         });
         el.tbody.replaceChildren(frag);
@@ -802,16 +863,38 @@
         } 
     }
 
-    async function calculate(isUserAction){
-        const parsed = getParsedInputs();
+    function scheduleHeavyTask(task){
+      requestAnimationFrame(()=>queueMicrotask(task));
+    }
+
+    async function calculate(isUserAction, preParsed){
+        const parsed = preParsed || getParsedInputs();
         saveInputs(parsed.raw);
         if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0});
         setStatus('Calculando...', 'loading');
         const { ok, updated } = await fetchTarifas();
         if(!ok) return;
-        const needsCalc = updated || state.lastInputSnapshot !== parsed.snapshot || state.lastCalcVersion !== state.tarifasMeta.version || !state.rows.length;
+        const needsCalc = updated || state.lastInputSnapshot !== parsed.normalizedSnapshot || state.lastCalcVersion !== state.tarifasMeta.version || !state.rows.length;
         if(!needsCalc){ setStatus('Resultados actualizados','ok'); return; }
-        calculateLocal(parsed);
+        scheduleHeavyTask(()=>calculateLocal(parsed));
+    }
+
+    function enqueueInputWork(parsed){
+      state.pendingInputs = parsed;
+      state.pendingWorkSnapshot = parsed.normalizedSnapshot;
+      state.hasPendingWork = true;
+      if(state.inputWorkHandle) return;
+      state.inputWorkHandle = requestAnimationFrame(()=>{
+        state.inputWorkHandle = null;
+        if(!state.hasPendingWork) return;
+        state.hasPendingWork = false;
+        const pending = state.pendingInputs || getParsedInputs();
+        const snapshot = state.pendingWorkSnapshot;
+        state.pendingInputs = null;
+        state.pendingWorkSnapshot = null;
+        if(snapshot === state.lastNormalizedSnapshot){ return; }
+        calculate(false, pending);
+      });
     }
 
     function toggleMenu(force){ 
@@ -855,7 +938,7 @@
               invalidateCachedInputs();
               const parsed = getParsedInputs();
               updateKwhHint(parsed);
-              clearTimeout(state.debounce); state.debounce = setTimeout(()=>calculate(false), 500);
+              enqueueInputWork(parsed);
           });
       });
 
