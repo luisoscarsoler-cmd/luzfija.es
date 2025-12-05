@@ -403,7 +403,7 @@
       btnExport: $('btnExport'), btnReset: $('btnReset'), btnShare: $('btnShare')
     };
 
-    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null, rowsVersion: 0, preparedKey: null, preparedRows: [], lastInputSnapshot: null, lastCalcVersion: null, cachedInputs: null, tarifasMeta: { version: null, nextVersion: null }, lastSortIconKey: null };
+    const state = { busy: false, filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], userHasInteracted: false, logDebounce: null, rowsVersion: 0, preparedKey: null, preparedRows: [], lastInputSnapshot: null, lastCalcVersion: null, cachedInputs: null, tarifasMeta: { version: null, nextVersion: null }, lastSortIconKey: null, pendingInputs: null, hasPendingWork: false, inputWorkHandle: null, pendingWorkSnapshot: null, lastNormalizedSnapshot: null };
     let cachedTarifas = [];
 
     function showBlock(el){ if(el) el.classList.remove('is-hidden'); }
@@ -432,8 +432,9 @@
         cLlano: parseNum(raw.cLlano),
         cValle: parseNum(raw.cValle)
       };
+      const normalizedSnapshot=INPUT_KEYS.map(k=>numbers[k]).join('|');
       const snapshot=INPUT_KEYS.map(k=>raw[k]).join('|');
-      state.cachedInputs={ raw, numbers, snapshot };
+      state.cachedInputs={ raw, numbers, snapshot, normalizedSnapshot };
       return state.cachedInputs;
     }
 
@@ -594,7 +595,8 @@
         const max = Math.max(...prices);
         const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
 
-        state.lastInputSnapshot = parsed.snapshot;
+        state.lastInputSnapshot = parsed.normalizedSnapshot;
+        state.lastNormalizedSnapshot = parsed.normalizedSnapshot;
         state.lastCalcVersion = state.tarifasMeta.version;
 
         renderAll({
@@ -802,16 +804,38 @@
         } 
     }
 
-    async function calculate(isUserAction){
-        const parsed = getParsedInputs();
+    function scheduleHeavyTask(task){
+      requestAnimationFrame(()=>queueMicrotask(task));
+    }
+
+    async function calculate(isUserAction, preParsed){
+        const parsed = preParsed || getParsedInputs();
         saveInputs(parsed.raw);
         if(isUserAction) createRipple(el.btnCalc, {clientX:0, clientY:0});
         setStatus('Calculando...', 'loading');
         const { ok, updated } = await fetchTarifas();
         if(!ok) return;
-        const needsCalc = updated || state.lastInputSnapshot !== parsed.snapshot || state.lastCalcVersion !== state.tarifasMeta.version || !state.rows.length;
+        const needsCalc = updated || state.lastInputSnapshot !== parsed.normalizedSnapshot || state.lastCalcVersion !== state.tarifasMeta.version || !state.rows.length;
         if(!needsCalc){ setStatus('Resultados actualizados','ok'); return; }
-        calculateLocal(parsed);
+        scheduleHeavyTask(()=>calculateLocal(parsed));
+    }
+
+    function enqueueInputWork(parsed){
+      state.pendingInputs = parsed;
+      state.pendingWorkSnapshot = parsed.normalizedSnapshot;
+      state.hasPendingWork = true;
+      if(state.inputWorkHandle) return;
+      state.inputWorkHandle = requestAnimationFrame(()=>{
+        state.inputWorkHandle = null;
+        if(!state.hasPendingWork) return;
+        state.hasPendingWork = false;
+        const pending = state.pendingInputs || getParsedInputs();
+        const snapshot = state.pendingWorkSnapshot;
+        state.pendingInputs = null;
+        state.pendingWorkSnapshot = null;
+        if(snapshot === state.lastNormalizedSnapshot){ return; }
+        calculate(false, pending);
+      });
     }
 
     function toggleMenu(force){ 
@@ -855,7 +879,7 @@
               invalidateCachedInputs();
               const parsed = getParsedInputs();
               updateKwhHint(parsed);
-              clearTimeout(state.debounce); state.debounce = setTimeout(()=>calculate(false), 500);
+              enqueueInputWork(parsed);
           });
       });
 
