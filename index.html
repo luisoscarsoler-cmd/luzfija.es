@@ -15,8 +15,11 @@
        La API de la CNMC bloquea CORS desde dominios externos.
        Si quieres que aparezca PVPC en el ranking, define una URL de proxy ANTES del script principal.
        Debe ser un endpoint que acepte ?url= y devuelva el JSON añadiendo Access-Control-Allow-Origin:*.
-       Ejemplo:
-       <script>window.PVPC_PROXY_URL="https://TU-WORKER.workers.dev/?url=";</script>
+       Ejemplo en el <head> o justo antes de este script:
+
+       <script>
+         window.PVPC_PROXY_URL = "https://TU-WORKER.workers.dev/?url="; // ideal que termine en ?url=
+       </script>
   -->
   <script>
     // window.PVPC_PROXY_URL = "https://TU-WORKER.workers.dev/?url="; // <- opcional
@@ -139,14 +142,12 @@
     :root{ --bg0:#070A12; --bg1:#0B1020; --card: rgba(255,255,255,.06); --card2: rgba(255,255,255,.085); --border: rgba(255,255,255,.10); --border2: rgba(255,255,255,.16); --text:#F7F7FB; --muted: rgba(247,247,251,.72); --muted2: rgba(247,247,251,.55); --accent:#8B5CF6; --accent2:#22C55E; --warn:#F59E0B; --danger:#EF4444; --shadow: 0 22px 65px rgba(0,0,0,.52); --shadow2: 0 16px 40px rgba(0,0,0,.50); --radius: 18px; --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; --sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif; }
     *{box-sizing:border-box; margin:0; padding:0}
     html,body{height:100%;}
-    /* INP OPT: Reduce tap highlight for faster tap handling on touch devices */
     body{ font-family: var(--sans); color: var(--text); background: radial-gradient(1000px 600px at 12% 15%, rgba(139,92,246,.22), transparent 55%), radial-gradient(1000px 680px at 86% 88%, rgba(34,197,94,.16), transparent 55%), linear-gradient(135deg, var(--bg0), var(--bg1)); overflow-x:hidden; -webkit-tap-highlight-color: transparent; }
     .container{ max-width:1400px; margin:0 auto; padding: clamp(50px, 5vw, 70px) clamp(22px, 4.5vw, 60px); }
     .topbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 22px; flex-wrap: wrap; }
     @media (max-width: 520px){ .topbar{ justify-content: center; } }
     .brand{display:flex; align-items:center; gap:14px; min-width: 240px; position: relative; flex-shrink: 0;}
     @media (max-width: 520px){ .brand{ min-width: auto; } }
-    /* INP OPT: Hint compositor for animated logo transformations */
     .logo{ width:60px; height:60px; border-radius:18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%); background-size: 400% 400%; box-shadow: 0 0 30px rgba(139,92,246,.4), 0 0 60px rgba(139,92,246,.2), 0 10px 40px rgba(0,0,0,.3), inset 0 0 20px rgba(255,255,255,.1); display:grid; place-items:center; font-size: 32px; position: relative; overflow: hidden; animation: gradientShift 8s ease infinite, logoFloat 3s ease-in-out infinite; border: 2px solid rgba(255,255,255,.2); backdrop-filter: blur(10px); flex-shrink: 0; will-change: transform; contain: layout size style; }
     .logo::before{ content: ''; position: absolute; inset: -4px; border-radius: inherit; pointer-events: none; background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,.8) 50%, transparent 70%); animation: logoRotate 3s linear infinite; }
     .logo::after{ content: ''; position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border-radius: 20px; border: 2px solid transparent; background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe) border-box; -webkit-mask: linear-gradient(#fff, #fff) padding-box, linear-gradient(#fff, #fff); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringPulse 2s ease-in-out infinite; opacity: 0.6; }
@@ -170,7 +171,6 @@
     .pill.loading{border-color: rgba(139,92,246,.55); box-shadow: 0 0 0 4px rgba(139,92,246,.12), 0 18px 55px rgba(0,0,0,.35);}
     .pill.ok{border-color: rgba(34,197,94,.55); box-shadow: 0 0 0 4px rgba(34,197,94,.12), 0 18px 55px rgba(0,0,0,.35);}
     .pill.err{border-color: rgba(239,68,68,.55); box-shadow: 0 0 0 4px rgba(239,68,68,.12), 0 18px 55px rgba(0,0,0,.35);}
-    /* INP OPT: Improve pointer responsiveness on buttons */
     .btn{ border: 1px solid var(--border); background: var(--card); color: var(--text); padding: 10px 12px; border-radius: 12px; cursor:pointer; font-weight: 900; font-size: 13px; display:inline-flex; align-items:center; gap: 10px; transition: transform .15s ease, background .15s ease, border-color .15s ease, opacity .15s ease; backdrop-filter: blur(14px); min-height: 44px; touch-action: manipulation; will-change: transform, box-shadow; }
     .btn:hover{transform: translateY(-1px); border-color: var(--border2); background: var(--card2);}
     .btn:active{transform: translateY(0px); opacity:.9}
@@ -183,7 +183,6 @@
     .spinner{ display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius:50%; animation: spin 0.6s linear infinite; }
     .grid{ display:grid; grid-template-columns: 420px 1fr; gap: 24px; }
     @media (max-width: 1100px){ .grid{grid-template-columns:1fr;} }
-    /* INP OPT: Prepare cards for hover animation compositing */
     .card{ background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow:hidden; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); transition: transform .3s ease, box-shadow .3s ease; animation: fadeInUp 0.5s ease-out; margin-bottom: 6px; will-change: transform; }
     .card:hover{ transform: translateY(-4px) translateZ(0); box-shadow: 0 28px 80px rgba(0,0,0,.60); }
     .card .head{ padding: 18px 18px 14px 18px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, rgba(139,92,246,.10), transparent); }
@@ -234,7 +233,6 @@
     .badge.b3:hover{ transform: scale(1.05); box-shadow: 0 6px 16px rgba(245,158,11,.4); }
     .toolbar{ display:flex; align-items:center; justify-content:flex-end; gap: 12px; margin: 10px 0 12px; flex-wrap: wrap; }
     .filters{display:flex; gap: 10px; flex-wrap: wrap;}
-    /* INP OPT: Improve touch responsiveness on filter buttons */
     .fbtn{ padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,.06); color: var(--muted); cursor:pointer; font-weight: 1000; font-size: 12px; transition: transform .15s ease, border-color .15s ease, background .15s ease; user-select:none; min-height: 44px; display:flex; align-items:center; touch-action: manipulation; will-change: transform; }
     .fbtn:hover{transform: translateY(-1px); border-color: var(--border2); background: rgba(255,255,255,.09);}
     .fbtn.active{ background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.55); color: var(--text); }
@@ -285,7 +283,6 @@
     .mi-right{ opacity: .6; white-space: nowrap; flex: 0 0 auto; }
     .menuDivider{ height:1px; background: rgba(255,255,255,.08); margin: 6px 6px; }
     .menuHint{ padding: 8px 10px 6px 10px; color: var(--muted2); font-size: 11px; font-weight: 900; letter-spacing: .2px; }
-    /* INP OPT: Prepare toast for entrance animation */
     .toast{ position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(5,8,16,.92); border: 1px solid var(--border); color: var(--text); border-radius: 16px; box-shadow: var(--shadow2); padding: 12px 14px; display:none; gap: 10px; align-items:center; max-width: min(760px, calc(100vw - 24px)); backdrop-filter: blur(14px); z-index: 9999; font-size: 13px; will-change: transform, opacity; }
     .toast.show{display:flex; animation: pop .22s ease;}
     @keyframes pop { from{opacity:0; transform: translateX(-50%) translateY(8px);} to{opacity:1; transform: translateX(-50%) translateY(0px);} }
@@ -317,12 +314,6 @@
     #heroKpis { min-height: 260px; }
     #statsBar { min-height: 80px; }
     #table { min-height: 300px; }
-
-    .btn:hover,
-    .fbtn:hover,
-    .web:hover {
-      will-change: transform;
-    }
 
     .fade-container {
       opacity: 0;
@@ -378,7 +369,6 @@
       overflow: hidden;
     }
 
-    /* INP OPT: Hint compositor for animated chart bars */
     .chartTop-barFill {
       height: 100%;
       border-radius: inherit;
@@ -509,25 +499,60 @@
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
             <defs>
               <linearGradient id="logoGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1"><animate attributeName="stop-color" values="#fbbf24;#f59e0b;#fbbf24" dur="2s" repeatCount="indefinite"/></stop>
+                <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1">
+                  <animate attributeName="stop-color" values="#fbbf24;#f59e0b;#fbbf24" dur="2s" repeatCount="indefinite"/>
+                </stop>
                 <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1"/>
-                <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:1"><animate attributeName="stop-color" values="#fbbf24;#f59e0b;#fbbf24" dur="2s" repeatCount="indefinite"/></stop>
+                <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:1">
+                  <animate attributeName="stop-color" values="#fbbf24;#f59e0b;#fbbf24" dur="2s" repeatCount="indefinite"/>
+                </stop>
               </linearGradient>
-              <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1"/><stop offset="100%" style="stop-color:#6366f1;stop-opacity:1"/></linearGradient>
-              <filter id="glow"><feGaussianBlur stdDeviation="2" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1"/>
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
             </defs>
-            <circle cx="50" cy="50" r="35" fill="url(#logoGrad2)" opacity="0.2"><animate attributeName="r" values="35;38;35" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.2;0.4;0.2" dur="2s" repeatCount="indefinite"/></circle>
-            <path d="M 55 15 L 35 48 L 48 48 L 45 85 L 70 45 L 57 45 Z" fill="url(#logoGrad1)" filter="url(#glow)" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"><animateTransform attributeName="transform" attributeType="XML" type="scale" values="1;1.08;1" dur="1.5s" repeatCount="indefinite" additive="sum"/></path>
-            <circle cx="30" cy="30" r="2" fill="#fbbf24" opacity="0"><animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/><animate attributeName="r" values="2;3;2" dur="1.5s" repeatCount="indefinite"/></circle>
-            <circle cx="70" cy="35" r="2" fill="#fbbf24" opacity="0"><animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/><animate attributeName="r" values="2;3;2" dur="1.5s" begin="0.5s" repeatCount="indefinite"/></circle>
-            <circle cx="65" cy="70" r="2" fill="#fbbf24" opacity="0"><animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="1s" repeatCount="indefinite"/><animate attributeName="r" values="2;3;2" dur="1.5s" begin="1s" repeatCount="indefinite"/></circle>
+            <circle cx="50" cy="50" r="35" fill="url(#logoGrad2)" opacity="0.2">
+              <animate attributeName="r" values="35;38;35" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.2;0.4;0.2" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <path d="M 55 15 L 35 48 L 48 48 L 45 85 L 70 45 L 57 45 Z"
+                  fill="url(#logoGrad1)" filter="url(#glow)"
+                  stroke="#fff" stroke-width="1.5" stroke-linejoin="round">
+              <animateTransform attributeName="transform" attributeType="XML" type="scale"
+                                values="1;1.08;1" dur="1.5s" repeatCount="indefinite" additive="sum"/>
+            </path>
+            <circle cx="30" cy="30" r="2" fill="#fbbf24" opacity="0">
+              <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+              <animate attributeName="r" values="2;3;2" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="70" cy="35" r="2" fill="#fbbf24" opacity="0">
+              <animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+              <animate attributeName="r" values="2;3;2" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="65" cy="70" r="2" fill="#fbbf24" opacity="0">
+              <animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+              <animate attributeName="r" values="2;3;2" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+            </circle>
           </svg>
         </div>
-        <div><h1>Comparador de Tarifas</h1><p>Encuentra la tarifa más barata en segundos</p></div>
+        <div>
+          <h1>Comparador de Tarifas</h1>
+          <p>Encuentra la tarifa más barata en segundos</p>
+        </div>
       </div>
 
       <div class="actions">
-        <div class="pill" id="statusPill" role="status" aria-live="polite"><span id="statusText">Listo para calcular</span></div>
+        <div class="pill" id="statusPill" role="status" aria-live="polite">
+          <span id="statusText">Listo para calcular</span>
+        </div>
         <div class="menu" id="menuRoot">
           <button class="btn" id="btnMenu" type="button" aria-haspopup="true" aria-expanded="false" title="Opciones">⚙️</button>
           <div class="menuPanel" id="menuPanel" role="menu" aria-label="Opciones">
@@ -552,43 +577,101 @@
 
     <div class="grid">
       <section class="card">
-        <div class="head"><div class="kicker">Tus datos</div><h2 class="title">Potencia y consumos (kWh)</h2></div>
+        <div class="head">
+          <div class="kicker">Tus datos</div>
+          <h2 class="title">Potencia y consumos (kWh)</h2>
+        </div>
         <div class="body">
           <div class="alert" id="errorBox"><b>Error:</b> <span id="errorText"></span></div>
           <div class="form">
-            <div class="group"><label for="p1">Potencia P1 (kW)</label><input id="p1" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 3,45" ></div>
-            <div class="group"><label for="p2">Potencia P2 (kW)</label><input id="p2" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 3,45" ></div>
-            <div class="group"><label for="dias">Días factura</label><input id="dias" class="input" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="1 a 365" ></div>
+            <div class="group">
+              <label for="p1">Potencia P1 (kW)</label>
+              <input id="p1" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 3,45">
+            </div>
+            <div class="group">
+              <label for="p2">Potencia P2 (kW)</label>
+              <input id="p2" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 3,45">
+            </div>
+            <div class="group">
+              <label for="dias">Días factura</label>
+              <input id="dias" class="input" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="1 a 365">
+            </div>
           </div>
           <div style="height:12px"></div>
           <div class="form">
-            <div class="group"><label for="cPunta">Consumo PUNTA <span class="tooltip" data-tip="10h-14h y 18h-22h" role="button" tabindex="0" aria-label="Horario de consumo punta">i</span></label><input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 120" ></div>
-            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h" role="button" tabindex="0" aria-label="Horario de consumo llano">i</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 80" ></div>
-            <div class="group"><label for="cValle">Consumo VALLE <span class="tooltip" data-tip="0h-8h (madrugada)" role="button" tabindex="0" aria-label="Horario de consumo valle">i</span></label><input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 150" ></div>
+            <div class="group">
+              <label for="cPunta">
+                Consumo PUNTA
+                <span class="tooltip" data-tip="10h-14h y 18h-22h" role="button" tabindex="0" aria-label="Horario de consumo punta">i</span>
+              </label>
+              <input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 120">
+            </div>
+            <div class="group">
+              <label for="cLlano">
+                Consumo LLANO
+                <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h" role="button" tabindex="0" aria-label="Horario de consumo llano">i</span>
+              </label>
+              <input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 80">
+            </div>
+            <div class="group">
+              <label for="cValle">
+                Consumo VALLE
+                <span class="tooltip" data-tip="0h-8h (madrugada)" role="button" tabindex="0" aria-label="Horario de consumo valle">i</span>
+              </label>
+              <input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 150">
+            </div>
           </div>
           <div class="row" style="margin-top:14px">
-            <div class="kwhPill" aria-live="polite"><div class="kwhLabel">Total kWh</div><div class="kwhValue" id="kwhHint">—</div></div>
-            <button class="btn primary" id="btnCalc" type="button" title="Calcular ahora"><span id="btnText">⚡ Calcular</span><span id="btnSpinner" style="display:none;"><span class="spinner"></span></span></button>
+            <div class="kwhPill" aria-live="polite">
+              <div class="kwhLabel">Total kWh</div>
+              <div class="kwhValue" id="kwhHint">—</div>
+            </div>
+            <button class="btn primary" id="btnCalc" type="button" title="Calcular ahora">
+              <span id="btnText">⚡ Calcular</span>
+              <span id="btnSpinner" style="display:none;"><span class="spinner"></span></span>
+            </button>
           </div>
-          <div class="help">Los datos iniciales ya están calculados. Modifica cualquier valor para actualizar el ranking al momento.</div>
+          <div class="help">
+            Los datos iniciales ya están calculados. Modifica cualquier valor para actualizar el ranking al momento.
+          </div>
         </div>
       </section>
 
       <section class="card">
-        <div class="head"><div class="kicker">Resultados</div><h2 class="title">Tarifa óptima + ranking</h2></div>
+        <div class="head">
+          <div class="kicker">Resultados</div>
+          <h2 class="title">Tarifa óptima + ranking</h2>
+        </div>
         <div class="body">
           <div class="heroKpis fade-container" id="heroKpis">
-            <div class="heroCard best"><div class="k">Tarifa más barata</div><div class="v" id="kpiBest">—</div><div class="s">Mejor opción</div></div>
-            <div class="heroCard"><div class="k">Factura mínima</div><div class="v" id="kpiPrice">—</div><div class="s">Según tus datos</div></div>
+            <div class="heroCard best">
+              <div class="k">Tarifa más barata</div>
+              <div class="v" id="kpiBest">—</div>
+              <div class="s">Mejor opción</div>
+            </div>
+            <div class="heroCard">
+              <div class="k">Factura mínima</div>
+              <div class="v" id="kpiPrice">—</div>
+              <div class="s">Según tus datos</div>
+            </div>
           </div>
 
           <div class="statsbar fade-container" id="statsBar">
-            <div class="statCard"><div class="statLabel">Precio mínimo</div><div class="statValue" id="statMin">—</div></div>
-            <div class="statCard"><div class="statLabel">Precio medio</div><div class="statValue" id="statAvg">—</div></div>
-            <div class="statCard"><div class="statLabel">Precio máximo</div><div class="statValue" id="statMax">—</div></div>
+            <div class="statCard">
+              <div class="statLabel">Precio mínimo</div>
+              <div class="statValue" id="statMin">—</div>
+            </div>
+            <div class="statCard">
+              <div class="statLabel">Precio medio</div>
+              <div class="statValue" id="statAvg">—</div>
+            </div>
+            <div class="statCard">
+              <div class="statLabel">Precio máximo</div>
+              <div class="statValue" id="statMax">—</div>
+            </div>
           </div>
 
-          <!-- ✅ PVPC info (antes lo buscaba tu JS y no existía) -->
+          <!-- PVPC info -->
           <div class="help" id="pvpcInfo" style="display:none; margin-top:0; margin-bottom: 12px;"></div>
 
           <div class="chartTop fade-container" id="chartTop">
@@ -618,7 +701,8 @@
                   <th class="sort" data-sort="impuestosNum">Impuestos <span class="sortIcon" id="si_impuestosNum"></span></th>
                   <th class="sort" data-sort="totalNum">Total <span class="sortIcon" id="si_totalNum"></span></th>
                   <th class="sort" data-sort="vsMejorNum">Vs mejor <span class="sortIcon" id="si_vsMejorNum"></span></th>
-                  <th>Tipo</th><th>Web</th>
+                  <th>Tipo</th>
+                  <th>Web</th>
                 </tr>
               </thead>
               <tbody id="tbody"></tbody>
@@ -630,75 +714,75 @@
       </section>
     </div>
 
-<section class="seoFold" id="info">
-  <details class="seoDetails">
-    <summary>ℹ️ Cómo funciona el comparador (potencia, consumos e impuestos)</summary>
-    <div class="seoContent">
-      <p>Este comparador calcula tu <strong>factura eléctrica</strong> estimada a partir de tu <strong>potencia contratada</strong> (P1 y P2), los <strong>kWh</strong> consumidos y el tipo de tarifa (<strong>1P</strong> precio fijo o <strong>3P</strong> con <strong>discriminación horaria</strong>: punta, llano y valle).</p>
-      <p>El ranking muestra el <strong>total con impuestos</strong> y la diferencia frente a la mejor opción, para que veas rápidamente cuánto podrías <strong>ahorrar</strong> cambiando de tarifa.</p>
-    </div>
-  </details>
+    <section class="seoFold" id="info">
+      <details class="seoDetails">
+        <summary>ℹ️ Cómo funciona el comparador (potencia, consumos e impuestos)</summary>
+        <div class="seoContent">
+          <p>Este comparador calcula tu <strong>factura eléctrica</strong> estimada a partir de tu <strong>potencia contratada</strong> (P1 y P2), los <strong>kWh</strong> consumidos y el tipo de tarifa (<strong>1P</strong> precio fijo o <strong>3P</strong> con <strong>discriminación horaria</strong>: punta, llano y valle).</p>
+          <p>El ranking muestra el <strong>total con impuestos</strong> y la diferencia frente a la mejor opción, para que veas rápidamente cuánto podrías <strong>ahorrar</strong> cambiando de tarifa.</p>
+        </div>
+      </details>
 
-  <details class="seoDetails">
-    <summary>❓ Preguntas frecuentes sobre tarifas de luz (punta, llano, valle, P1/P2)</summary>
-    <div class="seoContent">
-      <h2>Preguntas frecuentes</h2>
+      <details class="seoDetails">
+        <summary>❓ Preguntas frecuentes sobre tarifas de luz (punta, llano, valle, P1/P2)</summary>
+        <div class="seoContent">
+          <h2>Preguntas frecuentes</h2>
 
-      <h3>¿Qué significan punta, llano y valle?</h3>
-      <p>Son periodos horarios con precios distintos en tarifas 3P. En general, <strong>punta</strong> es más caro, <strong>valle</strong> más barato y <strong>llano</strong> intermedio (los horarios exactos dependen del calendario y la tarifa).</p>
+          <h3>¿Qué significan punta, llano y valle?</h3>
+          <p>Son periodos horarios con precios distintos en tarifas 3P. En general, <strong>punta</strong> es más caro, <strong>valle</strong> más barato y <strong>llano</strong> intermedio (los horarios exactos dependen del calendario y la tarifa).</p>
 
-      <h3>¿Qué es P1 y P2 en la potencia contratada?</h3>
-      <p>La potencia se paga por días y puede variar por periodo (P1/P2). En muchas viviendas se contrata la misma potencia en ambos, pero puedes optimizarla según tu uso.</p>
+          <h3>¿Qué es P1 y P2 en la potencia contratada?</h3>
+          <p>La potencia se paga por días y puede variar por periodo (P1/P2). En muchas viviendas se contrata la misma potencia en ambos, pero puedes optimizarla según tu uso.</p>
 
-      <h3>¿El comparador incluye impuestos?</h3>
-      <p>Sí: el cálculo muestra potencia, consumo y una estimación de impuestos/IVA según el modelo del comparador.</p>
+          <h3>¿El comparador incluye impuestos?</h3>
+          <p>Sí: el cálculo muestra potencia, consumo y una estimación de impuestos/IVA según el modelo del comparador.</p>
 
-      <h3>¿Necesito registrarme?</h3>
-      <p>No. Es una herramienta gratuita, sin registro. Puedes además compartir tu configuración por URL.</p>
+          <h3>¿Necesito registrarme?</h3>
+          <p>No. Es una herramienta gratuita, sin registro. Puedes además compartir tu configuración por URL.</p>
 
-      <h3>¿De dónde salen los precios?</h3>
-      <p>Las tarifas se cargan desde un archivo <code>tarifas.json</code> publicado en esta misma web.</p>
-    </div>
-  </details>
-</section>
+          <h3>¿De dónde salen los precios?</h3>
+          <p>Las tarifas se cargan desde un archivo <code>tarifas.json</code> publicado en esta misma web.</p>
+        </div>
+      </details>
+    </section>
 
-<footer style="max-width:1400px; margin:0 auto; padding:40px clamp(22px, 4.5vw, 60px) 30px; border-top:1px solid var(--border);">
-  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:30px; margin-bottom:30px;">
-    <div>
-      <h3 style="font-size:14px; font-weight:900; margin-bottom:10px; color:var(--text);">Sobre el Comparador</h3>
-      <p style="color:var(--muted); font-size:12px; line-height:1.6; margin:0;">
-        Herramienta gratuita para <strong>comparar tarifas de luz</strong> en España.
-        Calcula tu factura según consumo real en horarios de punta, llano y valle.
-        Sin publicidad, sin registro.
-      </p>
-    </div>
+    <footer style="max-width:1400px; margin:0 auto; padding:40px clamp(22px, 4.5vw, 60px) 30px; border-top:1px solid var(--border);">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:30px; margin-bottom:30px;">
+        <div>
+          <h3 style="font-size:14px; font-weight:900; margin-bottom:10px; color:var(--text);">Sobre el Comparador</h3>
+          <p style="color:var(--muted); font-size:12px; line-height:1.6; margin:0;">
+            Herramienta gratuita para <strong>comparar tarifas de luz</strong> en España.
+            Calcula tu factura según consumo real en horarios de punta, llano y valle.
+            Sin publicidad, sin registro.
+          </p>
+        </div>
 
-    <div>
-      <h3 style="font-size:14px; font-weight:900; margin-bottom:10px; color:var(--text);">Horarios Discriminación</h3>
-      <ul style="list-style:none; color:var(--muted); font-size:12px; line-height:1.8; margin:0; padding:0;">
-        <li><strong style="color:var(--danger);">Punta:</strong> 10h-14h y 18h-22h</li>
-        <li><strong style="color:var(--warn);">Llano:</strong> 8h-10h, 14h-18h, 22h-24h</li>
-        <li><strong style="color:var(--accent2);">Valle:</strong> 0h-8h + fines de semana</li>
-      </ul>
-    </div>
+        <div>
+          <h3 style="font-size:14px; font-weight:900; margin-bottom:10px; color:var(--text);">Horarios Discriminación</h3>
+          <ul style="list-style:none; color:var(--muted); font-size:12px; line-height:1.8; margin:0; padding:0;">
+            <li><strong style="color:var(--danger);">Punta:</strong> 10h-14h y 18h-22h</li>
+            <li><strong style="color:var(--warn);">Llano:</strong> 8h-10h, 14h-18h, 22h-24h</li>
+            <li><strong style="color:var(--accent2);">Valle:</strong> 0h-8h + fines de semana</li>
+          </ul>
+        </div>
 
-    <div>
-      <h3 style="font-size:14px; font-weight:900; margin-bottom:10px; color:var(--text);">¿Qué Calculamos?</h3>
-      <ul style="list-style:none; color:var(--muted); font-size:12px; line-height:1.8; margin:0; padding:0;">
-        <li>✓ Coste potencia (P1/P2)</li>
-        <li>✓ Consumo por periodos</li>
-        <li>✓ Impuestos + IVA (21%)</li>
-        <li>✓ Comparación directa</li>
-      </ul>
-    </div>
-  </div>
+        <div>
+          <h3 style="font-size:14px; font-weight:900; margin-bottom:10px; color:var(--text);">¿Qué Calculamos?</h3>
+          <ul style="list-style:none; color:var(--muted); font-size:12px; line-height:1.8; margin:0; padding:0;">
+            <li>✓ Coste potencia (P1/P2)</li>
+            <li>✓ Consumo por periodos</li>
+            <li>✓ Impuestos + IVA (21%)</li>
+            <li>✓ Comparación directa</li>
+          </ul>
+        </div>
+      </div>
 
-  <div style="text-align:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
-    <p style="margin:0; color:var(--muted2); font-size:12px;">⚡ Comparador de Tarifas Eléctricas · España</p>
-    <p style="margin:8px 0 0; font-weight:600; font-size:13px;">Creado por <strong style="color: var(--accent);">aLMaX</strong></p>
-    <p style="margin:8px 0 0; font-size:11px; color:var(--muted2);">Proyecto gratuito y sin publicidad · Datos actualizados regularmente</p>
-  </div>
-</footer>
+      <div style="text-align:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
+        <p style="margin:0; color:var(--muted2); font-size:12px;">⚡ Comparador de Tarifas Eléctricas · España</p>
+        <p style="margin:8px 0 0; font-weight:600; font-size:13px;">Creado por <strong style="color: var(--accent);">aLMaX</strong></p>
+        <p style="margin:8px 0 0; font-size:11px; color:var(--muted2);">Proyecto gratuito y sin publicidad · Datos actualizados regularmente</p>
+      </div>
+    </footer>
   </div>
 
   <div class="toast" id="toast"><span class="dot" id="toastDot"></span><span id="toastText"></span></div>
@@ -707,7 +791,7 @@
 
   <script>
     const $ = id => document.getElementById(id);
-    
+
     // URL DEL JSON ESTÁTICO DE TARIFAS EN EL MISMO HOST
     const JSON_URL = 'tarifas.json';
 
@@ -715,7 +799,7 @@
 
     // VALORES POR DEFECTO PARA PRIMERA VISITA
     const DEFAULTS = { p1:'3,45', p2:'3,45', dias:'30', cPunta:'100', cLlano:'100', cValle:'100' };
-    
+
     // RECOGIDA DE PARÁMETROS URL (para enlaces compartidos)
     const params = new URLSearchParams(window.location.search);
     const SERVER_PARAMS = {};
@@ -743,9 +827,9 @@
     // NOTA: La API de la CNMC tiene CORS bloqueado desde dominios externos.
     // Para habilitar PVPC en producción:
     // 1) Crea un proxy (ej. Cloudflare Worker) que añada Access-Control-Allow-Origin:*
-    // 2) Define ANTES de cargar este script (en el HTML), por ejemplo:
-    //    window.PVPC_PROXY_URL = "https://tu-worker.workers.dev/?url=";
-    // 3) El comparador usará automáticamente el proxy si está disponible
+    // 2) Define window.PVPC_PROXY_URL en el HTML ANTES de este script, por ejemplo:
+    //       window.PVPC_PROXY_URL = "https://tu-worker.workers.dev/?url=";  // ideal que termine en ?url=
+    // 3) El comparador usará automáticamente ese proxy cuando el fetch directo falle por CORS.
 
     const PVPC_CACHE_TTL = 30 * 60 * 1000;
     const PVPC_CACHE_LIMIT = 10;
@@ -942,7 +1026,7 @@
         descuento: 'false',
         perfilConsumo: '8',
         fechaInicio: periodo.fechaInicio,
-        potenciaConsumo: ((p1 + p2) / 2).toFixed(1), // ✅ FIX: promedio potencias
+        potenciaConsumo: ((p1 + p2) / 2).toFixed(1), // promedio potencias
         horarioElectrodomesticos: '3',
         inicioFacturacion: String(periodo.inicioFacturacion),
         finFacturacion: String(periodo.finFacturacion)
@@ -1152,15 +1236,20 @@
       document.addEventListener('keydown', (evt) => { if(evt.key==='Escape') hideTooltip(true); });
     }
 
-    function parseNum(str){ 
+    function parseNum(str){
       if(str===null||str===undefined)return 0;
-      if(typeof str==='number')return Number.isFinite(str)?str:0; 
-      let s=String(str).trim().replace(/\s/g,''); 
-      if(!s)return 0; 
-      if(s.includes(',')&&s.includes('.')){const lc=s.lastIndexOf(',');const ld=s.lastIndexOf('.');if(lc>ld)s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'');}
-      else if(s.includes(',')){s=s.replace(',','.');} 
-      s=s.replace(/[^\d.-]/g,''); 
-      const n=Number(s); 
+      if(typeof str==='number')return Number.isFinite(str)?str:0;
+      let s=String(str).trim().replace(/\s/g,'');
+      if(!s)return 0;
+      if(s.includes(',')&&s.includes('.')){
+        const lc=s.lastIndexOf(',');
+        const ld=s.lastIndexOf('.');
+        if(lc>ld)s=s.replace(/\./g,'').replace(',','.');
+        else s=s.replace(/,/g,'');
+      }
+      else if(s.includes(',')){s=s.replace(',','.');}
+      s=s.replace(/[^\d.-]/g,'');
+      const n=Number(s);
       return Number.isFinite(n)?n:0;
     }
 
@@ -1173,26 +1262,26 @@
         .replace(/'/g,'&#039;');
     }
 
-    function setStatus(text, mode='idle'){ 
-      el.statusText.textContent=text; 
-      el.statusPill.classList.remove('loading','ok','err'); 
-      if(mode==='loading')el.statusPill.classList.add('loading'); 
-      if(mode==='ok')el.statusPill.classList.add('ok'); 
-      if(mode==='err')el.statusPill.classList.add('err'); 
-      const l=mode==='loading'; 
-      el.btnCalc.disabled=l; 
-      el.btnText.style.display=l?'none':'flex'; 
-      el.btnSpinner.style.display=l?'flex':'none'; 
-      if(l)el.btnCalc.classList.add('calculating'); else el.btnCalc.classList.remove('calculating'); 
+    function setStatus(text, mode='idle'){
+      el.statusText.textContent=text;
+      el.statusPill.classList.remove('loading','ok','err');
+      if(mode==='loading')el.statusPill.classList.add('loading');
+      if(mode==='ok')el.statusPill.classList.add('ok');
+      if(mode==='err')el.statusPill.classList.add('err');
+      const l=mode==='loading';
+      el.btnCalc.disabled=l;
+      el.btnText.style.display=l?'none':'flex';
+      el.btnSpinner.style.display=l?'flex':'none';
+      if(l)el.btnCalc.classList.add('calculating'); else el.btnCalc.classList.remove('calculating');
     }
 
-    function toast(msg, mode='ok'){ 
-      el.toastText.textContent=msg; 
-      el.toastDot.classList.remove('ok','err'); 
-      el.toastDot.classList.add(mode==='err'?'err':'ok'); 
-      el.toast.classList.add('show'); 
-      clearTimeout(el.toast._t); 
-      el.toast._t=setTimeout(()=>el.toast.classList.remove('show'),2800); 
+    function toast(msg, mode='ok'){
+      el.toastText.textContent=msg;
+      el.toastDot.classList.remove('ok','err');
+      el.toastDot.classList.add(mode==='err'?'err':'ok');
+      el.toast.classList.add('show');
+      clearTimeout(el.toast._t);
+      el.toast._t=setTimeout(()=>el.toast.classList.remove('show'),2800);
     }
 
     async function copyText(text) {
@@ -1210,7 +1299,7 @@
       document.body.removeChild(ta);
       return true;
     }
-    
+
     async function fetchTarifas(forceRefresh = false) {
       if (!forceRefresh && baseTarifasCache.length > 0) return true;
       setStatus('Cargando tarifas...', 'loading');
@@ -1326,7 +1415,7 @@
       });
 
       const prices = processed.map(r => r.totalNum);
-      const min = Math.min(...prices); 
+      const min = Math.min(...prices);
       const max = Math.max(...prices);
       const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
 
@@ -1352,49 +1441,49 @@
       updateKwhHint();
     }
 
-    function saveInputs(){ 
-      const d={}; 
-      for(const k in DEFAULTS)d[k]=el.inputs[k].value; 
-      try { localStorage.setItem(LS_KEY,JSON.stringify(d)); } catch(e){} 
-      return d; 
+    function saveInputs(){
+      const d={};
+      for(const k in DEFAULTS)d[k]=el.inputs[k].value;
+      try { localStorage.setItem(LS_KEY,JSON.stringify(d)); } catch(e){}
+      return d;
     }
 
-    function resetInputs(){ 
-      for(const k in DEFAULTS)el.inputs[k].value=DEFAULTS[k]; 
-      saveInputs(); 
-      updateKwhHint(); 
-      clearErrorStyles(); 
-      toast('Restablecido'); 
-      setTimeout(()=>calculate(false), 300); 
+    function resetInputs(){
+      for(const k in DEFAULTS)el.inputs[k].value=DEFAULTS[k];
+      saveInputs();
+      updateKwhHint();
+      clearErrorStyles();
+      toast('Restablecido');
+      setTimeout(()=>calculate(false), 300);
     }
 
-    function updateKwhHint(){ 
+    function updateKwhHint(){
       const v = getInputValues();
       const t = v.cPunta + v.cLlano + v.cValle;
-      el.kwhHint.textContent=`${t.toFixed(2).replace('.',',')} kWh`; 
+      el.kwhHint.textContent=`${t.toFixed(2).replace('.',',')} kWh`;
     }
 
     function clearErrorStyles(){ Object.values(el.inputs).forEach(i=>i.classList.remove('error')); }
 
-    function rowTipoBadge(t){ 
-      const s=String(t||'').trim(); 
-      if(s==='1P')return `<span class="badge b1">1P</span>`; 
-      if(s==='3P')return `<span class="badge b3">3P</span>`; 
-      return `<span class="badge">${escapeHtml(s||'—')}</span>`; 
+    function rowTipoBadge(t){
+      const s=String(t||'').trim();
+      if(s==='1P')return `<span class="badge b1">1P</span>`;
+      if(s==='3P')return `<span class="badge b3">3P</span>`;
+      return `<span class="badge">${escapeHtml(s||'—')}</span>`;
     }
 
-    function formatVsWithBar(v,vn){ 
-      const s=String(v??'').trim(); 
-      if(!s||s==='—'||s==='0'||s==='0,00'||s==='0 €'||s==='0,00 €')return '<span class="vs-text zero">—</span>'; 
-      const pos=s.startsWith('+'); 
-      const c=pos?'pos':'neg'; 
-      const a=pos?'▲':'▼'; 
-      return `<span class="vs-text ${c}">${a} ${escapeHtml(s)}</span>`; 
+    function formatVsWithBar(v,vn){
+      const s=String(v??'').trim();
+      if(!s||s==='—'||s==='0'||s==='0,00'||s==='0 €'||s==='0,00 €')return '<span class="vs-text zero">—</span>';
+      const pos=s.startsWith('+');
+      const c=pos?'pos':'neg';
+      const a=pos?'▲':'▼';
+      return `<span class="vs-text ${c}">${a} ${escapeHtml(s)}</span>`;
     }
 
-    function applyFilters(r){ 
-      const f=state.filter; 
-      return r.filter(x=>(f==='all'||String(x.tipo||'')===f)); 
+    function applyFilters(r){
+      const f=state.filter;
+      return r.filter(x=>(f==='all'||String(x.tipo||'')===f));
     }
 
     function applySort(r){
@@ -1426,19 +1515,19 @@
       });
     }
 
-    function createRipple(b,e){ 
-      const r=document.createElement('span'); 
-      const rect=b.getBoundingClientRect(); 
-      const s=Math.max(rect.width,rect.height); 
-      const x=e.clientX-rect.left-s/2; 
-      const y=e.clientY-rect.top-s/2; 
-      r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`; 
-      b.style.position='relative'; 
-      b.style.overflow='hidden'; 
-      b.appendChild(r); 
-      setTimeout(()=>r.remove(),600); 
+    function createRipple(b,e){
+      const r=document.createElement('span');
+      const rect=b.getBoundingClientRect();
+      const s=Math.max(rect.width,rect.height);
+      const x=e.clientX-rect.left-s/2;
+      const y=e.clientY-rect.top-s/2;
+      r.style.cssText=`position:absolute;width:${s}px;height:${s}px;border-radius:50%;background:rgba(255,255,255,.4);left:${x}px;top:${y}px;pointer-events:none;animation:ripple 0.6s ease-out;`;
+      b.style.position='relative';
+      b.style.overflow='hidden';
+      b.appendChild(r);
+      setTimeout(()=>r.remove(),600);
     }
-    
+
     function renderTable(){
       const f = applyFilters(state.rows);
       const s = applySort(f);
@@ -1461,7 +1550,16 @@
           const w = r.webUrl
             ? `<a class="web" href="${escapeHtml(r.webUrl)}" target="_blank" rel="noopener" title="Abrir web">🔗</a>`
             : '';
-          tr.innerHTML = `<td>${escapeHtml(r.posicion)}</td><td title="${escapeHtml(r.nombre)}">${escapeHtml(r.nombre)}</td><td>${escapeHtml(r.potencia)}</td><td>${escapeHtml(r.consumo)}</td><td>${escapeHtml(r.impuestos)}</td><td><strong style="font-weight:1100; color: rgba(167,139,250,1);">${escapeHtml(r.total)}</strong></td><td class="vs">${formatVsWithBar(r.vsMejor,r.vsMejorNum)}</td><td>${rowTipoBadge(r.tipo)}</td><td style="text-align:center">${w}</td>`;
+          tr.innerHTML =
+            `<td>${escapeHtml(r.posicion)}</td>`+
+            `<td title="${escapeHtml(r.nombre)}">${escapeHtml(r.nombre)}</td>`+
+            `<td>${escapeHtml(r.potencia)}</td>`+
+            `<td>${escapeHtml(r.consumo)}</td>`+
+            `<td>${escapeHtml(r.impuestos)}</td>`+
+            `<td><strong style="font-weight:1100; color: rgba(167,139,250,1);">${escapeHtml(r.total)}</strong></td>`+
+            `<td class="vs">${formatVsWithBar(r.vsMejor,r.vsMejorNum)}</td>`+
+            `<td>${rowTipoBadge(r.tipo)}</td>`+
+            `<td style="text-align:center">${w}</td>`;
           frag.appendChild(tr);
         });
 
@@ -1599,12 +1697,12 @@
       state.lastSignature = signature;
     }
 
-    function toggleMenu(force){ 
-      const s=(typeof force==='boolean')?force:!el.menuPanel.classList.contains('show'); 
-      el.menuPanel.classList.toggle('show',s); 
-      el.btnMenu.setAttribute('aria-expanded',s?'true':'false'); 
+    function toggleMenu(force){
+      const s=(typeof force==='boolean')?force:!el.menuPanel.classList.contains('show');
+      el.menuPanel.classList.toggle('show',s);
+      el.btnMenu.setAttribute('aria-expanded',s?'true':'false');
     }
-    
+
     document.addEventListener('DOMContentLoaded', async ()=>{
       initTooltips();
       loadInputs();
@@ -1695,7 +1793,7 @@
   </script>
 
   <!-- Cloudflare Web Analytics -->
-  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fea4a7fbe6e34ab1a867cff1c7837aa3"}'></script>
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "fea4a7fbe6e34ab1a867cff1c7837aa3"}'></script>
   <!-- End Cloudflare Web Analytics -->
 </body>
 </html>
