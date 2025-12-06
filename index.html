@@ -11,6 +11,17 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" >
   <meta name="apple-mobile-web-app-title" content="Comparador Tarifas" >
 
+  <!-- ✅ PVPC PROXY (OPCIONAL)
+       La API de la CNMC bloquea CORS desde dominios externos.
+       Si quieres que aparezca PVPC en el ranking, define una URL de proxy ANTES del script principal.
+       Debe ser un endpoint que acepte ?url= y devuelva el JSON añadiendo Access-Control-Allow-Origin:*.
+       Ejemplo:
+       <script>window.PVPC_PROXY_URL="https://TU-WORKER.workers.dev/?url=";</script>
+  -->
+  <script>
+    // window.PVPC_PROXY_URL = "https://TU-WORKER.workers.dev/?url="; // <- opcional
+  </script>
+
   <!-- Open Graph -->
   <meta property="og:title" content="Comparador de Tarifas de Luz en España | Encuentra la Más Barata" >
   <meta property="og:description" content="Compara tarifas de electricidad con discriminación horaria. Calcula tu factura según potencia y consumo. Descubre cuánto puedes ahorrar. 100% gratuito." >
@@ -122,7 +133,6 @@
     ]
   }
   </script>
-
 
   <style>
     /* === TU DISEÑO ORIGINAL EXACTO (NO TOCAR) === */
@@ -409,96 +419,84 @@
       }
     }
 
-/* === SEO DISCRETO (PLEGABLE) === */
-.seoFold{
-  max-width: 1400px;
-  margin: 40px auto 20px;
-  padding: 0 clamp(22px, 4.5vw, 60px);
-  display: grid;
-  gap: 10px;
-}
+    /* === SEO DISCRETO (PLEGABLE) === */
+    .seoFold{
+      max-width: 1400px;
+      margin: 40px auto 20px;
+      padding: 0 clamp(22px, 4.5vw, 60px);
+      display: grid;
+      gap: 10px;
+    }
 
-.seoDetails{
-  border: 1px solid var(--border);
-  background: rgba(0,0,0,.14);
-  border-radius: 16px;
-  padding: 10px 12px;
-  backdrop-filter: blur(14px);
-  transition: background 0.2s ease;
-}
+    .seoDetails{
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.14);
+      border-radius: 16px;
+      padding: 10px 12px;
+      backdrop-filter: blur(14px);
+      transition: background 0.2s ease;
+    }
 
-.seoDetails:hover{
-  background: rgba(0,0,0,.20);
-}
+    .seoDetails:hover{
+      background: rgba(0,0,0,.20);
+    }
 
-.seoDetails > summary{
-  cursor: pointer;
-  list-style: none;
-  font-weight: 900;
-  color: var(--muted);
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  user-select: none;
-  transition: color 0.2s ease;
-}
+    .seoDetails > summary{
+      cursor: pointer;
+      list-style: none;
+      font-weight: 900;
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+      transition: color 0.2s ease;
+    }
 
-.seoDetails > summary::-webkit-details-marker{
-  display:none;
-}
+    .seoDetails > summary::-webkit-details-marker{ display:none; }
 
-.seoDetails[open] > summary{
-  color: var(--text);
-  margin-bottom: 10px;
-}
+    .seoDetails[open] > summary{
+      color: var(--text);
+      margin-bottom: 10px;
+    }
 
-.seoContent{
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
-}
+    .seoContent{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
 
-.seoContent h2{
-  margin: 6px 0 10px;
-  font-size: 16px;
-  font-weight: 900;
-  color: var(--text);
-}
+    .seoContent h2{
+      margin: 6px 0 10px;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--text);
+    }
 
-.seoContent h3{
-  margin: 14px 0 6px;
-  font-size: 14px;
-  font-weight: 900;
-  color: var(--text);
-}
+    .seoContent h3{
+      margin: 14px 0 6px;
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--text);
+    }
 
-.seoContent p{
-  margin: 0 0 10px;
-}
+    .seoContent p{ margin: 0 0 10px; }
 
-.seoContent code{
-  background: rgba(139,92,246,.15);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--accent);
-}
+    .seoContent code{
+      background: rgba(139,92,246,.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+    }
 
-@media (max-width: 768px){
-  .seoFold{
-    margin: 30px auto 20px;
-  }
-
-  .seoDetails > summary{
-    font-size: 12px;
-  }
-
-  .seoContent{
-    font-size: 12px;
-  }
-}
+    @media (max-width: 768px){
+      .seoFold{ margin: 30px auto 20px; }
+      .seoDetails > summary{ font-size: 12px; }
+      .seoContent{ font-size: 12px; }
+    }
   </style>
 </head>
 
@@ -558,15 +556,15 @@
         <div class="body">
           <div class="alert" id="errorBox"><b>Error:</b> <span id="errorText"></span></div>
           <div class="form">
-            <div class="group"><label for="p1">Potencia P1 (kW)</label><input id="p1" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 3,45" ></div>
-            <div class="group"><label for="p2">Potencia P2 (kW)</label><input id="p2" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 3,45" ></div>
+            <div class="group"><label for="p1">Potencia P1 (kW)</label><input id="p1" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 3,45" ></div>
+            <div class="group"><label for="p2">Potencia P2 (kW)</label><input id="p2" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 3,45" ></div>
             <div class="group"><label for="dias">Días factura</label><input id="dias" class="input" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="1 a 365" ></div>
           </div>
           <div style="height:12px"></div>
-            <div class="form">
-            <div class="group"><label for="cPunta">Consumo PUNTA <span class="tooltip" data-tip="10h-14h y 18h-22h" role="button" tabindex="0" aria-label="Horario de consumo punta">i</span></label><input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 120" ></div>
-            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h" role="button" tabindex="0" aria-label="Horario de consumo llano">i</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 80" ></div>
-            <div class="group"><label for="cValle">Consumo VALLE <span class="tooltip" data-tip="0h-8h (madrugada)" role="button" tabindex="0" aria-label="Horario de consumo valle">i</span></label><input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9]*" autocomplete="off" placeholder="Ej: 150" ></div>
+          <div class="form">
+            <div class="group"><label for="cPunta">Consumo PUNTA <span class="tooltip" data-tip="10h-14h y 18h-22h" role="button" tabindex="0" aria-label="Horario de consumo punta">i</span></label><input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 120" ></div>
+            <div class="group"><label for="cLlano">Consumo LLANO <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h" role="button" tabindex="0" aria-label="Horario de consumo llano">i</span></label><input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 80" ></div>
+            <div class="group"><label for="cValle">Consumo VALLE <span class="tooltip" data-tip="0h-8h (madrugada)" role="button" tabindex="0" aria-label="Horario de consumo valle">i</span></label><input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 150" ></div>
           </div>
           <div class="row" style="margin-top:14px">
             <div class="kwhPill" aria-live="polite"><div class="kwhLabel">Total kWh</div><div class="kwhValue" id="kwhHint">—</div></div>
@@ -589,6 +587,9 @@
             <div class="statCard"><div class="statLabel">Precio medio</div><div class="statValue" id="statAvg">—</div></div>
             <div class="statCard"><div class="statLabel">Precio máximo</div><div class="statValue" id="statMax">—</div></div>
           </div>
+
+          <!-- ✅ PVPC info (antes lo buscaba tu JS y no existía) -->
+          <div class="help" id="pvpcInfo" style="display:none; margin-top:0; margin-bottom: 12px;"></div>
 
           <div class="chartTop fade-container" id="chartTop">
             <div class="chartTop-header">
@@ -730,20 +731,73 @@
       toast: $('toast'), toastText: $('toastText'), toastDot: $('toastDot'),
       menuRoot: $('menuRoot'), btnMenu: $('btnMenu'), menuPanel: $('menuPanel'),
       btnExport: $('btnExport'), btnReset: $('btnReset'), btnShare: $('btnShare'),
-      globalTooltip: $('globalTooltip')
+      globalTooltip: $('globalTooltip'),
+      pvpcInfo: $('pvpcInfo')
     };
 
-    const state = { filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], lastSignature: null };
+    const state = { filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], lastSignature: null, debounce: null };
     let cachedTarifas = [];
     let baseTarifasCache = [];
 
     // ===== BEGIN PVPC MODULE =====
+    // NOTA: La API de la CNMC tiene CORS bloqueado desde dominios externos.
+    // Para habilitar PVPC en producción:
+    // 1) Crea un proxy (ej. Cloudflare Worker) que añada Access-Control-Allow-Origin:*
+    // 2) Define ANTES de cargar el script principal:
+    //    <script>window.PVPC_PROXY_URL = "https://tu-worker.workers.dev/?url=";</script>
+    //                                                                      ^^^^^ ideal que termine en ?url=
+    // 3) El comparador usará automáticamente el proxy si está disponible
+
     const PVPC_CACHE_TTL = 30 * 60 * 1000;
     const PVPC_CACHE_LIMIT = 10;
     const pvpcCache = new Map();
     const pvpcInFlight = new Map();
     let pvpcLastMeta = null;
     let pvpcErrorShown = false;
+
+    // Helper robusto: soporta número, "3.45", "3,45", "1.234,56", "1,234.56" y entradas con separadores repetidos
+    function asNumber(v, fallback = 0) {
+      if (typeof v === 'number' && Number.isFinite(v)) return v;
+
+      let s = String(v ?? '').trim();
+      if (!s) return fallback;
+
+      const hasComma = s.includes(',');
+      const hasDot = s.includes('.');
+
+      // Si hay coma y punto, el último separador suele ser el decimal
+      if (hasComma && hasDot) {
+        if (s.lastIndexOf(',') > s.lastIndexOf('.')) {
+          // decimal = coma, miles = punto → "1.234,56"
+          s = s.replace(/\./g, '');
+          const parts = s.split(',');
+          const dec = parts.pop();
+          s = parts.join('') + '.' + dec;
+        } else {
+          // decimal = punto, miles = coma → "1,234.56"
+          s = s.replace(/,/g, '');
+        }
+      } else if (hasComma) {
+        // Solo comas: tratar la ÚLTIMA como decimal, las anteriores como miles
+        const parts = s.split(',');
+        const dec = parts.pop();
+        s = parts.join('') + '.' + dec;
+      } else if (hasDot) {
+        // Solo puntos: tratar el ÚLTIMO como decimal, los anteriores como miles
+        const parts = s.split('.');
+        const dec = parts.pop();
+        s = parts.join('') + '.' + dec;
+      }
+
+      // Limpia basura (mantiene solo números, punto y signo menos)
+      s = s.replace(/[^0-9.\-]/g, '');
+      const n = Number(s);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    // Cooldown anti-spam: desactivar fetch directo 30min tras fallo CORS/red
+    let pvpcDirectDisabledUntil = 0;
+    const PVPC_DIRECT_DISABLE_MS = 30 * 60 * 1000;
 
     function startOfDayLocal(date){
       const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());
@@ -843,49 +897,112 @@
       return { ...meta, precioPunta, precioLlano, precioValle, rangoFechas };
     }
 
+    function normalizeProxyBase(p){
+      const raw = String(p || '').trim();
+      if(!raw) return '';
+      // Si ya parece terminar en url=, perfecto
+      if(raw.endsWith('?url=') || raw.endsWith('&url=') || raw.endsWith('url=')) return raw;
+
+      // Si contiene ? pero no url=, añadir &url=
+      if(raw.includes('?')) {
+        const sep = (raw.endsWith('?') || raw.endsWith('&')) ? '' : '&';
+        return raw + sep + 'url=';
+      }
+
+      // Si no contiene ?, añadir ?url=
+      return raw + (raw.endsWith('/') ? '' : '') + '?url=';
+    }
+
     async function obtenerPVPC_CNMC(values){
-      const periodo=buildPvpcPeriodo(values?.dias||30);
-      const params=new URLSearchParams({
-        pvpcTipoContador:'T',
-        periodoFacturacion:periodo.periodoFacturacion,
-        bonoSocial:'false',
-        tipoConsumidor:'1',
-        categoria:'1',
-        contador:'1',
-        potenciaPrimeraFranja:String(values?.p1||0),
-        potenciaSegundaFranja:String(values?.p2||0),
-        consumo1:String(values?.cPunta||0),
-        consumo2:String(values?.cLlano||0),
-        consumo3:String(values?.cValle||0),
-        vivienda:'false',
-        tarifa:'4',
-        calculoAntiguo:'false',
-        descuento:'false',
-        perfilConsumo:'8',
-        fechaInicio:periodo.fechaInicio,
-        potenciaConsumo:String((values?.cPunta||0)+(values?.cLlano||0)+(values?.cValle||0)),
-        horarioElectrodomesticos:'3',
-        inicioFacturacion:String(periodo.inicioFacturacion),
-        finFacturacion:String(periodo.finFacturacion)
+      // Inputs robustos con validación y clamp
+      const diasRaw = asNumber(values?.dias, 30);
+      const dias = Math.min(365, Math.max(1, Math.round(diasRaw))); // clamp 1..365
+      const p1 = Math.max(0, asNumber(values?.p1, 0));              // clamp >= 0
+      const p2 = Math.max(0, asNumber(values?.p2, 0));              // clamp >= 0
+      const cPunta = Math.max(0, asNumber(values?.cPunta, 0));      // clamp >= 0
+      const cLlano = Math.max(0, asNumber(values?.cLlano, 0));      // clamp >= 0
+      const cValle = Math.max(0, asNumber(values?.cValle, 0));      // clamp >= 0
+
+      const periodo = buildPvpcPeriodo(dias);
+
+      const params = new URLSearchParams({
+        pvpcTipoContador: 'T',
+        periodoFacturacion: periodo.periodoFacturacion,
+        bonoSocial: 'false',
+        tipoConsumidor: '1',
+        categoria: '1',
+        contador: '1',
+        potenciaPrimeraFranja: p1.toFixed(2),
+        potenciaSegundaFranja: p2.toFixed(2),
+        consumo1: String(Math.round(cPunta)),
+        consumo2: String(Math.round(cLlano)),
+        consumo3: String(Math.round(cValle)),
+        vivienda: 'false',
+        tarifa: '4',
+        calculoAntiguo: 'false',
+        descuento: 'false',
+        perfilConsumo: '8',
+        fechaInicio: periodo.fechaInicio,
+        potenciaConsumo: ((p1 + p2) / 2).toFixed(1), // ✅ FIX: promedio potencias
+        horarioElectrodomesticos: '3',
+        inicioFacturacion: String(periodo.inicioFacturacion),
+        finFacturacion: String(periodo.finFacturacion)
       });
-      const url=`https://comparador.cnmc.gob.es/api/ofertas/pvpc?${params.toString()}`;
+
+      const apiUrl = `https://comparador.cnmc.gob.es/api/ofertas/pvpc?${params.toString()}`;
 
       console.group('PVPC obtenerPVPC_CNMC');
-      console.log('URL',url);
-      console.log('Periodo',periodo.periodoFacturacion);
-      console.log('Potencias',values?.p1,values?.p2,'Consumos',values?.cPunta,values?.cLlano,values?.cValle);
+      console.log('API URL:', apiUrl);
+      console.log('Periodo:', periodo.periodoFacturacion, `(${dias} días)`);
+      console.log(`Potencias: P1=${p1.toFixed(2)} P2=${p2.toFixed(2)} → promedio=${((p1+p2)/2).toFixed(1)}`);
+      console.log(`Consumos: Punta=${Math.round(cPunta)} Llano=${Math.round(cLlano)} Valle=${Math.round(cValle)}`);
       console.groupEnd();
 
-      try{
-        return await fetchJsonWithTimeout(url,15000);
-      }catch(err){
-        if(err instanceof TypeError && window.PVPC_PROXY_URL){
-          const proxyUrl=`${window.PVPC_PROXY_URL}?url=${encodeURIComponent(url)}`;
-          return fetchJsonWithTimeout(proxyUrl,15000);
+      const inCooldown = Date.now() < pvpcDirectDisabledUntil;
+
+      // INTENTO 1: Fetch directo (solo si no hay cooldown)
+      if (!inCooldown) {
+        try {
+          console.log('PVPC: Intentando fetch directo a CNMC...');
+          const result = await fetchJsonWithTimeout(apiUrl, 8000);
+          pvpcErrorShown = false;
+          return result;
+        } catch (err) {
+          console.warn('PVPC fetch directo falló:', err?.message || err);
+          const msg = String(err?.message || '');
+          const isCorsOrNetwork = (err instanceof TypeError) || msg.includes('Failed to fetch');
+          if (isCorsOrNetwork) {
+            pvpcDirectDisabledUntil = Date.now() + PVPC_DIRECT_DISABLE_MS;
+            console.info('PVPC: ⏸️ Cooldown activado 30min (CORS/red detectado).');
+          }
         }
-        console.error('PVPC fetch error',err);
-        return null;
+      } else {
+        const remaining = Math.ceil((pvpcDirectDisabledUntil - Date.now()) / 60000);
+        console.info(`PVPC: ⏸️ Fetch directo desactivado (${remaining}min restantes).`);
       }
+
+      // INTENTO 2: Proxy (solo si está configurado)
+      if (window.PVPC_PROXY_URL) {
+        const proxyBase = normalizeProxyBase(window.PVPC_PROXY_URL);
+        if (proxyBase) {
+          try {
+            const proxyUrl = `${proxyBase}${encodeURIComponent(apiUrl)}`;
+            console.log('PVPC: 🔄 Reintentando vía proxy:', proxyUrl);
+            const result = await fetchJsonWithTimeout(proxyUrl, 12000);
+            pvpcErrorShown = false;
+            return result;
+          } catch (proxyErr) {
+            console.warn('PVPC fetch con proxy falló:', proxyErr?.message || proxyErr);
+          }
+        }
+      }
+
+      console.info('PVPC: ⚠️ window.PVPC_PROXY_URL no configurado o inválido. PVPC no disponible.');
+      if (typeof toast === 'function' && !pvpcErrorShown) {
+        toast('PVPC no disponible (CORS/red). Puedes configurar proxy.', 'err');
+        pvpcErrorShown = true;
+      }
+      return null;
     }
 
     function pvpcSignatureFromValues(v){
@@ -969,12 +1086,10 @@
 
     let activeTooltip = null;
     let tooltipPinned = false;
-    // INP OPT: Track scheduled tooltip frame to batch layout reads
     let tooltipRaf = null;
 
     function positionTooltip(target){
       if(!target)return;
-      // INP OPT: Defer tooltip measurement and paint to next frame
       if(tooltipRaf) cancelAnimationFrame(tooltipRaf);
       tooltipRaf = requestAnimationFrame(() => {
         const tip = target.getAttribute('data-tip') || '';
@@ -1033,7 +1148,6 @@
         if(!evt.target.closest('.tooltip')) hideTooltip(true);
       });
 
-      // INP OPT: Passive scroll/resize handlers with rAF-batched tooltip position
       window.addEventListener('scroll', () => { if(activeTooltip) positionTooltip(activeTooltip); }, {capture:true, passive:true});
       window.addEventListener('resize', () => { if(activeTooltip) positionTooltip(activeTooltip); }, {passive:true});
       document.addEventListener('keydown', (evt) => { if(evt.key==='Escape') hideTooltip(true); });
@@ -1044,11 +1158,21 @@
       if(typeof str==='number')return Number.isFinite(str)?str:0; 
       let s=String(str).trim().replace(/\s/g,''); 
       if(!s)return 0; 
-      if(s.includes(',')&&s.includes('.')){const lc=s.lastIndexOf(',');const ld=s.lastIndexOf('.');if(lc>ld)s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'');}else if(s.includes(',')){s=s.replace(',','.');} 
-      s=s.replace(/[^\d.-]/g,''); const n=Number(s); return Number.isFinite(n)?n:0;
+      if(s.includes(',')&&s.includes('.')){const lc=s.lastIndexOf(',');const ld=s.lastIndexOf('.');if(lc>ld)s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'');}
+      else if(s.includes(',')){s=s.replace(',','.');} 
+      s=s.replace(/[^\d.-]/g,''); 
+      const n=Number(s); 
+      return Number.isFinite(n)?n:0;
     }
 
-    function escapeHtml(v){ return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+    function escapeHtml(v){
+      return String(v??'')
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+    }
 
     function setStatus(text, mode='idle'){ 
       el.statusText.textContent=text; 
@@ -1074,10 +1198,7 @@
 
     async function copyText(text) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        try {
-          await navigator.clipboard.writeText(text);
-          return true;
-        } catch (e) {}
+        try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
       }
       const ta = document.createElement('textarea');
       ta.value = text;
@@ -1091,143 +1212,145 @@
       return true;
     }
     
-    // ⚡ LEER TARIFAS DESDE tarifas.json EN EL MISMO HOST
     async function fetchTarifas(forceRefresh = false) {
-        if (!forceRefresh && baseTarifasCache.length > 0) return true;
-        setStatus('Cargando tarifas...', 'loading');
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
+      if (!forceRefresh && baseTarifasCache.length > 0) return true;
+      setStatus('Cargando tarifas...', 'loading');
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-            const response = await fetch(JSON_URL, { signal: controller.signal, cache: forceRefresh ? 'no-cache' : 'default' });
-            clearTimeout(timeoutId);
+        const response = await fetch(JSON_URL, { signal: controller.signal, cache: forceRefresh ? 'no-cache' : 'default' });
+        clearTimeout(timeoutId);
 
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status);
-            }
+        if (!response.ok) throw new Error('HTTP ' + response.status);
 
-            const data = await response.json();
-            const tarifas = Array.isArray(data.tarifas) ? data.tarifas : null;
+        const data = await response.json();
+        const tarifas = Array.isArray(data.tarifas) ? data.tarifas : null;
 
-            if (tarifas && tarifas.length) {
-                baseTarifasCache = tarifas;
-                setStatus('Datos actualizados', 'ok');
-                setTimeout(() => setStatus('Listo para calcular', 'idle'), 1500);
-                return true;
-            } else {
-                throw new Error('JSON sin tarifas válidas');
-            }
-        } catch (e) {
-            console.error('Error cargando tarifas JSON:', e);
-            setStatus('Error conexión', 'err');
-            toast('Error cargando tarifas desde el servidor.', 'err');
-            return false;
+        if (tarifas && tarifas.length) {
+          baseTarifasCache = tarifas;
+          setStatus('Datos actualizados', 'ok');
+          setTimeout(() => setStatus('Listo para calcular', 'idle'), 1500);
+          return true;
+        } else {
+          throw new Error('JSON sin tarifas válidas');
         }
+      } catch (e) {
+        console.error('Error cargando tarifas JSON:', e);
+        setStatus('Error conexión', 'err');
+        toast('Error cargando tarifas desde el servidor.', 'err');
+        return false;
+      }
     }
 
     function formatMoney(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
 
+    function clamp01to365Days(raw){
+      const d = Math.trunc(raw);
+      if(!Number.isFinite(d) || d === 0) return 30;
+      return Math.min(365, Math.max(1, d));
+    }
+
+    function clampNonNeg(n){ return Math.max(0, Number(n) || 0); }
+
     function getInputValues() {
-        return {
-            p1: parseNum(el.inputs.p1.value),
-            p2: parseNum(el.inputs.p2.value),
-            dias: Math.trunc(parseNum(el.inputs.dias.value)) || 30,
-            cPunta: parseNum(el.inputs.cPunta.value),
-            cLlano: parseNum(el.inputs.cLlano.value),
-            cValle: parseNum(el.inputs.cValle.value)
-        };
+      const p1 = clampNonNeg(parseNum(el.inputs.p1.value));
+      const p2 = clampNonNeg(parseNum(el.inputs.p2.value));
+      const dias = clamp01to365Days(parseNum(el.inputs.dias.value));
+      const cPunta = clampNonNeg(parseNum(el.inputs.cPunta.value));
+      const cLlano = clampNonNeg(parseNum(el.inputs.cLlano.value));
+      const cValle = clampNonNeg(parseNum(el.inputs.cValle.value));
+      return { p1, p2, dias, cPunta, cLlano, cValle };
     }
 
     function signatureFromValues(v) {
-        return [v.p1, v.p2, v.dias, v.cPunta, v.cLlano, v.cValle].join('|');
+      return [v.p1, v.p2, v.dias, v.cPunta, v.cLlano, v.cValle].join('|');
     }
 
     function calculateLocal(values) {
-        const { p1, p2, dias, cPunta, cLlano, cValle } = values || getInputValues();
+      const { p1, p2, dias, cPunta, cLlano, cValle } = values || getInputValues();
+      if(!cachedTarifas.length) return;
 
-        if(!cachedTarifas.length) return;
+      const resultados = cachedTarifas.map((t, index) => {
+        if (t.esPVPC && t.metaPvpc) {
+          const m = t.metaPvpc;
+          const potenciaNum = m.terminoFijo;
+          const consumoNum = m.terminoVariable;
+          const impuestosNum = (m.bonoSocial || 0) + m.impuestoElectrico + m.equipoMedida + m.iva;
+          const totalNum = m.totalFactura;
+          return {
+            ...t,
+            posicion: index + 1,
+            potenciaNum,
+            potencia: formatMoney(potenciaNum),
+            consumoNum,
+            consumo: formatMoney(consumoNum),
+            impuestosNum,
+            impuestos: formatMoney(impuestosNum),
+            totalNum,
+            total: formatMoney(totalNum),
+            webUrl: t.web
+          };
+        }
 
-        const resultados = cachedTarifas.map((t, index) => {
-            if (t.esPVPC && t.metaPvpc) {
-                const m = t.metaPvpc;
-                const potenciaNum = m.terminoFijo;
-                const consumoNum = m.terminoVariable;
-                const impuestosNum = m.bonoSocial + m.impuestoElectrico + m.equipoMedida + m.iva;
-                const totalNum = m.totalFactura;
-                return {
-                    ...t,
-                    posicion: index + 1,
-                    potenciaNum,
-                    potencia: formatMoney(potenciaNum),
-                    consumoNum,
-                    consumo: formatMoney(consumoNum),
-                    impuestosNum,
-                    impuestos: formatMoney(impuestosNum),
-                    totalNum,
-                    total: formatMoney(totalNum),
-                    webUrl: t.web
-                };
-            }
+        const pot = (p1 * dias * t.p1) + (p2 * dias * t.p2);
+        const cons = (cPunta * t.cPunta) + (cLlano * t.cLlano) + (cValle * t.cValle);
+        const tarifaAcceso = (4.650987 / 365 * dias);
+        const sumaBase = pot + cons + tarifaAcceso;
+        const impuestoElec = Math.max((5.11269632 / 100) * sumaBase, (cPunta + cLlano + cValle) * 0.001);
+        const margen = dias * 0.026667;
+        const subtotal = sumaBase + impuestoElec + margen;
+        const iva = subtotal * 0.21;
+        const total = subtotal + iva;
 
-            const pot = (p1 * dias * t.p1) + (p2 * dias * t.p2);
-            const cons = (cPunta * t.cPunta) + (cLlano * t.cLlano) + (cValle * t.cValle);
-            const tarifaAcceso = (4.650987 / 365 * dias);
-            const sumaBase = pot + cons + tarifaAcceso;
-            const impuestoElec = Math.max((5.11269632 / 100) * sumaBase, (cPunta + cLlano + cValle) * 0.001);
-            const margen = dias * 0.026667;
-            const subtotal = sumaBase + impuestoElec + margen;
-            const iva = subtotal * 0.21;
-            const total = subtotal + iva;
+        return {
+          ...t,
+          posicion: index + 1,
+          potenciaNum: pot, potencia: formatMoney(pot),
+          consumoNum: cons, consumo: formatMoney(cons),
+          impuestosNum: impuestoElec + margen + iva,
+          impuestos: formatMoney(impuestoElec + margen + iva),
+          totalNum: total, total: formatMoney(total),
+          webUrl: t.web
+        };
+      });
 
-            return {
-                ...t,
-                posicion: index + 1,
-                potenciaNum: pot, potencia: formatMoney(pot),
-                consumoNum: cons, consumo: formatMoney(cons),
-                impuestosNum: impuestoElec + margen + iva,
-                impuestos: formatMoney(impuestoElec + margen + iva),
-                totalNum: total, total: formatMoney(total),
-                webUrl: t.web
-            };
-        });
+      resultados.sort((a, b) => a.totalNum - b.totalNum);
 
-        resultados.sort((a, b) => a.totalNum - b.totalNum);
-        
-        const bestPrice = resultados[0].totalNum;
-        const processed = resultados.map((r, i) => {
-            const diff = r.totalNum - bestPrice;
-            return {
-                ...r, posicion: i + 1, esMejor: i === 0,
-                vsMejorNum: diff, vsMejor: i === 0 ? '—' : '+' + formatMoney(diff)
-            };
-        });
+      const bestPrice = resultados[0].totalNum;
+      const processed = resultados.map((r, i) => {
+        const diff = r.totalNum - bestPrice;
+        return {
+          ...r, posicion: i + 1, esMejor: i === 0,
+          vsMejorNum: diff, vsMejor: i === 0 ? '—' : '+' + formatMoney(diff)
+        };
+      });
 
-        const prices = processed.map(r => r.totalNum);
-        const min = Math.min(...prices); 
-        const max = Math.max(...prices);
-        const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
+      const prices = processed.map(r => r.totalNum);
+      const min = Math.min(...prices); 
+      const max = Math.max(...prices);
+      const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
 
-        renderAll({
-            success: true,
-            resumen: { mejor: processed[0].nombre, precio: formatMoney(processed[0].totalNum) },
-            stats: { precioMin: formatMoney(min), precioMax: formatMoney(max), precioMedio: formatMoney(avg) },
-            resultados: processed
-        });
+      renderAll({
+        success: true,
+        resumen: { mejor: processed[0].nombre, precio: formatMoney(processed[0].totalNum) },
+        stats: { precioMin: formatMoney(min), precioMax: formatMoney(max), precioMedio: formatMoney(avg) },
+        resultados: processed
+      });
     }
 
     function loadInputs() {
-        // Prioridad: URL > localStorage > DEFAULTS
-        if (Object.keys(SERVER_PARAMS).length > 0) {
-             const d = Object.assign({}, DEFAULTS, SERVER_PARAMS);
-             for(const k in DEFAULTS) el.inputs[k].value = d[k];
-             updateKwhHint();
-             return;
-        }
-        let savedData = {};
-        try { const r = localStorage.getItem(LS_KEY); if (r) savedData = JSON.parse(r); } catch(e){}
-        const finalData = { ...DEFAULTS, ...savedData };
-        for (const k in DEFAULTS) el.inputs[k].value = finalData[k];
+      if (Object.keys(SERVER_PARAMS).length > 0) {
+        const d = Object.assign({}, DEFAULTS, SERVER_PARAMS);
+        for(const k in DEFAULTS) el.inputs[k].value = d[k];
         updateKwhHint();
+        return;
+      }
+      let savedData = {};
+      try { const r = localStorage.getItem(LS_KEY); if (r) savedData = JSON.parse(r); } catch(e){}
+      const finalData = { ...DEFAULTS, ...savedData };
+      for (const k in DEFAULTS) el.inputs[k].value = finalData[k];
+      updateKwhHint();
     }
 
     function saveInputs(){ 
@@ -1247,7 +1370,8 @@
     }
 
     function updateKwhHint(){ 
-      const t=parseNum(el.inputs.cPunta.value)+parseNum(el.inputs.cLlano.value)+parseNum(el.inputs.cValle.value); 
+      const v = getInputValues();
+      const t = v.cPunta + v.cLlano + v.cValle;
       el.kwhHint.textContent=`${t.toFixed(2).replace('.',',')} kWh`; 
     }
 
@@ -1278,16 +1402,29 @@
       const {key,dir}=state.sort;
       const asc=dir==='asc';
       const c=r.slice();
-      c.sort((a,b)=>{const va=a[key],vb=b[key];
-        if(key==='nombre'){const sa=String(va||'').toLowerCase(),sb=String(vb||'').toLowerCase();if(sa>sb)return asc?1:-1;if(sa<sb)return asc?-1:1;return 0;}
+      c.sort((a,b)=>{
+        const va=a[key],vb=b[key];
+        if(key==='nombre'){
+          const sa=String(va||'').toLowerCase(),sb=String(vb||'').toLowerCase();
+          if(sa>sb)return asc?1:-1;
+          if(sa<sb)return asc?-1:1;
+          return 0;
+        }
         const na=Number(va)||0,nb=Number(vb)||0;
-        if(na>nb)return asc?1:-1;if(na<nb)return asc?-1:1;return 0;
+        if(na>nb)return asc?1:-1;
+        if(na<nb)return asc?-1:1;
+        return 0;
       });
       return c;
     }
 
     function updateSortIcons(){
-      ['nombre','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{const i=$('si_'+k); if(!i)return; if(state.sort.key!==k){i.textContent='';return;} i.textContent=state.sort.dir==='asc'?'▲':'▼';});
+      ['nombre','potenciaNum','consumoNum','impuestosNum','totalNum','vsMejorNum'].forEach(k=>{
+        const i=$('si_'+k);
+        if(!i) return;
+        if(state.sort.key!==k){ i.textContent=''; return; }
+        i.textContent=state.sort.dir==='asc'?'▲':'▼';
+      });
     }
 
     function createRipple(b,e){ 
@@ -1319,7 +1456,7 @@
         el.table.classList.add('show');
 
         const frag = document.createDocumentFragment();
-        s.forEach((r, i) => {
+        s.forEach((r) => {
           const tr = document.createElement('tr');
           if (r.esMejor) tr.classList.add('best');
           const w = r.webUrl
@@ -1346,12 +1483,7 @@
         return;
       }
 
-      // Top 5 ordenadas por totalNum ascendente
-      const sorted = rows
-        .slice()
-        .sort((a, b) => a.totalNum - b.totalNum)
-        .slice(0, 5);
-
+      const sorted = rows.slice().sort((a, b) => a.totalNum - b.totalNum).slice(0, 5);
       const max = sorted[sorted.length - 1].totalNum || 1;
 
       const frag = document.createDocumentFragment();
@@ -1363,22 +1495,16 @@
         const pct = Math.max(5, Math.round((r.totalNum / max) * 100));
 
         row.innerHTML = `
-      <div class="chartTop-name" title="${escapeHtml(r.nombre)}">
-        ${escapeHtml(r.nombre)}
-      </div>
-      <div class="chartTop-barTrack">
-        <div class="chartTop-barFill" data-width="${pct}%"></div>
-      </div>
-      <div class="chartTop-value">${escapeHtml(r.total || '')}</div>
-    `;
-
+          <div class="chartTop-name" title="${escapeHtml(r.nombre)}">${escapeHtml(r.nombre)}</div>
+          <div class="chartTop-barTrack"><div class="chartTop-barFill" data-width="${pct}%"></div></div>
+          <div class="chartTop-value">${escapeHtml(r.total || '')}</div>
+        `;
         frag.appendChild(row);
       });
 
       body.replaceChildren(frag);
       c.classList.add('show');
 
-      // Animación de barras después de estar en el DOM
       requestAnimationFrame(() => {
         body.querySelectorAll('.chartTop-barFill').forEach(bar => {
           const w = bar.getAttribute('data-width') || '0%';
@@ -1388,72 +1514,90 @@
     }
 
     function renderPvpcInfo(){
-      const div=document.getElementById('pvpcInfo');
-      if(!div)return;
+      const div = el.pvpcInfo;
+      if(!div) return;
+
       if(!pvpcLastMeta){
         div.style.display='none';
-        div.innerHTML='';
+        div.textContent='';
         return;
       }
+
       const fmt=(n)=>Number.isFinite(n)?`${n.toFixed(4).replace('.',',')} €/kWh`:'—';
       const rango=pvpcLastMeta.rangoFechas?`Periodo oficial: ${pvpcLastMeta.rangoFechas.inicio} - ${pvpcLastMeta.rangoFechas.fin}`:'';
       const fecha=pvpcLastMeta.fechaConsulta?new Date(pvpcLastMeta.fechaConsulta):null;
       const fechaTxt=fecha?fecha.toLocaleString('es-ES'):'-';
+
       div.style.display='block';
-      div.innerHTML=`<div><strong>PVPC oficial CNMC</strong></div>
+      div.innerHTML = `
+        <div><strong>PVPC oficial CNMC</strong></div>
         <div>Precio medio Punta: ${fmt(pvpcLastMeta.precioPunta)}</div>
         <div>Precio medio Llano: ${fmt(pvpcLastMeta.precioLlano)}</div>
         <div>Precio medio Valle: ${fmt(pvpcLastMeta.precioValle)}</div>
-        ${rango?`<div>${rango}</div>`:''}
-        <div>Consulta: ${fechaTxt}</div>`;
+        ${rango?`<div>${escapeHtml(rango)}</div>`:''}
+        <div>Consulta: ${escapeHtml(fechaTxt)}</div>
+      `;
     }
 
     function renderAll(d){
-        if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;}
-        setStatus('Resultados actualizados','ok');
-        const r=d.resumen||{};
-        if(r.mejor) el.kpiBest.textContent=r.mejor;
-        if(r.precio) el.kpiPrice.textContent=r.precio;
-        el.heroKpis.classList.add('show');
-        const s=d.stats;
-        if(s){ el.statMin.textContent=s.precioMin; el.statAvg.textContent=s.precioMedio; el.statMax.textContent=s.precioMax; el.statsBar.classList.add('show'); }
-        state.rows=Array.isArray(d.resultados)?d.resultados:[];
-        el.toolbar.classList.add('show');
-        renderTopChart();
-        renderTable();
-        if(window.innerWidth<1100){
-          const sb=$('scrollToResults');
-          sb.style.display='block';
-          setTimeout(()=>sb.style.display='none',5000);
-        }
-        renderPvpcInfo();
+      if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;}
+      setStatus('Resultados actualizados','ok');
+
+      const r=d.resumen||{};
+      if(r.mejor) el.kpiBest.textContent=r.mejor;
+      if(r.precio) el.kpiPrice.textContent=r.precio;
+
+      el.heroKpis.classList.add('show');
+
+      const s=d.stats;
+      if(s){
+        el.statMin.textContent=s.precioMin;
+        el.statAvg.textContent=s.precioMedio;
+        el.statMax.textContent=s.precioMax;
+        el.statsBar.classList.add('show');
+      }
+
+      state.rows=Array.isArray(d.resultados)?d.resultados:[];
+      el.toolbar.classList.add('show');
+
+      renderTopChart();
+      renderTable();
+      renderPvpcInfo();
+
+      if(window.innerWidth<1100){
+        const sb=$('scrollToResults');
+        sb.style.display='block';
+        setTimeout(()=>sb.style.display='none',5000);
+      }
     }
 
-    // INP OPT: Faster debounce to reduce idle delay while batching recalculations
     function scheduleCalculateDebounced(){
       clearTimeout(state.debounce);
       state.debounce = setTimeout(()=>calculate(false, false), 200);
     }
 
     async function calculate(isUserAction, forceRefresh = false){
-        const values = getInputValues();
-        const signature = signatureFromValues(values);
+      const values = getInputValues();
+      const signature = signatureFromValues(values);
 
-        if(!forceRefresh && state.lastSignature === signature){
-          setStatus('Listo para calcular', 'idle');
-          return;
-        }
+      if(!forceRefresh && state.lastSignature === signature){
+        setStatus('Listo para calcular', 'idle');
+        return;
+      }
 
-        saveInputs();
-        setStatus('Calculando...', 'loading');
-        const loaded = await fetchTarifas(forceRefresh);
-        if(!loaded) return;
-        const pvpc = await crearTarifaPVPC(values);
-        const base = Array.isArray(baseTarifasCache) ? baseTarifasCache.slice() : [];
-        cachedTarifas = pvpc ? [...base, pvpc] : base;
-        if(!pvpc) pvpcLastMeta=null;
-        calculateLocal(values);
-        state.lastSignature = signature;
+      saveInputs();
+      setStatus('Calculando...', 'loading');
+
+      const loaded = await fetchTarifas(forceRefresh);
+      if(!loaded) return;
+
+      const pvpc = await crearTarifaPVPC(values);
+      const base = Array.isArray(baseTarifasCache) ? baseTarifasCache.slice() : [];
+      cachedTarifas = pvpc ? [...base, pvpc] : base;
+      if(!pvpc) pvpcLastMeta=null;
+
+      calculateLocal(values);
+      state.lastSignature = signature;
     }
 
     function toggleMenu(force){ 
@@ -1466,14 +1610,13 @@
       initTooltips();
       loadInputs();
 
-      // Cálculo inicial automático con los datos precargados
       calculate(false, true);
 
       Object.values(el.inputs).forEach(i=>{
-          i.addEventListener('input',()=>{
-              updateKwhHint();
-              scheduleCalculateDebounced();
-          });
+        i.addEventListener('input',()=>{
+          updateKwhHint();
+          scheduleCalculateDebounced();
+        });
       });
 
       document.querySelectorAll('.fbtn').forEach(b=>{
@@ -1518,23 +1661,23 @@
       });
 
       el.btnExport.addEventListener('click',(e)=>{
-          createRipple(el.btnExport,e);
-          toggleMenu(false);
-          if(!state.rows || state.rows.length === 0){ toast('No hay datos para descargar','err'); return; }
-          const headers = ['#','Tarifa','Potencia','Consumo','Impuestos','Total','Vs Mejor','Tipo','Web'];
-          const rows = state.rows.map(r=>[r.posicion,r.nombre,r.potencia,r.consumo,r.impuestos,r.total,r.vsMejor,r.tipo,r.webUrl||'']);
-          const csv = [headers, ...rows].map(r=>r.join(';')).join('\n');
-          const BOM = '\uFEFF';
-          const blob = new Blob([BOM + csv], {type:'text/csv;charset=utf-8;'});
-          const link = document.createElement('a');
-          const url = URL.createObjectURL(blob);
-          link.setAttribute('href',url);
-          link.setAttribute('download',`ranking_tarifas_${new Date().toISOString().split('T')[0]}.csv`);
-          link.style.visibility='hidden';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          toast('Ranking descargado');
+        createRipple(el.btnExport,e);
+        toggleMenu(false);
+        if(!state.rows || state.rows.length === 0){ toast('No hay datos para descargar','err'); return; }
+        const headers = ['#','Tarifa','Potencia','Consumo','Impuestos','Total','Vs Mejor','Tipo','Web'];
+        const rows = state.rows.map(r=>[r.posicion,r.nombre,r.potencia,r.consumo,r.impuestos,r.total,r.vsMejor,r.tipo,r.webUrl||'']);
+        const csv = [headers, ...rows].map(r=>r.join(';')).join('\n');
+        const BOM = '\uFEFF';
+        const blob = new Blob([BOM + csv], {type:'text/csv;charset=utf-8;'});
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href',url);
+        link.setAttribute('download',`ranking_tarifas_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility='hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast('Ranking descargado');
       });
 
       el.btnShare.addEventListener('click', async (e) => {
@@ -1551,6 +1694,7 @@
       $('scrollToResults').addEventListener('click',()=>$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'}));
     });
   </script>
+
   <!-- Cloudflare Web Analytics -->
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fea4a7fbe6e34ab1a867cff1c7837aa3"}'></script>
   <!-- End Cloudflare Web Analytics -->
