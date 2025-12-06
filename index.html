@@ -541,6 +541,10 @@
       color: var(--text);
       border-color: rgba(15,23,42,.12);
     }
+
+    body.light-mode .kwhValue{
+      color: rgba(15,23,42,.86);
+    }
   </style>
 </head>
 
@@ -605,7 +609,7 @@
 
       <div class="actions">
         <div class="pill" id="statusPill" role="status" aria-live="polite">
-          <span id="statusText">Listo para calcular</span>
+          <span id="statusText">Listo — cambia un valor para actualizar</span>
         </div>
         <button class="btn" id="btnTheme" type="button" title="Cambiar tema" aria-label="Cambiar tema">☀️</button>
         <div class="menu" id="menuRoot">
@@ -687,7 +691,7 @@
             </button>
           </div>
           <div class="help">
-            Los datos iniciales ya están calculados. Modifica cualquier valor para actualizar el ranking al momento.
+            Se recalcula automáticamente mientras escribes. Pulsa ⚡ Calcular para forzar una recarga completa (tarifas y PVPC si está disponible). Puedes escribir decimales con coma o punto (ej.: 3,45 / 3.45).
           </div>
         </div>
       </section>
@@ -761,7 +765,7 @@
               </thead>
               <tbody id="tbody"></tbody>
             </table>
-            <div class="empty fade-container" id="emptyBox">Aún no hay resultados. Calcula para mostrar ranking.</div>
+            <div class="empty fade-container" id="emptyBox">Aún no hay resultados. Pulsa ⚡ Calcular para generar el ranking.</div>
           </div>
 
         </div>
@@ -1235,7 +1239,7 @@
 
       console.info('PVPC: ⚠️ window.PVPC_PROXY_URL no configurado o inválido. PVPC no disponible.');
       if (typeof toast === 'function' && !pvpcErrorShown) {
-        toast('PVPC no disponible (CORS/red). Puedes configurar proxy.', 'err');
+        toast('PVPC (regulada) no disponible ahora mismo. Mostrando ranking sin PVPC; puedes reintentar con ⚡ Calcular.', 'err');
         pvpcErrorShown = true;
       }
       return null;
@@ -1273,9 +1277,9 @@
         console.groupEnd();
         try{
           const data=await obtenerPVPC_CNMC(values);
-          if(!data){ if(!pvpcErrorShown){toast('No se pudo cargar PVPC','err'); pvpcErrorShown=true;} return null; }
+          if(!data){ if(!pvpcErrorShown){toast('PVPC (regulada) no disponible ahora mismo. Mostrando ranking sin PVPC; puedes reintentar con ⚡ Calcular.','err'); pvpcErrorShown=true;} return null; }
           const parsed=parsearRespuestaPVPC(data);
-          if(!parsed){ if(!pvpcErrorShown){toast('No se pudo cargar PVPC','err'); pvpcErrorShown=true;} return null; }
+          if(!parsed){ if(!pvpcErrorShown){toast('PVPC (regulada) no disponible ahora mismo. Mostrando ranking sin PVPC; puedes reintentar con ⚡ Calcular.','err'); pvpcErrorShown=true;} return null; }
 
           const tarifa={
             nombre:'PVPC (Regulada) ⚡',
@@ -1310,7 +1314,7 @@
           return tarifa;
         }catch(err){
           console.error('Error procesando PVPC',err);
-          if(!pvpcErrorShown){toast('No se pudo cargar PVPC','err'); pvpcErrorShown=true;}
+          if(!pvpcErrorShown){toast('PVPC (regulada) no disponible ahora mismo. Mostrando ranking sin PVPC; puedes reintentar con ⚡ Calcular.','err'); pvpcErrorShown=true;}
           return null;
         }
       })();
