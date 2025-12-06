@@ -1008,29 +1008,34 @@
 
       const periodo = buildPvpcPeriodo(dias);
 
-      const params = new URLSearchParams({
-        pvpcTipoContador: 'T',
-        periodoFacturacion: periodo.periodoFacturacion,
-        bonoSocial: 'false',
-        tipoConsumidor: '1',
-        categoria: '1',
-        contador: '1',
-        potenciaPrimeraFranja: p1.toFixed(2),
-        potenciaSegundaFranja: p2.toFixed(2),
-        consumo1: String(Math.round(cPunta)),
-        consumo2: String(Math.round(cLlano)),
-        consumo3: String(Math.round(cValle)),
-        vivienda: 'false',
-        tarifa: '4',
-        calculoAntiguo: 'false',
-        descuento: 'false',
-        perfilConsumo: '8',
-        fechaInicio: periodo.fechaInicio,
-        potenciaConsumo: ((p1 + p2) / 2).toFixed(1), // promedio potencias
-        horarioElectrodomesticos: '3',
-        inicioFacturacion: String(periodo.inicioFacturacion),
-        finFacturacion: String(periodo.finFacturacion)
-      });
+const params = new URLSearchParams({
+  // 👇 nombre que seguramente espera el backend
+  tipoContador: 'T',
+
+  // 👇 dejamos también el antiguo por si acaso lo usan en otro sitio
+  pvpcTipoContador: 'T',
+
+  periodoFacturacion: periodo.periodoFacturacion,
+  bonoSocial: 'false',
+  tipoConsumidor: '1',
+  categoria: '1',
+  contador: '1',
+  potenciaPrimeraFranja: p1.toFixed(2),
+  potenciaSegundaFranja: p2.toFixed(2),
+  consumo1: String(Math.round(cPunta)),
+  consumo2: String(Math.round(cLlano)),
+  consumo3: String(Math.round(cValle)),
+  vivienda: 'false',
+  tarifa: '4',
+  calculoAntiguo: 'false',
+  descuento: 'false',
+  perfilConsumo: '8',
+  fechaInicio: periodo.fechaInicio,
+  potenciaConsumo: ((p1 + p2) / 2).toFixed(1),
+  horarioElectrodomesticos: '3',
+  inicioFacturacion: String(periodo.inicioFacturacion),
+  finFacturacion: String(periodo.finFacturacion)
+});
 
       const apiUrl = `https://comparador.cnmc.gob.es/api/ofertas/pvpc?${params.toString()}`;
 
