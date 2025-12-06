@@ -738,12 +738,64 @@
     let baseTarifasCache = [];
 
     // ===== BEGIN PVPC MODULE =====
+    // NOTA: La API de la CNMC tiene CORS bloqueado desde dominios externos.
+    // Para habilitar PVPC en producción:
+    //
+    // 1) Crea un proxy (ej. Cloudflare Worker) que añada Access-Control-Allow-Origin:*
+    // 2) Define ANTES de cargar el script principal:
+    //    <script>window.PVPC_PROXY_URL = "https://tu-worker.workers.dev/?url=";</script>
+    //                                                                      ^^^^^ DEBE terminar en ?url=
+    // 3) El comparador usará automáticamente el proxy si está disponible
     const PVPC_CACHE_TTL = 30 * 60 * 1000;
     const PVPC_CACHE_LIMIT = 10;
     const pvpcCache = new Map();
     const pvpcInFlight = new Map();
     let pvpcLastMeta = null;
     let pvpcErrorShown = false;
+
+    // Helper robusto: soporta número, "3.45", "3,45", "1.234,56", "1,234.56" y entradas con separadores repetidos
+    function asNumber(v, fallback = 0) {
+      if (typeof v === 'number' && Number.isFinite(v)) return v;
+
+      let s = String(v ?? '').trim();
+      if (!s) return fallback;
+
+      const hasComma = s.includes(',');
+      const hasDot = s.includes('.');
+
+      // Si hay coma y punto, el último separador suele ser el decimal
+      if (hasComma && hasDot) {
+        if (s.lastIndexOf(',') > s.lastIndexOf('.')) {
+          // decimal = coma, miles = punto → "1.234,56"
+          s = s.replace(/\./g, '');
+          const parts = s.split(',');
+          const dec = parts.pop();
+          s = parts.join('') + '.' + dec;
+        } else {
+          // decimal = punto, miles = coma → "1,234.56"
+          s = s.replace(/,/g, '');
+        }
+      } else if (hasComma) {
+        // Solo comas: tratar la ÚLTIMA como decimal, las anteriores como miles
+        const parts = s.split(',');
+        const dec = parts.pop();
+        s = parts.join('') + '.' + dec;
+      } else if (hasDot) {
+        // Solo puntos: tratar el ÚLTIMO como decimal, los anteriores como miles
+        const parts = s.split('.');
+        const dec = parts.pop();
+        s = parts.join('') + '.' + dec;
+      }
+
+      // Limpia basura (mantiene solo números, punto y signo menos)
+      s = s.replace(/[^0-9.\-]/g, '');
+      const n = Number(s);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    // Cooldown anti-spam: desactivar fetch directo 30min tras fallo CORS/red
+    let pvpcDirectDisabledUntil = 0;
+    const PVPC_DIRECT_DISABLE_MS = 30 * 60 * 1000;
 
     function startOfDayLocal(date){
       const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());
@@ -844,48 +896,110 @@
     }
 
     async function obtenerPVPC_CNMC(values){
-      const periodo=buildPvpcPeriodo(values?.dias||30);
-      const params=new URLSearchParams({
-        pvpcTipoContador:'T',
-        periodoFacturacion:periodo.periodoFacturacion,
-        bonoSocial:'false',
-        tipoConsumidor:'1',
-        categoria:'1',
-        contador:'1',
-        potenciaPrimeraFranja:String(values?.p1||0),
-        potenciaSegundaFranja:String(values?.p2||0),
-        consumo1:String(values?.cPunta||0),
-        consumo2:String(values?.cLlano||0),
-        consumo3:String(values?.cValle||0),
-        vivienda:'false',
-        tarifa:'4',
-        calculoAntiguo:'false',
-        descuento:'false',
-        perfilConsumo:'8',
-        fechaInicio:periodo.fechaInicio,
-        potenciaConsumo:String((values?.cPunta||0)+(values?.cLlano||0)+(values?.cValle||0)),
-        horarioElectrodomesticos:'3',
-        inicioFacturacion:String(periodo.inicioFacturacion),
-        finFacturacion:String(periodo.finFacturacion)
+      // Inputs robustos con validación y clamp
+      const diasRaw = asNumber(values?.dias, 30);
+      const dias = Math.min(365, Math.max(1, Math.round(diasRaw))); // clamp 1..365
+      const p1 = Math.max(0, asNumber(values?.p1, 0));              // clamp >= 0
+      const p2 = Math.max(0, asNumber(values?.p2, 0));              // clamp >= 0
+      const cPunta = Math.max(0, asNumber(values?.cPunta, 0));      // clamp >= 0
+      const cLlano = Math.max(0, asNumber(values?.cLlano, 0));      // clamp >= 0
+      const cValle = Math.max(0, asNumber(values?.cValle, 0));      // clamp >= 0
+
+      // buildPvpcPeriodo() ya existe en tu módulo: NO la modifiques
+      // Debe devolver: { periodoFacturacion, fechaInicio, inicioFacturacion, finFacturacion }
+      const periodo = buildPvpcPeriodo(dias);
+
+      const params = new URLSearchParams({
+        pvpcTipoContador: 'T',
+        periodoFacturacion: periodo.periodoFacturacion,
+        bonoSocial: 'false',
+        tipoConsumidor: '1',
+        categoria: '1',
+        contador: '1',
+        potenciaPrimeraFranja: p1.toFixed(2),      // formato API: "3.45"
+        potenciaSegundaFranja: p2.toFixed(2),      // formato API: "3.45"
+        consumo1: String(Math.round(cPunta)),
+        consumo2: String(Math.round(cLlano)),
+        consumo3: String(Math.round(cValle)),
+        vivienda: 'false',
+        tarifa: '4',
+        calculoAntiguo: 'false',
+        descuento: 'false',
+        perfilConsumo: '8',
+        fechaInicio: periodo.fechaInicio,
+        potenciaConsumo: ((p1 + p2) / 2).toFixed(1), // ✅ FIX: promedio potencias, NO suma consumos
+        horarioElectrodomesticos: '3',
+        inicioFacturacion: String(periodo.inicioFacturacion),
+        finFacturacion: String(periodo.finFacturacion)
       });
-      const url=`https://comparador.cnmc.gob.es/api/ofertas/pvpc?${params.toString()}`;
+
+      const apiUrl = `https://comparador.cnmc.gob.es/api/ofertas/pvpc?${params.toString()}`;
 
       console.group('PVPC obtenerPVPC_CNMC');
-      console.log('URL',url);
-      console.log('Periodo',periodo.periodoFacturacion);
-      console.log('Potencias',values?.p1,values?.p2,'Consumos',values?.cPunta,values?.cLlano,values?.cValle);
+      console.log('API URL:', apiUrl);
+      console.log('Periodo:', periodo.periodoFacturacion, `(${dias} días)`);
+      console.log(`Potencias: P1=${p1.toFixed(2)} P2=${p2.toFixed(2)} → promedio=${((p1+p2)/2).toFixed(1)}`);
+      console.log(`Consumos: Punta=${Math.round(cPunta)} Llano=${Math.round(cLlano)} Valle=${Math.round(cValle)}`);
       console.groupEnd();
 
-      try{
-        return await fetchJsonWithTimeout(url,15000);
-      }catch(err){
-        if(err instanceof TypeError && window.PVPC_PROXY_URL){
-          const proxyUrl=`${window.PVPC_PROXY_URL}?url=${encodeURIComponent(url)}`;
-          return fetchJsonWithTimeout(proxyUrl,15000);
+      const inCooldown = Date.now() < pvpcDirectDisabledUntil;
+
+      // ═════════════════════════════════════════════════════════════
+      // INTENTO 1: Fetch directo (solo si no hay cooldown)
+      // ═════════════════════════════════════════════════════════════
+      if (!inCooldown) {
+        try {
+          console.log('PVPC: Intentando fetch directo a CNMC...');
+          const result = await fetchJsonWithTimeout(apiUrl, 8000);
+          // Si directo funciona, resetear flag de error para futuros avisos
+          pvpcErrorShown = false;
+          return result;
+        } catch (err) {
+          console.warn('PVPC fetch directo falló:', err?.message || err);
+
+          // Detectar error CORS/red: TypeError con "Failed to fetch"
+          const msg = String(err?.message || '');
+          const isCorsOrNetwork = (err instanceof TypeError) || msg.includes('Failed to fetch');
+
+          if (isCorsOrNetwork) {
+            pvpcDirectDisabledUntil = Date.now() + PVPC_DIRECT_DISABLE_MS;
+            console.info('PVPC: ⏸️ Cooldown activado 30min (CORS/red detectado).');
+          }
+          // Continuar a intento 2 (proxy)
         }
-        console.error('PVPC fetch error',err);
-        return null;
+      } else {
+        const remaining = Math.ceil((pvpcDirectDisabledUntil - Date.now()) / 60000);
+        console.info(`PVPC: ⏸️ Fetch directo desactivado (${remaining}min restantes).`);
       }
+
+      // ═════════════════════════════════════════════════════════════
+      // INTENTO 2: Proxy (solo si está configurado)
+      // ═════════════════════════════════════════════════════════════
+      if (window.PVPC_PROXY_URL) {
+        try {
+          // ⚠️ IMPORTANTE: window.PVPC_PROXY_URL debe terminar en ?url=
+          // Ejemplo correcto: "https://tu-worker.workers.dev/?url="
+          const proxyUrl = `${window.PVPC_PROXY_URL}${encodeURIComponent(apiUrl)}`;
+          console.log('PVPC: 🔄 Reintentando vía proxy:', proxyUrl);
+          const result = await fetchJsonWithTimeout(proxyUrl, 12000);
+          // Si proxy funciona, resetear flag de error para futuros avisos
+          pvpcErrorShown = false;
+          return result;
+        } catch (proxyErr) {
+          console.warn('PVPC fetch con proxy falló:', proxyErr?.message || proxyErr);
+          // Continuar a mostrar toast y return null
+        }
+      }
+
+      console.info('PVPC: ⚠️ window.PVPC_PROXY_URL no configurado. PVPC no disponible.');
+      
+      // Toast SOLO una vez para no spamear al usuario
+      if (typeof toast === 'function' && !pvpcErrorShown) {
+        toast('PVPC no disponible (CORS/red). Puedes configurar proxy.', 'err');
+        pvpcErrorShown = true;
+      }
+      
+      return null;
     }
 
     function pvpcSignatureFromValues(v){
