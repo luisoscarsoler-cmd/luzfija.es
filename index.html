@@ -119,12 +119,43 @@
   }
   </script>
 
+  <script>
+    (function(){
+      var key='almax_theme';
+      try{
+        var saved=localStorage.getItem(key);
+        if(saved==='light')document.documentElement.classList.add('light-mode');
+        else document.documentElement.classList.remove('light-mode');
+        window.__ALMAX_THEME_SAVED=saved;
+      }catch(e){}
+      window.__ALMAX_THEME_KEY=key;
+    })();
+  </script>
+
   <style>
     /* === TU DISEÑO ORIGINAL EXACTO (NO TOCAR) === */
     :root{ --bg0:#070A12; --bg1:#0B1020; --card: rgba(255,255,255,.06); --card2: rgba(255,255,255,.085); --border: rgba(255,255,255,.10); --border2: rgba(255,255,255,.16); --text:#F7F7FB; --muted: rgba(247,247,251,.72); --muted2: rgba(247,247,251,.55); --accent:#8B5CF6; --accent2:#22C55E; --warn:#F59E0B; --danger:#EF4444; --shadow: 0 22px 65px rgba(0,0,0,.52); --shadow2: 0 16px 40px rgba(0,0,0,.50); --radius: 18px; --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; --sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif; }
+    body.light-mode {
+      --bg0:#F4F6FB;
+      --bg1:#FFFFFF; /* used only in gradients, keep very subtle */
+      --card: rgba(15, 23, 42, .04);
+      --card2: rgba(15, 23, 42, .06);
+      --border: rgba(15, 23, 42, .10);
+      --border2: rgba(15, 23, 42, .16);
+      --text:#0F172A;
+      --muted: rgba(15, 23, 42, .68);
+      --muted2: rgba(15, 23, 42, .48);
+      --shadow: 0 22px 65px rgba(2,6,23,.12);
+      --shadow2: 0 16px 40px rgba(2,6,23,.10);
+    }
     *{box-sizing:border-box; margin:0; padding:0}
     html,body{height:100%;}
     body{ font-family: var(--sans); color: var(--text); background: radial-gradient(1000px 600px at 12% 15%, rgba(139,92,246,.22), transparent 55%), radial-gradient(1000px 680px at 86% 88%, rgba(34,197,94,.16), transparent 55%), linear-gradient(135deg, var(--bg0), var(--bg1)); overflow-x:hidden; -webkit-tap-highlight-color: transparent; }
+    body.light-mode {
+      background: radial-gradient(1000px 600px at 12% 15%, rgba(139,92,246,.10), transparent 55%),
+              radial-gradient(1000px 680px at 86% 88%, rgba(34,197,94,.08), transparent 55%),
+              linear-gradient(135deg, var(--bg0), var(--bg1));
+    }
     .container{ max-width:1400px; margin:0 auto; padding: clamp(50px, 5vw, 70px) clamp(22px, 4.5vw, 60px); }
     .topbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 22px; flex-wrap: wrap; }
     @media (max-width: 520px){ .topbar{ justify-content: center; } }
@@ -535,6 +566,7 @@
         <div class="pill" id="statusPill" role="status" aria-live="polite">
           <span id="statusText">Listo para calcular</span>
         </div>
+        <button class="btn" id="btnTheme" type="button" title="Cambiar tema" aria-label="Cambiar tema">☀️</button>
         <div class="menu" id="menuRoot">
           <button class="btn" id="btnMenu" type="button" aria-haspopup="true" aria-expanded="false" title="Opciones">⚙️</button>
           <div class="menuPanel" id="menuPanel" role="menu" aria-label="Opciones">
@@ -584,21 +616,21 @@
             <div class="group">
               <label for="cPunta">
                 Consumo PUNTA
-                <span class="tooltip" data-tip="10h-14h y 18h-22h" role="button" tabindex="0" aria-label="Horario de consumo punta">i</span>
+                <span class="tooltip" data-tip="10h-14h y 18h-22h" role="button" tabindex="-1" aria-label="Horario de consumo punta">i</span>
               </label>
               <input id="cPunta" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 120">
             </div>
             <div class="group">
               <label for="cLlano">
                 Consumo LLANO
-                <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h" role="button" tabindex="0" aria-label="Horario de consumo llano">i</span>
+                <span class="tooltip" data-tip="8h-10h, 14h-18h y 22h-24h" role="button" tabindex="-1" aria-label="Horario de consumo llano">i</span>
               </label>
               <input id="cLlano" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 80">
             </div>
             <div class="group">
               <label for="cValle">
                 Consumo VALLE
-                <span class="tooltip" data-tip="0h-8h (madrugada)" role="button" tabindex="0" aria-label="Horario de consumo valle">i</span>
+                <span class="tooltip" data-tip="0h-8h (madrugada)" role="button" tabindex="-1" aria-label="Horario de consumo valle">i</span>
               </label>
               <input id="cValle" class="input" type="text" inputmode="decimal" pattern="[0-9.,]*" autocomplete="off" placeholder="Ej: 150">
             </div>
@@ -777,6 +809,7 @@
     const JSON_URL = 'tarifas.json';
 
     const LS_KEY = 'almax_comparador_v6_inputs';
+    const THEME_KEY = window.__ALMAX_THEME_KEY || 'almax_theme';
 
     // VALORES POR DEFECTO PARA PRIMERA VISITA
     const DEFAULTS = { p1:'3,45', p2:'3,45', dias:'30', cPunta:'100', cLlano:'100', cValle:'100' };
@@ -794,7 +827,7 @@
       statsBar: $('statsBar'), statMin: $('statMin'), statAvg: $('statAvg'), statMax: $('statMax'),
       toolbar: $('toolbar'), table: $('table'), tbody: $('tbody'), emptyBox: $('emptyBox'),
       toast: $('toast'), toastText: $('toastText'), toastDot: $('toastDot'),
-      menuRoot: $('menuRoot'), btnMenu: $('btnMenu'), menuPanel: $('menuPanel'),
+      menuRoot: $('menuRoot'), btnMenu: $('btnMenu'), menuPanel: $('menuPanel'), btnTheme: $('btnTheme'),
       btnExport: $('btnExport'), btnReset: $('btnReset'), btnShare: $('btnShare'),
       globalTooltip: $('globalTooltip'),
       pvpcInfo: $('pvpcInfo')
@@ -949,9 +982,7 @@
     }
 
     function parsearRespuestaPVPC(data) {
-      // Ajuste: A veces la CNMC devuelve el array directo o dentro de una propiedad
       const lista = Array.isArray(data) ? data : (data?.resultadoPVPC || []);
-      
       if (!lista || !lista.length) return null;
 
       const meta = {
@@ -964,14 +995,9 @@
         totalFactura: 0
       };
 
-      // Variables para extraer precios unitarios (si vienen en el texto)
-      let precioPunta = null, precioLlano = null, precioValle = null;
       let rangoFechas = null;
-      
-      // Array temporal para capturar TODOS los precios que encontremos
-      let preciosEncontrados = [];
+      let textoCompleto = '';
 
-      // Intentamos sacar fechas del primer elemento
       try {
         const rangoTexto = stripHtml(lista[0]?.cabecera || lista[0]?.concepto || '');
         const rangoMatch = /Periodo:\s*del\s*(\d{2}\/\d{2}\/\d{4})\s*al\s*(\d{2}\/\d{2}\/\d{4})/i.exec(rangoTexto);
@@ -981,68 +1007,63 @@
       console.group('PVPC parsearRespuestaPVPC (FIXED)');
       try {
         lista.forEach(item => {
-          const cabecera = stripHtml(item?.cabecera || item?.concepto || '').trim().toLowerCase();
-          // Importante: La API ahora devuelve 'importe' como número directo, no string
+          const cabeceraRaw = stripHtml(item?.cabecera || item?.concepto || '').trim();
+          const cabecera = cabeceraRaw.toLowerCase();
+
+          const exp = stripHtml(item?.explicacion || item?.detalle || item?.descripcion || '');
+          textoCompleto += ` ${cabeceraRaw} ${exp} `;
+
           const importe = parseEuro(item?.importe ?? item?.valor ?? item?.precio ?? item?.total);
 
           console.log(`Concepto: ${cabecera} -> Importe: ${importe}`);
 
-          if (cabecera.includes('término fijo') || cabecera.includes('potencia')) {
-             meta.terminoFijo += importe;
-          } 
-          else if (cabecera.includes('término variable') || cabecera.includes('energía')) {
-             meta.terminoVariable += importe;
-             
-             // Intentar sacar precios unitarios de la explicación
-             const exp = String(item?.explicacion || '');
-             if (exp) {
-               // Buscamos patrones tipo: "0,123456 €/kWh"
-               const matches = exp.match(/(\d+[.,]\d+)\s*€\/kWh/gi);
-               if (matches) {
-                 matches.forEach(m => {
-                   const cleanNum = m.replace('€/kWh','').trim();
-                   const val = parseEuro(cleanNum);
-                   if (val > 0) preciosEncontrados.push(val);
-                 });
-               }
-             }
+          if (cabecera.includes('término fijo') || cabecera.includes('termino fijo') || cabecera.includes('potencia')) {
+            meta.terminoFijo += importe;
           }
-          else if (cabecera.includes('bono social')) meta.bonoSocial += importe;
-          else if (cabecera.includes('impuesto eléctrico')) meta.impuestoElectrico += importe;
-          else if (cabecera.includes('equipo de medida') || cabecera.includes('alquiler')) meta.equipoMedida += importe;
-          else if (cabecera.includes('iva') || cabecera.includes('impuesto sobre el valor')) meta.iva += importe;
-          else if (cabecera.includes('total factura')) meta.totalFactura = importe;
+          else if (cabecera.includes('término variable') || cabecera.includes('termino variable') || cabecera.includes('energía') || cabecera.includes('energia')) {
+            meta.terminoVariable += importe;
+          }
+          else if (cabecera.includes('financiación del bono social') || cabecera.includes('financiacion del bono social') || cabecera.includes('bono social')) {
+            meta.bonoSocial += importe;
+          }
+          else if (cabecera.includes('impuesto eléctrico') || cabecera.includes('impuesto electrico')) {
+            meta.impuestoElectrico += importe;
+          }
+          else if (cabecera.includes('equipo de medida') || cabecera.includes('alquiler')) {
+            meta.equipoMedida += importe;
+          }
+          else if (cabecera.includes('iva') || cabecera.includes('impuesto sobre el valor')) {
+            meta.iva += importe;
+          }
+          else if (cabecera.includes('total factura')) {
+            meta.totalFactura = importe;
+          }
         });
-        
-        // --- LÓGICA INFALIBLE DE ASIGNACIÓN ---
-        // Ordenamos los precios encontrados de MENOR a MAYOR.
-        // Sabemos que en 2.0TD: Valle < Llano < Punta
-        if (preciosEncontrados.length >= 3) {
-          preciosEncontrados.sort((a, b) => a - b);
-          // El menor es Valle
-          precioValle = preciosEncontrados[0];
-          // El del medio es Llano
-          precioLlano = preciosEncontrados[1]; 
-          // El mayor es Punta
-          precioPunta = preciosEncontrados[2];
-        } else {
-           // Fallback por si no encuentra 3 precios (raro)
-           // Intentamos asignar lo que haya
-           if(preciosEncontrados[0]) precioValle = preciosEncontrados[0];
-           if(preciosEncontrados[1]) precioLlano = preciosEncontrados[1];
-           if(preciosEncontrados[2]) precioPunta = preciosEncontrados[2];
-        }
-
-      } finally { 
-        console.groupEnd(); 
+      } finally {
+        console.groupEnd();
       }
 
-      // Si no encontramos total explícito, lo sumamos nosotros para asegurar
       if (meta.totalFactura <= 0) {
         meta.totalFactura = meta.terminoFijo + meta.terminoVariable + meta.bonoSocial + meta.impuestoElectrico + meta.equipoMedida + meta.iva;
       }
-
       if (meta.totalFactura <= 0) return null;
+
+      const texto = stripHtml(textoCompleto || '');
+
+      function extraerMaxPorPeriodo(periodo) {
+        const re = new RegExp(`${periodo}(?:\s*\([^)]*\))?\s*:\s*([0-9]+(?:[.,][0-9]+)?)\s*€\s*\/\s*kWh`, 'gi');
+        const vals = [];
+        for (const m of texto.matchAll(re)) {
+          const v = parseEuro(m[1]);
+          if (v > 0) vals.push(v);
+        }
+        if (!vals.length) return null;
+        return Math.max(...vals);
+      }
+
+      const precioPunta = extraerMaxPorPeriodo('P1');
+      const precioLlano = extraerMaxPorPeriodo('P2');
+      const precioValle = extraerMaxPorPeriodo('P3');
 
       return { ...meta, precioPunta, precioLlano, precioValle, rangoFechas };
     }
@@ -1367,6 +1388,31 @@
       el.toast.classList.add('show');
       clearTimeout(el.toast._t);
       el.toast._t=setTimeout(()=>el.toast.classList.remove('show'),2800);
+    }
+
+    function applyThemeClass(theme){
+      const isLight=theme==='light';
+      document.documentElement.classList.toggle('light-mode',isLight);
+      if(document.body)document.body.classList.toggle('light-mode',isLight);
+    }
+
+    function updateThemeIcon(){
+      if(!el.btnTheme)return;
+      const isLight=document.body.classList.contains('light-mode');
+      el.btnTheme.textContent=isLight?'🌙':'☀️';
+    }
+
+    const initialTheme=(window.__ALMAX_THEME_SAVED==='light')?'light':'dark';
+    applyThemeClass(initialTheme);
+    updateThemeIcon();
+
+    function toggleTheme(){
+      const isLight=document.body.classList.contains('light-mode');
+      const next=isLight?'dark':'light';
+      applyThemeClass(next==='light'?'light':'dark');
+      try{localStorage.setItem(THEME_KEY,next);}catch(e){}
+      updateThemeIcon();
+      toast(next==='light'?'Modo claro':'Modo oscuro');
     }
 
     async function copyText(text) {
@@ -1705,7 +1751,13 @@
         return;
       }
 
-      const fmt=(n)=>Number.isFinite(n)?`${n.toFixed(4).replace('.',',')} €/kWh`:'—';
+      const fmt = (n) => {
+        if (!Number.isFinite(n)) return '—';
+        let s = n.toFixed(6);
+        s = s.replace(/0+$/,'').replace(/\.$/,'');
+        s = s.replace('.',',');
+        return `${s} €/kWh`;
+      };
       const rango=pvpcLastMeta.rangoFechas?`Periodo oficial: ${pvpcLastMeta.rangoFechas.inicio} - ${pvpcLastMeta.rangoFechas.fin}`:'';
       const fecha=pvpcLastMeta.fechaConsulta?new Date(pvpcLastMeta.fechaConsulta):null;
       
@@ -1805,6 +1857,8 @@
 
     document.addEventListener('DOMContentLoaded', async ()=>{
       initTooltips();
+      applyThemeClass(document.documentElement.classList.contains('light-mode')?'light':'dark');
+      updateThemeIcon();
       loadInputs();
 
       calculate(false, true);
@@ -1815,6 +1869,13 @@
           scheduleCalculateDebounced();
         });
       });
+
+      if(el.btnTheme){
+        el.btnTheme.addEventListener('click',(e)=>{
+          createRipple(el.btnTheme,e);
+          toggleTheme();
+        });
+      }
 
       document.querySelectorAll('.fbtn').forEach(b=>{
         b.addEventListener('click',(e)=>{
