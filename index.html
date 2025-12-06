@@ -129,13 +129,15 @@
     :root{ --bg0:#070A12; --bg1:#0B1020; --card: rgba(255,255,255,.06); --card2: rgba(255,255,255,.085); --border: rgba(255,255,255,.10); --border2: rgba(255,255,255,.16); --text:#F7F7FB; --muted: rgba(247,247,251,.72); --muted2: rgba(247,247,251,.55); --accent:#8B5CF6; --accent2:#22C55E; --warn:#F59E0B; --danger:#EF4444; --shadow: 0 22px 65px rgba(0,0,0,.52); --shadow2: 0 16px 40px rgba(0,0,0,.50); --radius: 18px; --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; --sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif; }
     *{box-sizing:border-box; margin:0; padding:0}
     html,body{height:100%;}
-    body{ font-family: var(--sans); color: var(--text); background: radial-gradient(1000px 600px at 12% 15%, rgba(139,92,246,.22), transparent 55%), radial-gradient(1000px 680px at 86% 88%, rgba(34,197,94,.16), transparent 55%), linear-gradient(135deg, var(--bg0), var(--bg1)); overflow-x:hidden; }
+    // INP OPT: Reduce tap highlight for faster tap handling on touch devices
+    body{ font-family: var(--sans); color: var(--text); background: radial-gradient(1000px 600px at 12% 15%, rgba(139,92,246,.22), transparent 55%), radial-gradient(1000px 680px at 86% 88%, rgba(34,197,94,.16), transparent 55%), linear-gradient(135deg, var(--bg0), var(--bg1)); overflow-x:hidden; -webkit-tap-highlight-color: transparent; }
     .container{ max-width:1400px; margin:0 auto; padding: clamp(50px, 5vw, 70px) clamp(22px, 4.5vw, 60px); }
     .topbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 22px; flex-wrap: wrap; }
     @media (max-width: 520px){ .topbar{ justify-content: center; } }
     .brand{display:flex; align-items:center; gap:14px; min-width: 240px; position: relative; flex-shrink: 0;}
     @media (max-width: 520px){ .brand{ min-width: auto; } }
-    .logo{ width:60px; height:60px; border-radius:18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%); background-size: 400% 400%; box-shadow: 0 0 30px rgba(139,92,246,.4), 0 0 60px rgba(139,92,246,.2), 0 10px 40px rgba(0,0,0,.3), inset 0 0 20px rgba(255,255,255,.1); display:grid; place-items:center; font-size: 32px; position: relative; overflow: visible; animation: gradientShift 8s ease infinite, logoFloat 3s ease-in-out infinite; border: 2px solid rgba(255,255,255,.2); backdrop-filter: blur(10px); flex-shrink: 0; }
+    // INP OPT: Hint compositor for animated logo transformations
+    .logo{ width:60px; height:60px; border-radius:18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%); background-size: 400% 400%; box-shadow: 0 0 30px rgba(139,92,246,.4), 0 0 60px rgba(139,92,246,.2), 0 10px 40px rgba(0,0,0,.3), inset 0 0 20px rgba(255,255,255,.1); display:grid; place-items:center; font-size: 32px; position: relative; overflow: visible; animation: gradientShift 8s ease infinite, logoFloat 3s ease-in-out infinite; border: 2px solid rgba(255,255,255,.2); backdrop-filter: blur(10px); flex-shrink: 0; will-change: transform, filter; }
     .logo::before{ content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,.8) 50%, transparent 70%); animation: logoRotate 3s linear infinite; }
     .logo::after{ content: ''; position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border-radius: 20px; border: 2px solid transparent; background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe) border-box; -webkit-mask: linear-gradient(#fff, #fff) padding-box, linear-gradient(#fff, #fff); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringPulse 2s ease-in-out infinite; opacity: 0.6; }
     @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
@@ -158,7 +160,8 @@
     .pill.loading{border-color: rgba(139,92,246,.55); box-shadow: 0 0 0 4px rgba(139,92,246,.12), 0 18px 55px rgba(0,0,0,.35);}
     .pill.ok{border-color: rgba(34,197,94,.55); box-shadow: 0 0 0 4px rgba(34,197,94,.12), 0 18px 55px rgba(0,0,0,.35);}
     .pill.err{border-color: rgba(239,68,68,.55); box-shadow: 0 0 0 4px rgba(239,68,68,.12), 0 18px 55px rgba(0,0,0,.35);}
-    .btn{ border: 1px solid var(--border); background: var(--card); color: var(--text); padding: 10px 12px; border-radius: 12px; cursor:pointer; font-weight: 900; font-size: 13px; display:inline-flex; align-items:center; gap: 10px; transition: transform .15s ease, background .15s ease, border-color .15s ease, opacity .15s ease; backdrop-filter: blur(14px); min-height: 44px; }
+    // INP OPT: Improve pointer responsiveness on buttons
+    .btn{ border: 1px solid var(--border); background: var(--card); color: var(--text); padding: 10px 12px; border-radius: 12px; cursor:pointer; font-weight: 900; font-size: 13px; display:inline-flex; align-items:center; gap: 10px; transition: transform .15s ease, background .15s ease, border-color .15s ease, opacity .15s ease; backdrop-filter: blur(14px); min-height: 44px; touch-action: manipulation; will-change: transform, box-shadow; }
     .btn:hover{transform: translateY(-1px); border-color: var(--border2); background: var(--card2);}
     .btn:active{transform: translateY(0px); opacity:.9}
     .btn.primary{ background: linear-gradient(45deg, rgba(139,92,246,1), rgba(167,139,250,1)); border-color: rgba(139,92,246,.55); box-shadow: 0 12px 30px rgba(139,92,246,.25); padding: 12px 14px; position: relative; overflow: hidden; }
@@ -170,7 +173,8 @@
     .spinner{ display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius:50%; animation: spin 0.6s linear infinite; }
     .grid{ display:grid; grid-template-columns: 420px 1fr; gap: 24px; }
     @media (max-width: 1100px){ .grid{grid-template-columns:1fr;} }
-    .card{ background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow:hidden; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); transition: transform .3s ease, box-shadow .3s ease; animation: fadeInUp 0.5s ease-out; margin-bottom: 6px; }
+    // INP OPT: Prepare cards for hover animation compositing
+    .card{ background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow:hidden; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); transition: transform .3s ease, box-shadow .3s ease; animation: fadeInUp 0.5s ease-out; margin-bottom: 6px; will-change: transform; }
     .card:hover{ transform: translateY(-4px) translateZ(0); box-shadow: 0 28px 80px rgba(0,0,0,.60); }
     .card .head{ padding: 18px 18px 14px 18px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, rgba(139,92,246,.10), transparent); }
     .kicker{ font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted2); font-weight: 900; }
@@ -220,7 +224,8 @@
     .badge.b3:hover{ transform: scale(1.05); box-shadow: 0 6px 16px rgba(245,158,11,.4); }
     .toolbar{ display:flex; align-items:center; justify-content:flex-end; gap: 12px; margin: 10px 0 12px; flex-wrap: wrap; }
     .filters{display:flex; gap: 10px; flex-wrap: wrap;}
-    .fbtn{ padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,.06); color: var(--muted); cursor:pointer; font-weight: 1000; font-size: 12px; transition: transform .15s ease, border-color .15s ease, background .15s ease; user-select:none; min-height: 44px; display:flex; align-items:center; }
+    // INP OPT: Improve touch responsiveness on filter buttons
+    .fbtn{ padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,.06); color: var(--muted); cursor:pointer; font-weight: 1000; font-size: 12px; transition: transform .15s ease, border-color .15s ease, background .15s ease; user-select:none; min-height: 44px; display:flex; align-items:center; touch-action: manipulation; will-change: transform; }
     .fbtn:hover{transform: translateY(-1px); border-color: var(--border2); background: rgba(255,255,255,.09);}
     .fbtn.active{ background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.55); color: var(--text); }
     .tableWrap{ background: transparent !important; border: none !important; overflow: visible !important; }
@@ -270,7 +275,8 @@
     .mi-right{ opacity: .6; white-space: nowrap; flex: 0 0 auto; }
     .menuDivider{ height:1px; background: rgba(255,255,255,.08); margin: 6px 6px; }
     .menuHint{ padding: 8px 10px 6px 10px; color: var(--muted2); font-size: 11px; font-weight: 900; letter-spacing: .2px; }
-    .toast{ position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(5,8,16,.92); border: 1px solid var(--border); color: var(--text); border-radius: 16px; box-shadow: var(--shadow2); padding: 12px 14px; display:none; gap: 10px; align-items:center; max-width: min(760px, calc(100vw - 24px)); backdrop-filter: blur(14px); z-index: 9999; font-size: 13px; }
+    // INP OPT: Prepare toast for entrance animation
+    .toast{ position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(5,8,16,.92); border: 1px solid var(--border); color: var(--text); border-radius: 16px; box-shadow: var(--shadow2); padding: 12px 14px; display:none; gap: 10px; align-items:center; max-width: min(760px, calc(100vw - 24px)); backdrop-filter: blur(14px); z-index: 9999; font-size: 13px; will-change: transform, opacity; }
     .toast.show{display:flex; animation: pop .22s ease;}
     @keyframes pop { from{opacity:0; transform: translateX(-50%) translateY(8px);} to{opacity:1; transform: translateX(-50%) translateY(0px);} }
     .dot{width:10px; height:10px; border-radius:999px; background: var(--accent);}
@@ -362,12 +368,14 @@
       overflow: hidden;
     }
 
+    // INP OPT: Hint compositor for animated chart bars
     .chartTop-barFill {
       height: 100%;
       border-radius: inherit;
       background: linear-gradient(90deg, var(--accent), var(--accent2));
       width: 0%;
       transition: width 0.6s ease;
+      will-change: width;
     }
 
     .chartTop-value {
@@ -730,26 +738,32 @@
 
     let activeTooltip = null;
     let tooltipPinned = false;
+    // INP OPT: Track scheduled tooltip frame to batch layout reads
+    let tooltipRaf = null;
 
     function positionTooltip(target){
       if(!target)return;
-      const tip = target.getAttribute('data-tip') || '';
-      el.globalTooltip.textContent = tip;
-      el.globalTooltip.style.display = 'block';
-      el.globalTooltip.style.visibility = 'hidden';
-      el.globalTooltip.style.opacity = '0';
-      el.globalTooltip.setAttribute('aria-hidden', tip ? 'false' : 'true');
-      const rect = target.getBoundingClientRect();
-      const ttRect = el.globalTooltip.getBoundingClientRect();
-      let top = rect.top - ttRect.height - 10;
-      if(top < 8) top = rect.bottom + 10;
-      let left = rect.left + rect.width / 2 - ttRect.width / 2;
-      const maxLeft = window.innerWidth - ttRect.width - 8;
-      left = Math.max(8, Math.min(maxLeft, left));
-      el.globalTooltip.style.top = `${top}px`;
-      el.globalTooltip.style.left = `${left}px`;
-      el.globalTooltip.style.visibility = 'visible';
-      el.globalTooltip.style.opacity = '1';
+      // INP OPT: Defer tooltip measurement and paint to next frame
+      if(tooltipRaf) cancelAnimationFrame(tooltipRaf);
+      tooltipRaf = requestAnimationFrame(() => {
+        const tip = target.getAttribute('data-tip') || '';
+        el.globalTooltip.textContent = tip;
+        el.globalTooltip.style.display = 'block';
+        el.globalTooltip.style.visibility = 'hidden';
+        el.globalTooltip.style.opacity = '0';
+        el.globalTooltip.setAttribute('aria-hidden', tip ? 'false' : 'true');
+        const rect = target.getBoundingClientRect();
+        const ttRect = el.globalTooltip.getBoundingClientRect();
+        let top = rect.top - ttRect.height - 10;
+        if(top < 8) top = rect.bottom + 10;
+        let left = rect.left + rect.width / 2 - ttRect.width / 2;
+        const maxLeft = window.innerWidth - ttRect.width - 8;
+        left = Math.max(8, Math.min(maxLeft, left));
+        el.globalTooltip.style.top = `${top}px`;
+        el.globalTooltip.style.left = `${left}px`;
+        el.globalTooltip.style.visibility = 'visible';
+        el.globalTooltip.style.opacity = '1';
+      });
     }
 
     function hideTooltip(force=false){
@@ -768,8 +782,8 @@
     function initTooltips(){
       const tooltips = Array.from(document.querySelectorAll('.tooltip'));
       tooltips.forEach(t => {
-        t.addEventListener('mouseenter', () => { tooltipPinned = false; openTooltip(t); });
-        t.addEventListener('mouseleave', () => { if(tooltipPinned && activeTooltip===t)return; hideTooltip(); });
+        t.addEventListener('mouseenter', () => { tooltipPinned = false; openTooltip(t); }, {passive:true});
+        t.addEventListener('mouseleave', () => { if(tooltipPinned && activeTooltip===t)return; hideTooltip(); }, {passive:true});
         t.addEventListener('focus', () => { tooltipPinned = false; openTooltip(t); });
         t.addEventListener('blur', () => hideTooltip(true));
         t.addEventListener('click', (evt) => {
@@ -788,8 +802,9 @@
         if(!evt.target.closest('.tooltip')) hideTooltip(true);
       });
 
+      // INP OPT: Passive scroll/resize handlers with rAF-batched tooltip position
       window.addEventListener('scroll', () => { if(activeTooltip) positionTooltip(activeTooltip); }, {capture:true, passive:true});
-      window.addEventListener('resize', () => { if(activeTooltip) positionTooltip(activeTooltip); });
+      window.addEventListener('resize', () => { if(activeTooltip) positionTooltip(activeTooltip); }, {passive:true});
       document.addEventListener('keydown', (evt) => { if(evt.key==='Escape') hideTooltip(true); });
     }
 
@@ -1140,9 +1155,10 @@
         }
     }
 
+    // INP OPT: Faster debounce to reduce idle delay while batching recalculations
     function scheduleCalculateDebounced(){
       clearTimeout(state.debounce);
-      state.debounce = setTimeout(()=>calculate(false, false), 500);
+      state.debounce = setTimeout(()=>calculate(false, false), 200);
     }
 
     async function calculate(isUserAction, forceRefresh = false){
