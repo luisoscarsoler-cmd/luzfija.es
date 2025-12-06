@@ -904,59 +904,118 @@
 
     function stripHtml(str){ return String(str||'').replace(/<[^>]*>/g,''); }
 
-    function parseEuro(val){
-      if(val===null||val===undefined)return NaN;
-      const s=stripHtml(String(val)).replace(/\./g,'').replace(',','.').replace(/[^0-9+\-\.]/g,'');
-      const n=parseFloat(s);
-      return Number.isFinite(n)?n:NaN;
+    // --- CORRECCIÓN DE PARSEO DE NÚMEROS ---
+    function parseEuro(val) {
+      if (val === null || val === undefined) return 0;
+      
+      // Si ya es un número, lo devolvemos tal cual (evita el error de los miles)
+      if (typeof val === 'number') return val;
+
+      let s = String(val).trim();
+      
+      // Si viene con formato español "1.234,56" -> quitar puntos, cambiar coma por punto
+      if (s.includes(',') && s.indexOf('.') < s.indexOf(',')) {
+         s = s.replace(/\./g, '').replace(',', '.');
+      } 
+      // Si viene solo con comas "12,50" -> cambiar por punto
+      else if (s.includes(',')) {
+         s = s.replace(',', '.');
+      }
+      
+      // Limpiar cualquier carácter que no sea número, punto o guion
+      s = s.replace(/[^0-9.-]/g, '');
+      
+      const n = parseFloat(s);
+      return Number.isFinite(n) ? n : 0;
     }
 
     function parsePrecioFromTexto(texto, etiqueta){
       const re=new RegExp(`${etiqueta}\\s*:\\s*([\\d.,]+)\\s*€`, 'i');
       const m=re.exec(stripHtml(texto||''));
       if(!m||!m[1])return null;
-      const n=parseFloat(m[1].replace(/\./g,'').replace(',','.'));
-      return Number.isFinite(n)?n:null;
+      // Usamos parseEuro para ser consistentes con el formato numérico
+      return parseEuro(m[1]);
     }
 
-    function parsearRespuestaPVPC(data){
-      const lista=Array.isArray(data?.resultadoPVPC)?data.resultadoPVPC:null;
-      if(!lista||!lista.length)return null;
+    function parsearRespuestaPVPC(data) {
+      // Ajuste: A veces la CNMC devuelve el array directo o dentro de una propiedad
+      const lista = Array.isArray(data) ? data : (data?.resultadoPVPC || []);
+      
+      if (!lista || !lista.length) return null;
 
-      const meta={terminoFijo:null,terminoVariable:null,bonoSocial:0,impuestoElectrico:null,equipoMedida:null,iva:null,totalFactura:null};
-      let precioPunta=null,precioLlano=null,precioValle=null;
+      const meta = {
+        terminoFijo: 0,
+        terminoVariable: 0,
+        bonoSocial: 0,
+        impuestoElectrico: 0,
+        equipoMedida: 0,
+        iva: 0,
+        totalFactura: 0
+      };
 
-      const rangoTexto=stripHtml(lista[0]?.cabecera||'');
-      const rangoMatch=/Periodo:\s*del\s*(\d{2}\/\d{2}\/\d{4})\s*al\s*(\d{2}\/\d{2}\/\d{4})/i.exec(rangoTexto);
-      let rangoFechas=null;
-      if(rangoMatch) rangoFechas={inicio:rangoMatch[1],fin:rangoMatch[2]};
+      // Variables para extraer precios unitarios (si vienen en el texto)
+      let precioPunta = null, precioLlano = null, precioValle = null;
+      let rangoFechas = null;
 
-      console.group('PVPC parsearRespuestaPVPC');
-      try{
-        lista.forEach(item=>{
-          const cabecera=stripHtml(item?.cabecera||item?.concepto||'').trim();
-          const importe=parseEuro(item?.importe??item?.valor??item?.precio??item?.total);
+      // Intentamos sacar fechas del primer elemento
+      try {
+        const rangoTexto = stripHtml(lista[0]?.cabecera || lista[0]?.concepto || '');
+        const rangoMatch = /Periodo:\s*del\s*(\d{2}\/\d{2}\/\d{4})\s*al\s*(\d{2}\/\d{2}\/\d{4})/i.exec(rangoTexto);
+        if (rangoMatch) rangoFechas = { inicio: rangoMatch[1], fin: rangoMatch[2] };
+      } catch (e) {}
 
-          if(/^término fijo$/i.test(cabecera) && Number.isFinite(importe)) meta.terminoFijo=importe;
-          else if(/^término variable$/i.test(cabecera) && Number.isFinite(importe)){
-            meta.terminoVariable=importe;
-            const exp=String(item?.explicacion||'');
-            if(exp){
-              precioPunta=parsePrecioFromTexto(exp,'P1[^\\d]*Punta');
-              precioLlano=parsePrecioFromTexto(exp,'P2[^\\d]*Llano');
-              precioValle=parsePrecioFromTexto(exp,'P3[^\\d]*Valle');
-            }
+      console.group('PVPC parsearRespuestaPVPC (FIXED)');
+      try {
+        lista.forEach(item => {
+          const cabecera = stripHtml(item?.cabecera || item?.concepto || '').trim().toLowerCase();
+          // Importante: La API ahora devuelve 'importe' como número directo, no string
+          const importe = parseEuro(item?.importe ?? item?.valor ?? item?.precio ?? item?.total);
+
+          console.log(`Concepto: ${cabecera} -> Importe: ${importe}`);
+
+          if (cabecera.includes('término fijo') || cabecera.includes('potencia')) {
+             meta.terminoFijo += importe;
+          } 
+          else if (cabecera.includes('término variable') || cabecera.includes('energía')) {
+             meta.terminoVariable += importe;
+             
+             // Intentar sacar precios unitarios de la explicación
+             const exp = String(item?.explicacion || '');
+             if (exp) {
+               // Buscamos patrones tipo: "0,123456 €/kWh"
+               // Esto es aproximado porque la CNMC cambia el texto a veces
+               const matches = exp.match(/(\d+[.,]\d+)\s*€\/kWh/gi);
+               if (matches && matches.length >= 1) {
+                  // Limpiamos el texto para dejar solo el número
+                  const cleanNum = matches[0].replace('€/kWh','').trim();
+                  precioPunta = parseEuro(cleanNum);
+               }
+               if (matches && matches.length >= 2) {
+                  const cleanNum = matches[1].replace('€/kWh','').trim();
+                  precioLlano = parseEuro(cleanNum);
+               }
+               if (matches && matches.length >= 3) {
+                  const cleanNum = matches[2].replace('€/kWh','').trim();
+                  precioValle = parseEuro(cleanNum);
+               }
+             }
           }
-          else if(/financiación.*bono social/i.test(cabecera) && Number.isFinite(importe)) meta.bonoSocial=importe;
-          else if(/^impuesto eléctrico$/i.test(cabecera) && Number.isFinite(importe)) meta.impuestoElectrico=importe;
-          else if(/^equipo de medida$/i.test(cabecera) && Number.isFinite(importe)) meta.equipoMedida=importe;
-          else if(/^(iva\b|iva o equivalente)/i.test(cabecera) && Number.isFinite(importe)) meta.iva=importe;
-          else if(/^total factura$/i.test(cabecera) && Number.isFinite(importe)) meta.totalFactura=importe;
+          else if (cabecera.includes('bono social')) meta.bonoSocial += importe;
+          else if (cabecera.includes('impuesto eléctrico')) meta.impuestoElectrico += importe;
+          else if (cabecera.includes('equipo de medida') || cabecera.includes('alquiler')) meta.equipoMedida += importe;
+          else if (cabecera.includes('iva') || cabecera.includes('impuesto sobre el valor')) meta.iva += importe;
+          else if (cabecera.includes('total factura')) meta.totalFactura = importe;
         });
-      }finally{ console.groupEnd(); }
+      } finally { 
+        console.groupEnd(); 
+      }
 
-      if(!Number.isFinite(meta.terminoFijo)||!Number.isFinite(meta.terminoVariable)||!Number.isFinite(meta.impuestoElectrico)||!Number.isFinite(meta.equipoMedida)||!Number.isFinite(meta.iva)||!Number.isFinite(meta.totalFactura)) return null;
-      if(meta.totalFactura<=0) return null;
+      // Si no encontramos total explícito, lo sumamos nosotros para asegurar
+      if (meta.totalFactura <= 0) {
+        meta.totalFactura = meta.terminoFijo + meta.terminoVariable + meta.bonoSocial + meta.impuestoElectrico + meta.equipoMedida + meta.iva;
+      }
+
+      if (meta.totalFactura <= 0) return null;
 
       return { ...meta, precioPunta, precioLlano, precioValle, rangoFechas };
     }
