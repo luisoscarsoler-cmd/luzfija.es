@@ -172,6 +172,14 @@ Características (según implementación típica del worker):
 
 ## ⚖️ Avisos Legales
 
+### Transparencia y Origen de Datos
+
+Este proyecto opera bajo el principio de **Reutilización de Información del Sector Público** ([Ley 37/2007](https://www.boe.es/buscar/act.php?id=BOE-A-2007-19814)).
+
+- **Fuente de datos**: Los precios PVPC se obtienen de la API pública de la CNMC
+- **Uso**: Estrictamente educativo, informativo y de investigación, cumpliendo con el aviso legal de la fuente que autoriza dicho uso citando la procedencia
+- **Contacto**: [hola@luzfija.es](mailto:hola@luzfija.es)
+
 ### Descargo de responsabilidad
 
 Proyecto educativo y sin ánimo de lucro. Las estimaciones son orientativas y se obtienen consultando información pública disponible.
