@@ -1,107 +1,53 @@
-# ⚡ Comparador de Tarifas Eléctricas
+# ⚡ LuzFija.es - Comparador de Tarifas Eléctricas
 
-> Herramienta profesional para comparar tarifas de electricidad en España en tiempo real. Encuentra la oferta más barata según tus consumos específicos.
+Herramienta **gratuita** y **sin publicidad** para comparar tarifas de electricidad en España. Calcula una **estimación de factura** según potencia contratada (P1/P2) y consumos por periodos (punta, llano, valle), incluyendo el **PVPC (tarifa regulada)** cuando está disponible.
 
-![Estado](https://img.shields.io/website?url=https%3A%2F%2Fluzfija.es&label=Estado&style=flat-square)
-![Tamaño](https://img.shields.io/github/repo-size/almax/luzfija.es?label=Tamaño&color=orange&style=flat-square)
-![Licencia](https://img.shields.io/badge/Licencia-Gratis-green?style=flat-square)
+🔗 **Web:** https://luzfija.es
 
 ---
 
-## 🚀 Características
+## 🎯 Características
 
-* ✅ **Cálculo instantáneo:** Resultados basados en tu consumo real.
-* ✅ **Sin registro:** Úsalo directamente sin crear cuenta ni dar datos personales.
-* ✅ **Datos actualizados:** Tarifas fijas verificadas diariamente.
-* ✅ **Responsive:** Funciona perfectamente en móvil, tablet y ordenador.
-* ✅ **Exportar CSV:** Descarga el ranking completo con un clic.
-* ✅ **Sin publicidad:** Interfaz limpia, profesional y ética.
-* ✅ **Código abierto:** Transparencia total (GitHub Pages + Google Apps Script).
-
-## 🌐 Acceso
-
-👉 **[Visita luzfija.es](https://luzfija.es)** *(O busca "luz fija es" en Google)*
+- ✅ Comparación de tarifas **1P** y **3P** (discriminación horaria)
+- ✅ **PVPC** incluido cuando está disponible
+- ✅ Estimación con impuestos (IVA, impuesto eléctrico, etc.)
+- ✅ Ranking ordenado por **precio total**
+- ✅ Gráfico visual Top 5 tarifas más baratas
+- ✅ Enlaces directos para contratar
+- ✅ Compartir configuración por URL
+- ✅ Exportar resultados a CSV
+- ✅ Sin registro (y sin cookies propias)
 
 ---
 
-## 📊 Cómo Funciona
+## 📊 ¿Qué calculamos?
 
-1.  **Introduce tus datos:**
-    * Potencia P1 y P2 (en kW).
-    * Días de facturación.
-    * Consumo en horas punta, llano y valle.
-2.  **Obtén resultados:**
-    * Ranking de tarifas ordenadas por precio final.
-    * Desglose de Impuestos y Topes.
-    * Diferencia de ahorro respecto a la mejor opción.
-3.  **Descarga:**
-    * Puedes exportar la comparativa completa a formato CSV para analizarla en Excel.
+### Inputs del usuario
+- Potencia contratada **P1** y **P2** (kW)
+- **Días** de facturación (1–365)
+- Consumo por periodos (kWh):
+  - **Punta** (10h–14h y 18h–22h)
+  - **Llano** (8h–10h, 14h–18h, 22h–24h)
+  - **Valle** (0h–8h + fines de semana)
 
----
+### Incluye (estimación)
+- Término fijo (potencia × días)
+- Término variable (consumo × precio por periodo)
+- Conceptos/impuestos según el modelo del comparador (IVA, impuesto eléctrico, etc.)
 
-## 🏗️ Arquitectura
-
-Este proyecto sigue una arquitectura **Serverless** y **Jamstack**:
-
-### Frontend (100% Cliente)
-* **Core:** HTML5 + CSS3 + JavaScript vanilla (ES6+).
-* **Hosting:** GitHub Pages.
-* **CDN & Analytics:** Cloudflare.
-* **Estilos:** Diseño propio "Glassmorphism" + Google Fonts (Outfit).
-
-### Backend (Datos)
-* **API:** Google Apps Script (actúa como puente JSON).
-* **Base de datos:** Google Sheets (gestión sencilla de tarifas).
+> **Nota:** es una **estimación orientativa**. La factura real puede variar por redondeos, condiciones contractuales y cambios regulatorios.
 
 ---
 
-## 🎨 Stack Técnico
+## 🏆 PVPC (Tarifa Regulada) y CORS
 
-| Componente | Tecnología |
-| :--- | :--- |
-| **Frontend** | HTML5, CSS3, JavaScript Vanilla |
-| **Hosting** | GitHub Pages |
-| **CDN** | Cloudflare |
-| **API** | Google Apps Script |
-| **Base de Datos** | Google Sheets |
-| **Analytics** | Cloudflare Web Analytics |
+El PVPC se consulta en `comparador.cnmc.gob.es`, pero esa API **no permite CORS** directo desde navegador.  
+Por eso se usa un **Cloudflare Worker** como proxy CORS con whitelist estricta.
 
----
+### Cómo se activa en el frontend
+En `index.html` se define la URL del proxy:
 
-## 📈 Performance y Eficiencia
-
-Datos reales (Cloudflare Web Analytics):
-
-* 🚀 **Carga de página:** 195ms (Promedio)
-* ⚡ **LCP (Carga visual):** 99% Good
-* 👆 **INP (Interactividad):** 77% Good
-* 📐 **CLS (Estabilidad):** 86% Good
-
-### Eficiencia y Cuotas (Google Apps Script)
-* **Arquitectura eficiente:** La lógica de cálculo se ejecuta 100% en el navegador del usuario (Client-side).
-* **Consumo bajo demanda (Lazy Loading):** La conexión con la API solo se activa cuando el usuario realiza el primer cálculo, no al cargar la página.
-* **Caching inteligente:** Los datos se descargan una sola vez por sesión y se reutilizan para cálculos ilimitados sin consumir cuota del servidor.
-
----
-
-## 🎯 Casos de Uso
-
-1.  Comparar antes de cambiar de compañía eléctrica.
-2.  Simular ahorros subiendo o bajando potencia.
-3.  Comprobar si tu tarifa actual sigue siendo competitiva.
-4.  Análisis rápido de ofertas del mercado.
-
----
-
-## 🤝 Contribuciones y Contacto
-
-Este es un proyecto personal de utilidad pública creado por **aLMaX**.
-
-* **Web:** [luzfija.es](https://luzfija.es)
-* **Bugs/Sugerencias:** Abre un *Issue* en este repositorio.
-
----
-
-<p align="center">
-  <sub>Última actualización: Diciembre 2025 • Proyecto gratuito y sin publicidad.</sub>
-</p>
+```html
+<script>
+  window.PVPC_PROXY_URL = "https://TU-WORKER.workers.dev/?url=";
+</script>
