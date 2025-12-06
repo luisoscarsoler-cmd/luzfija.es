@@ -11,21 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" >
   <meta name="apple-mobile-web-app-title" content="Comparador Tarifas" >
 
-  <!-- ✅ PVPC PROXY (OPCIONAL)
-       La API de la CNMC bloquea CORS desde dominios externos.
-       Si quieres que aparezca PVPC en el ranking, define una URL de proxy ANTES del script principal.
-       Debe ser un endpoint que acepte ?url= y devuelva el JSON añadiendo Access-Control-Allow-Origin:*.
-       Ejemplo en el <head> o justo antes de este script:
-
-       <script>
-         window.PVPC_PROXY_URL = "https://TU-WORKER.workers.dev/?url="; // ideal que termine en ?url=
-       </script>
-  -->
   <script>
     window.PVPC_PROXY_URL = "https://pvpc-proxy-almax.luisoscar-soler.workers.dev/?url=";
   </script>
 
-  <!-- Open Graph -->
   <meta property="og:title" content="Comparador de Tarifas de Luz en España | Encuentra la Más Barata" >
   <meta property="og:description" content="Compara tarifas de electricidad con discriminación horaria. Calcula tu factura según potencia y consumo. Descubre cuánto puedes ahorrar. 100% gratuito." >
   <meta property="og:type" content="website" >
@@ -38,18 +27,15 @@
   <meta property="og:image:type" content="image/png" >
   <meta property="og:image:alt" content="Comparador de Tarifas de Luz - Encuentra la más barata en segundos" >
 
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" >
   <meta name="twitter:title" content="Comparador de Tarifas Eléctricas" >
   <meta name="twitter:description" content="Encuentra tu tarifa de luz más barata en segundos" >
   <meta name="twitter:image" content="https://luzfija.es/og.png" >
 
-  <!-- Canonical -->
   <link rel="canonical" href="https://luzfija.es/" >
   <link rel="alternate" hreflang="es-ES" href="https://luzfija.es/" >
   <link rel="alternate" hreflang="x-default" href="https://luzfija.es/" >
 
-  <!-- Prefetch/Preconnect -->
   <link rel="dns-prefetch" href="https://fonts.googleapis.com" >
   <link rel="dns-prefetch" href="https://script.google.com" >
   <link rel="dns-prefetch" href="https://static.cloudflareinsights.com" >
@@ -70,7 +56,6 @@
   <link rel="mask-icon" href="favicon.svg" color="#8B5CF6">
   <link rel="icon" href="favicon.ico" sizes="any">
 
-  <!-- Schema Markup (JSON-LD) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -671,7 +656,6 @@
             </div>
           </div>
 
-          <!-- PVPC info -->
           <div class="help" id="pvpcInfo" style="display:none; margin-top:0; margin-bottom: 12px;"></div>
 
           <div class="chartTop fade-container" id="chartTop">
@@ -1008,34 +992,47 @@
 
       const periodo = buildPvpcPeriodo(dias);
 
-const params = new URLSearchParams({
-  // 👇 nombre que seguramente espera el backend
-  tipoContador: 'T',
+      // La CNMC manda las fechas así: "YYYY-MM-DD,YYYY-MM-DD"
+      const [fechaInicioYMD, fechaFinYMD] = periodo.periodoFacturacion.split(',');
 
-  // 👇 dejamos también el antiguo por si acaso lo usan en otro sitio
-  pvpcTipoContador: 'T',
+      // Código postal solicitado por el usuario
+      const codigoPostal = '50010';
 
-  periodoFacturacion: periodo.periodoFacturacion,
-  bonoSocial: 'false',
-  tipoConsumidor: '1',
-  categoria: '1',
-  contador: '1',
-  potenciaPrimeraFranja: p1.toFixed(2),
-  potenciaSegundaFranja: p2.toFixed(2),
-  consumo1: String(Math.round(cPunta)),
-  consumo2: String(Math.round(cLlano)),
-  consumo3: String(Math.round(cValle)),
-  vivienda: 'false',
-  tarifa: '4',
-  calculoAntiguo: 'false',
-  descuento: 'false',
-  perfilConsumo: '8',
-  fechaInicio: periodo.fechaInicio,
-  potenciaConsumo: ((p1 + p2) / 2).toFixed(1),
-  horarioElectrodomesticos: '3',
-  inicioFacturacion: String(periodo.inicioFacturacion),
-  finFacturacion: String(periodo.finFacturacion)
-});
+      const params = new URLSearchParams({
+        // 👇 Copiado de la llamada que a ellos les devuelve 200
+        tipoContador: 'T',
+        periodoFacturacion: `${fechaInicioYMD},${fechaFinYMD}`,
+        codigoPostal,
+
+        bonoSocial: 'false',
+        tipoConsumidor: '1',
+        categoria: '1',
+        contador: '1',
+
+        potenciaPrimeraFranja: p1.toFixed(2),
+        potenciaSegundaFranja: p2.toFixed(2),
+
+        consumo1: String(Math.round(cPunta)),
+        consumo2: String(Math.round(cLlano)),
+        consumo3: String(Math.round(cValle)),
+
+        vivienda: 'false',
+        tarifa: '4', // 2.0TD
+        calculoAntiguo: 'false',
+        autoconsumo: 'false',
+        perfilConsumo: '8', // Perfil medio
+
+        // Ojo: aquí ellos usan solo fecha (sin hora)
+        fechaInicio: fechaInicioYMD,
+        fechaFin: fechaFinYMD,
+
+        // Aquí usan "potenciaAutoconsumo", no "potenciaConsumo". Usamos media o P1.
+        potenciaAutoconsumo: ((p1 + p2) / 2).toFixed(1),
+
+        // Y estos nombres EXACTOS:
+        inicioPFacturacion: String(periodo.inicioFacturacion),
+        finPFacturacion: String(periodo.finFacturacion)
+      });
 
       const apiUrl = `https://comparador.cnmc.gob.es/api/ofertas/pvpc?${params.toString()}`;
 
@@ -1703,102 +1700,4 @@ const params = new URLSearchParams({
     }
 
     function toggleMenu(force){
-      const s=(typeof force==='boolean')?force:!el.menuPanel.classList.contains('show');
-      el.menuPanel.classList.toggle('show',s);
-      el.btnMenu.setAttribute('aria-expanded',s?'true':'false');
-    }
-
-    document.addEventListener('DOMContentLoaded', async ()=>{
-      initTooltips();
-      loadInputs();
-
-      calculate(false, true);
-
-      Object.values(el.inputs).forEach(i=>{
-        i.addEventListener('input',()=>{
-          updateKwhHint();
-          scheduleCalculateDebounced();
-        });
-      });
-
-      document.querySelectorAll('.fbtn').forEach(b=>{
-        b.addEventListener('click',(e)=>{
-          createRipple(b,e);
-          document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));
-          b.classList.add('active');
-          state.filter=b.getAttribute('data-filter');
-          renderTable();
-        });
-      });
-
-      document.querySelectorAll('thead th.sort').forEach(th=>{
-        th.addEventListener('click',()=>{
-          const k=th.getAttribute('data-sort');
-          if(!k)return;
-          if(state.sort.key===k)state.sort.dir=(state.sort.dir==='asc')?'desc':'asc';
-          else{state.sort.key=k;state.sort.dir='asc';}
-          renderTable();updateSortIcons();
-        });
-      });
-
-      el.btnCalc.addEventListener('click',(e)=>{
-        createRipple(el.btnCalc,e);
-        calculate(true, true);
-      });
-
-      el.btnMenu.addEventListener('click',(e)=>{
-        createRipple(el.btnMenu,e);
-        e.stopPropagation();
-        toggleMenu();
-      });
-
-      el.menuPanel.addEventListener('click',(e)=>e.stopPropagation());
-      document.addEventListener('click',()=>toggleMenu(false));
-      document.addEventListener('keydown',(e)=>{if(e.key==='Escape')toggleMenu(false);});
-
-      el.btnReset.addEventListener('click',(e)=>{
-        createRipple(el.btnReset,e);
-        toggleMenu(false);
-        resetInputs();
-      });
-
-      el.btnExport.addEventListener('click',(e)=>{
-        createRipple(el.btnExport,e);
-        toggleMenu(false);
-        if(!state.rows || state.rows.length === 0){ toast('No hay datos para descargar','err'); return; }
-        const headers = ['#','Tarifa','Potencia','Consumo','Impuestos','Total','Vs Mejor','Tipo','Web'];
-        const rows = state.rows.map(r=>[r.posicion,r.nombre,r.potencia,r.consumo,r.impuestos,r.total,r.vsMejor,r.tipo,r.webUrl||'']);
-        const csv = [headers, ...rows].map(r=>r.join(';')).join('\n');
-        const BOM = '\uFEFF';
-        const blob = new Blob([BOM + csv], {type:'text/csv;charset=utf-8;'});
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href',url);
-        link.setAttribute('download',`ranking_tarifas_${new Date().toISOString().split('T')[0]}.csv`);
-        link.style.visibility='hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        toast('Ranking descargado');
-      });
-
-      el.btnShare.addEventListener('click', async (e) => {
-        createRipple(el.btnShare,e);
-        toggleMenu(false);
-
-        const d = saveInputs();
-        const qp = new URLSearchParams(d).toString();
-        const url = `${window.location.origin}${window.location.pathname}?${qp}`;
-        await copyText(url);
-        toast('Enlace copiado al portapapeles');
-      });
-
-      $('scrollToResults').addEventListener('click',()=>$('heroKpis').scrollIntoView({behavior:'smooth',block:'start'}));
-    });
-  </script>
-
-  <!-- Cloudflare Web Analytics -->
-  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "fea4a7fbe6e34ab1a867cff1c7837aa3"}'></script>
-  <!-- End Cloudflare Web Analytics -->
-</body>
-</html>
+      const s=(typeof force==='boolean')?force:!el.
