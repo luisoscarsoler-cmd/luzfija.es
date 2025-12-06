@@ -1051,15 +1051,21 @@
       const texto = stripHtml(textoCompleto || '');
 
       function extraerMaxPorPeriodo(periodo) {
-        const re = new RegExp(`${periodo}(?:\s*\([^)]*\))?\s*:\s*([0-9]+(?:[.,][0-9]+)?)\s*€\s*\/\s*kWh`, 'gi');
-        const vals = [];
-        for (const m of texto.matchAll(re)) {
-          const v = parseEuro(m[1]);
-          if (v > 0) vals.push(v);
-        }
-        if (!vals.length) return null;
-        return Math.max(...vals);
-      }
+        // OJO: en strings hay que usar \\s, o construir el patrón sin escapes rotos
+        const pattern =
+        periodo +
+      '(?:\\s*\\([^)]*\\))?\\s*[:=]\\s*([0-9]+(?:[.,][0-9]+)?)\\s*€\\s*\\/\\s*kWh';
+
+      const re = new RegExp(pattern, 'gi');
+
+      const vals = [];
+      for (const m of texto.matchAll(re)) {
+      const v = parseEuro(m[1]);
+      if (v > 0) vals.push(v);
+     }
+    if (!vals.length) return null;
+    return Math.max(...vals);
+  }
 
       const precioPunta = extraerMaxPorPeriodo('P1');
       const precioLlano = extraerMaxPorPeriodo('P2');
