@@ -735,6 +735,237 @@
 
     const state = { filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], lastSignature: null };
     let cachedTarifas = [];
+    let baseTarifasCache = [];
+
+    // ===== BEGIN PVPC MODULE =====
+    const PVPC_CACHE_TTL = 30 * 60 * 1000;
+    const PVPC_CACHE_LIMIT = 10;
+    const pvpcCache = new Map();
+    const pvpcInFlight = new Map();
+    let pvpcLastMeta = null;
+    let pvpcErrorShown = false;
+
+    function startOfDayLocal(date){
+      const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+      d.setHours(0,0,0,0);return d;
+    }
+
+    function addDays(date,n){
+      const d=new Date(date);d.setDate(d.getDate()+n);return d;
+    }
+
+    function formatYMD(date){
+      const y=date.getFullYear();
+      const m=String(date.getMonth()+1).padStart(2,'0');
+      const d=String(date.getDate()).padStart(2,'0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function buildPvpcPeriodo(dias){
+      const d=Math.min(Math.max(Number(dias)||0,1),365);
+      const end=startOfDayLocal(new Date());
+      const start=addDays(end,-d);
+      const periodoFacturacion=`${formatYMD(start)},${formatYMD(end)}`;
+      return {
+        periodoFacturacion,
+        fechaInicio:`${formatYMD(start)}T00:00:00`,
+        inicioFacturacion:start.getTime(),
+        finFacturacion:end.getTime()
+      };
+    }
+
+    async function fetchJsonWithTimeout(url, ms, headers){
+      const controller=new AbortController();
+      const t=setTimeout(()=>controller.abort(),ms);
+      try{
+        const res=await fetch(url,{signal:controller.signal,headers:headers||{}});
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        return await res.json();
+      }finally{ clearTimeout(t); }
+    }
+
+    function stripHtml(str){ return String(str||'').replace(/<[^>]*>/g,''); }
+
+    function parseEuro(val){
+      if(val===null||val===undefined)return NaN;
+      const s=stripHtml(String(val)).replace(/\./g,'').replace(',','.').replace(/[^0-9+\-\.]/g,'');
+      const n=parseFloat(s);
+      return Number.isFinite(n)?n:NaN;
+    }
+
+    function parsePrecioFromTexto(texto, etiqueta){
+      const re=new RegExp(`${etiqueta}\\s*:\\s*([\\d.,]+)\\s*€`, 'i');
+      const m=re.exec(stripHtml(texto||''));
+      if(!m||!m[1])return null;
+      const n=parseFloat(m[1].replace(/\./g,'').replace(',','.'));
+      return Number.isFinite(n)?n:null;
+    }
+
+    function parsearRespuestaPVPC(data){
+      const lista=Array.isArray(data?.resultadoPVPC)?data.resultadoPVPC:null;
+      if(!lista||!lista.length)return null;
+
+      const meta={terminoFijo:null,terminoVariable:null,bonoSocial:0,impuestoElectrico:null,equipoMedida:null,iva:null,totalFactura:null};
+      let precioPunta=null,precioLlano=null,precioValle=null;
+
+      const rangoTexto=stripHtml(lista[0]?.cabecera||'');
+      const rangoMatch=/Periodo:\s*del\s*(\d{2}\/\d{2}\/\d{4})\s*al\s*(\d{2}\/\d{2}\/\d{4})/i.exec(rangoTexto);
+      let rangoFechas=null;
+      if(rangoMatch) rangoFechas={inicio:rangoMatch[1],fin:rangoMatch[2]};
+
+      console.group('PVPC parsearRespuestaPVPC');
+      try{
+        lista.forEach(item=>{
+          const cabecera=stripHtml(item?.cabecera||item?.concepto||'').trim();
+          const importe=parseEuro(item?.importe??item?.valor??item?.precio??item?.total);
+
+          if(/^término fijo$/i.test(cabecera) && Number.isFinite(importe)) meta.terminoFijo=importe;
+          else if(/^término variable$/i.test(cabecera) && Number.isFinite(importe)){
+            meta.terminoVariable=importe;
+            const exp=String(item?.explicacion||'');
+            if(exp){
+              precioPunta=parsePrecioFromTexto(exp,'P1[^\\d]*Punta');
+              precioLlano=parsePrecioFromTexto(exp,'P2[^\\d]*Llano');
+              precioValle=parsePrecioFromTexto(exp,'P3[^\\d]*Valle');
+            }
+          }
+          else if(/financiación.*bono social/i.test(cabecera) && Number.isFinite(importe)) meta.bonoSocial=importe;
+          else if(/^impuesto eléctrico$/i.test(cabecera) && Number.isFinite(importe)) meta.impuestoElectrico=importe;
+          else if(/^equipo de medida$/i.test(cabecera) && Number.isFinite(importe)) meta.equipoMedida=importe;
+          else if(/^(iva\b|iva o equivalente)/i.test(cabecera) && Number.isFinite(importe)) meta.iva=importe;
+          else if(/^total factura$/i.test(cabecera) && Number.isFinite(importe)) meta.totalFactura=importe;
+        });
+      }finally{ console.groupEnd(); }
+
+      if(!Number.isFinite(meta.terminoFijo)||!Number.isFinite(meta.terminoVariable)||!Number.isFinite(meta.impuestoElectrico)||!Number.isFinite(meta.equipoMedida)||!Number.isFinite(meta.iva)||!Number.isFinite(meta.totalFactura)) return null;
+      if(meta.totalFactura<=0) return null;
+
+      return { ...meta, precioPunta, precioLlano, precioValle, rangoFechas };
+    }
+
+    async function obtenerPVPC_CNMC(values){
+      const periodo=buildPvpcPeriodo(values?.dias||30);
+      const params=new URLSearchParams({
+        pvpcTipoContador:'T',
+        periodoFacturacion:periodo.periodoFacturacion,
+        bonoSocial:'false',
+        tipoConsumidor:'1',
+        categoria:'1',
+        contador:'1',
+        potenciaPrimeraFranja:String(values?.p1||0),
+        potenciaSegundaFranja:String(values?.p2||0),
+        consumo1:String(values?.cPunta||0),
+        consumo2:String(values?.cLlano||0),
+        consumo3:String(values?.cValle||0),
+        vivienda:'false',
+        tarifa:'4',
+        calculoAntiguo:'false',
+        descuento:'false',
+        perfilConsumo:'8',
+        fechaInicio:periodo.fechaInicio,
+        potenciaConsumo:String((values?.cPunta||0)+(values?.cLlano||0)+(values?.cValle||0)),
+        horarioElectrodomesticos:'3',
+        inicioFacturacion:String(periodo.inicioFacturacion),
+        finFacturacion:String(periodo.finFacturacion)
+      });
+      const url=`https://comparador.cnmc.gob.es/api/ofertas/pvpc?${params.toString()}`;
+
+      console.group('PVPC obtenerPVPC_CNMC');
+      console.log('URL',url);
+      console.log('Periodo',periodo.periodoFacturacion);
+      console.log('Potencias',values?.p1,values?.p2,'Consumos',values?.cPunta,values?.cLlano,values?.cValle);
+      console.groupEnd();
+
+      try{
+        return await fetchJsonWithTimeout(url,15000);
+      }catch(err){
+        if(err instanceof TypeError && window.PVPC_PROXY_URL){
+          const proxyUrl=`${window.PVPC_PROXY_URL}?url=${encodeURIComponent(url)}`;
+          return fetchJsonWithTimeout(proxyUrl,15000);
+        }
+        console.error('PVPC fetch error',err);
+        return null;
+      }
+    }
+
+    function pvpcSignatureFromValues(v){
+      const norm=n=>Number(Number(n||0).toFixed(4));
+      return [Math.min(Math.max(Math.trunc(v?.dias)||0,1),365),norm(v?.p1),norm(v?.p2),norm(v?.cPunta),norm(v?.cLlano),norm(v?.cValle)].join('|');
+    }
+
+    function enforcePvpcCacheLimit(){
+      while(pvpcCache.size>PVPC_CACHE_LIMIT){
+        const oldestKey=pvpcCache.keys().next().value;
+        pvpcCache.delete(oldestKey);
+      }
+    }
+
+    async function crearTarifaPVPC(values){
+      const signature=pvpcSignatureFromValues(values);
+      if(pvpcInFlight.has(signature)) return pvpcInFlight.get(signature);
+
+      const now=Date.now();
+      const cached=pvpcCache.get(signature);
+      if(cached && cached.expiresAt>now){
+        pvpcLastMeta=cached.lastMeta;
+        console.group('PVPC crearTarifaPVPC');
+        console.log('Cache hit');
+        console.groupEnd();
+        return cached.tarifa;
+      }
+
+      const p=(async()=>{
+        console.group('PVPC crearTarifaPVPC');
+        console.log('Cache miss');
+        console.groupEnd();
+        try{
+          const data=await obtenerPVPC_CNMC(values);
+          if(!data){ if(!pvpcErrorShown){toast('No se pudo cargar PVPC','err'); pvpcErrorShown=true;} return null; }
+          const parsed=parsearRespuestaPVPC(data);
+          if(!parsed){ if(!pvpcErrorShown){toast('No se pudo cargar PVPC','err'); pvpcErrorShown=true;} return null; }
+
+          const tarifa={
+            nombre:'PVPC (Regulada) ⚡',
+            tipo:'3P',
+            p1:0, p2:0,
+            cPunta:parsed.precioPunta||0,
+            cLlano:parsed.precioLlano||0,
+            cValle:parsed.precioValle||0,
+            web:'https://facturaluz2.cnmc.es/',
+            esPVPC:true,
+            metaPvpc:{
+              terminoFijo:parsed.terminoFijo,
+              terminoVariable:parsed.terminoVariable,
+              bonoSocial:parsed.bonoSocial||0,
+              impuestoElectrico:parsed.impuestoElectrico,
+              equipoMedida:parsed.equipoMedida,
+              iva:parsed.iva,
+              totalFactura:parsed.totalFactura
+            }
+          };
+
+          pvpcLastMeta={
+            precioPunta:parsed.precioPunta,
+            precioLlano:parsed.precioLlano,
+            precioValle:parsed.precioValle,
+            rangoFechas:parsed.rangoFechas||null,
+            fechaConsulta:new Date()
+          };
+
+          pvpcCache.set(signature,{tarifa,expiresAt:now+PVPC_CACHE_TTL,createdAt:now,lastMeta:pvpcLastMeta});
+          enforcePvpcCacheLimit();
+          return tarifa;
+        }catch(err){
+          console.error('Error procesando PVPC',err);
+          if(!pvpcErrorShown){toast('No se pudo cargar PVPC','err'); pvpcErrorShown=true;}
+          return null;
+        }
+      })();
+
+      pvpcInFlight.set(signature,p);
+      return p.finally(()=>pvpcInFlight.delete(signature));
+    }
+    // ===== END PVPC MODULE =====
 
     let activeTooltip = null;
     let tooltipPinned = false;
@@ -862,7 +1093,7 @@
     
     // ⚡ LEER TARIFAS DESDE tarifas.json EN EL MISMO HOST
     async function fetchTarifas(forceRefresh = false) {
-        if (!forceRefresh && cachedTarifas.length > 0) return true;
+        if (!forceRefresh && baseTarifasCache.length > 0) return true;
         setStatus('Cargando tarifas...', 'loading');
         try {
             const controller = new AbortController();
@@ -874,12 +1105,12 @@
             if (!response.ok) {
                 throw new Error('HTTP ' + response.status);
             }
-            
+
             const data = await response.json();
             const tarifas = Array.isArray(data.tarifas) ? data.tarifas : null;
 
             if (tarifas && tarifas.length) {
-                cachedTarifas = tarifas;
+                baseTarifasCache = tarifas;
                 setStatus('Datos actualizados', 'ok');
                 setTimeout(() => setStatus('Listo para calcular', 'idle'), 1500);
                 return true;
@@ -917,6 +1148,27 @@
         if(!cachedTarifas.length) return;
 
         const resultados = cachedTarifas.map((t, index) => {
+            if (t.esPVPC && t.metaPvpc) {
+                const m = t.metaPvpc;
+                const potenciaNum = m.terminoFijo;
+                const consumoNum = m.terminoVariable;
+                const impuestosNum = m.bonoSocial + m.impuestoElectrico + m.equipoMedida + m.iva;
+                const totalNum = m.totalFactura;
+                return {
+                    ...t,
+                    posicion: index + 1,
+                    potenciaNum,
+                    potencia: formatMoney(potenciaNum),
+                    consumoNum,
+                    consumo: formatMoney(consumoNum),
+                    impuestosNum,
+                    impuestos: formatMoney(impuestosNum),
+                    totalNum,
+                    total: formatMoney(totalNum),
+                    webUrl: t.web
+                };
+            }
+
             const pot = (p1 * dias * t.p1) + (p2 * dias * t.p2);
             const cons = (cPunta * t.cPunta) + (cLlano * t.cLlano) + (cValle * t.cValle);
             const tarifaAcceso = (4.650987 / 365 * dias);
@@ -924,9 +1176,9 @@
             const impuestoElec = Math.max((5.11269632 / 100) * sumaBase, (cPunta + cLlano + cValle) * 0.001);
             const margen = dias * 0.026667;
             const subtotal = sumaBase + impuestoElec + margen;
-            const iva = subtotal * 0.21; 
+            const iva = subtotal * 0.21;
             const total = subtotal + iva;
-            
+
             return {
                 ...t,
                 posicion: index + 1,
@@ -1135,10 +1387,31 @@
       });
     }
 
+    function renderPvpcInfo(){
+      const div=document.getElementById('pvpcInfo');
+      if(!div)return;
+      if(!pvpcLastMeta){
+        div.style.display='none';
+        div.innerHTML='';
+        return;
+      }
+      const fmt=(n)=>Number.isFinite(n)?`${n.toFixed(4).replace('.',',')} €/kWh`:'—';
+      const rango=pvpcLastMeta.rangoFechas?`Periodo oficial: ${pvpcLastMeta.rangoFechas.inicio} - ${pvpcLastMeta.rangoFechas.fin}`:'';
+      const fecha=pvpcLastMeta.fechaConsulta?new Date(pvpcLastMeta.fechaConsulta):null;
+      const fechaTxt=fecha?fecha.toLocaleString('es-ES'):'-';
+      div.style.display='block';
+      div.innerHTML=`<div><strong>PVPC oficial CNMC</strong></div>
+        <div>Precio medio Punta: ${fmt(pvpcLastMeta.precioPunta)}</div>
+        <div>Precio medio Llano: ${fmt(pvpcLastMeta.precioLlano)}</div>
+        <div>Precio medio Valle: ${fmt(pvpcLastMeta.precioValle)}</div>
+        ${rango?`<div>${rango}</div>`:''}
+        <div>Consulta: ${fechaTxt}</div>`;
+    }
+
     function renderAll(d){
         if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;}
-        setStatus('Resultados actualizados','ok'); 
-        const r=d.resumen||{}; 
+        setStatus('Resultados actualizados','ok');
+        const r=d.resumen||{};
         if(r.mejor) el.kpiBest.textContent=r.mejor;
         if(r.precio) el.kpiPrice.textContent=r.precio;
         el.heroKpis.classList.add('show');
@@ -1151,8 +1424,9 @@
         if(window.innerWidth<1100){
           const sb=$('scrollToResults');
           sb.style.display='block';
-          setTimeout(()=>sb.style.display='none',5000); 
+          setTimeout(()=>sb.style.display='none',5000);
         }
+        renderPvpcInfo();
     }
 
     // INP OPT: Faster debounce to reduce idle delay while batching recalculations
@@ -1174,6 +1448,10 @@
         setStatus('Calculando...', 'loading');
         const loaded = await fetchTarifas(forceRefresh);
         if(!loaded) return;
+        const pvpc = await crearTarifaPVPC(values);
+        const base = Array.isArray(baseTarifasCache) ? baseTarifasCache.slice() : [];
+        cachedTarifas = pvpc ? [...base, pvpc] : base;
+        if(!pvpc) pvpcLastMeta=null;
         calculateLocal(values);
         state.lastSignature = signature;
     }
