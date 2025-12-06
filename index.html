@@ -635,7 +635,7 @@
 
       <div class="actions">
         <div class="pill" id="statusPill" role="status" aria-live="polite">
-          <span id="statusText">Listo — cambia un valor para actualizar</span>
+          <span id="statusText">Introduce tus datos y pulsa Calcular para ver el ranking</span>
         </div>
         <button class="btn" id="btnTheme" type="button" title="Cambiar tema" aria-label="Cambiar tema">☀️</button>
         <div class="menu" id="menuRoot">
@@ -721,7 +721,7 @@
             </button>
           </div>
           <div class="help">
-            Se recalcula automáticamente mientras escribes. Pulsa ⚡ Calcular para forzar una recarga completa (tarifas y PVPC si está disponible). Puedes escribir decimales con coma o punto (ej.: 3,45 / 3.45).
+            Introduce tus datos y pulsa ⚡ Calcular para generar o refrescar el ranking (tarifas y PVPC si está disponible). Puedes escribir decimales con coma o punto (ej.: 3,45 / 3.45).
           </div>
         </div>
       </section>
@@ -959,7 +959,7 @@
       pvpcInfo: $('pvpcInfo')
     };
 
-    const state = { filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], lastSignature: null, debounce: null };
+    const state = { filter: 'all', sort: { key: 'totalNum', dir: 'asc' }, rows: [], lastSignature: null, debounce: null, pending: true, hasValidationError: false };
     let cachedTarifas = [];
     let baseTarifasCache = [];
 
@@ -971,9 +971,9 @@
     //       window.PVPC_PROXY_URL = "https://tu-worker.workers.dev/?url=";  // ideal que termine en ?url=
     // 3) El comparador usará automáticamente ese proxy cuando el fetch directo falle por CORS.
 
-    const PVPC_CACHE_TTL = 30 * 60 * 1000;
-    const PVPC_CACHE_LIMIT = 10;
-    const pvpcCache = new Map();
+    const PVPC_CACHE_PREFIX = 'pvpc_cache_v1';
+    const PVPC_CACHE_LIMIT = 30;
+    const pvpcCacheMemory = new Map();
     const pvpcInFlight = new Map();
     let pvpcLastMeta = null;
     let pvpcErrorShown = false;
@@ -1036,6 +1036,34 @@
       const m=String(date.getMonth()+1).padStart(2,'0');
       const d=String(date.getDate()).padStart(2,'0');
       return `${y}-${m}-${d}`;
+    }
+
+    function getPvpcAnchorDate(){
+      const yesterday=startOfDayLocal(new Date());
+      yesterday.setDate(yesterday.getDate()-1);
+      return formatYMD(yesterday);
+    }
+
+    function buildPvpcCacheKey(values){
+      const {p1=0,p2=0,dias=0,cPunta=0,cLlano=0,cValle=0}=values||{};
+      return `${PVPC_CACHE_PREFIX}:${getPvpcAnchorDate()}:${p1}:${p2}:${dias}:${cPunta}:${cLlano}:${cValle}`;
+    }
+
+    function readPvpcCacheEntry(key){
+      if(pvpcCacheMemory.has(key)) return pvpcCacheMemory.get(key);
+      try{
+        const raw=localStorage.getItem(key);
+        if(!raw) return null;
+        const parsed=JSON.parse(raw);
+        pvpcCacheMemory.set(key,parsed);
+        return parsed;
+      }catch(e){ return null; }
+    }
+
+    function persistPvpcCacheEntry(key, payload){
+      try{ localStorage.setItem(key, JSON.stringify(payload)); }catch(e){}
+      pvpcCacheMemory.set(key,payload);
+      enforcePvpcCacheLimit();
     }
 
     function buildPvpcPeriodo(dias){
@@ -1328,34 +1356,49 @@
 
     function pvpcSignatureFromValues(v){
       const norm=n=>Number(Number(n||0).toFixed(4));
-      return [Math.min(Math.max(Math.trunc(v?.dias)||0,1),365),norm(v?.p1),norm(v?.p2),norm(v?.cPunta),norm(v?.cLlano),norm(v?.cValle)].join('|');
+      const values={
+        dias: Math.min(Math.max(Math.trunc(v?.dias)||0,1),365),
+        p1: norm(v?.p1),
+        p2: norm(v?.p2),
+        cPunta: norm(v?.cPunta),
+        cLlano: norm(v?.cLlano),
+        cValle: norm(v?.cValle)
+      };
+      return buildPvpcCacheKey(values);
     }
 
     function enforcePvpcCacheLimit(){
-      while(pvpcCache.size>PVPC_CACHE_LIMIT){
-        const oldestKey=pvpcCache.keys().next().value;
-        pvpcCache.delete(oldestKey);
-      }
+      try{
+        const entries=[];
+        for(let i=0;i<localStorage.length;i++){
+          const k=localStorage.key(i);
+          if(k && k.startsWith(`${PVPC_CACHE_PREFIX}:`)){
+            let ts=0;
+            try{ const parsed=JSON.parse(localStorage.getItem(k)); ts=parsed?.ts||0; }catch(e){}
+            entries.push({k,ts});
+          }
+        }
+        if(entries.length<=PVPC_CACHE_LIMIT) return;
+        entries.sort((a,b)=>a.ts-b.ts);
+        const remove=entries.length-PVPC_CACHE_LIMIT;
+        for(let i=0;i<remove;i++){
+          localStorage.removeItem(entries[i].k);
+          pvpcCacheMemory.delete(entries[i].k);
+        }
+      }catch(e){}
     }
 
     async function crearTarifaPVPC(values){
       const signature=pvpcSignatureFromValues(values);
       if(pvpcInFlight.has(signature)) return pvpcInFlight.get(signature);
 
-      const now=Date.now();
-      const cached=pvpcCache.get(signature);
-      if(cached && cached.expiresAt>now){
-        pvpcLastMeta=cached.lastMeta;
-        console.group('PVPC crearTarifaPVPC');
-        console.log('Cache hit');
-        console.groupEnd();
+      const cached=readPvpcCacheEntry(signature);
+      if(cached && cached.tarifa){
+        pvpcLastMeta=cached.meta||null;
         return cached.tarifa;
       }
 
       const p=(async()=>{
-        console.group('PVPC crearTarifaPVPC');
-        console.log('Cache miss');
-        console.groupEnd();
         try{
           const data=await obtenerPVPC_CNMC(values);
           if(!data){ if(!pvpcErrorShown){toast('PVPC (regulada) no disponible ahora mismo. Mostrando ranking sin PVPC; puedes reintentar con ⚡ Calcular.','err'); pvpcErrorShown=true;} return null; }
@@ -1387,11 +1430,11 @@
             precioLlano:parsed.precioLlano,
             precioValle:parsed.precioValle,
             rangoFechas:parsed.rangoFechas||null,
-            fechaConsulta:new Date()
+            fechaConsulta:new Date().toISOString()
           };
 
-          pvpcCache.set(signature,{tarifa,expiresAt:now+PVPC_CACHE_TTL,createdAt:now,lastMeta:pvpcLastMeta});
-          enforcePvpcCacheLimit();
+          const payload={tarifa, meta: pvpcLastMeta, ts: Date.now()};
+          persistPvpcCacheEntry(signature,payload);
           return tarifa;
         }catch(err){
           console.error('Error procesando PVPC',err);
@@ -1500,6 +1543,13 @@
         .replace(/'/g,'&#039;');
     }
 
+    function applyButtonState(isLoading){
+      const disabled = isLoading || state.hasValidationError;
+      el.btnCalc.disabled = disabled;
+      if(isLoading) el.btnCalc.classList.add('calculating');
+      else el.btnCalc.classList.remove('calculating');
+    }
+
     function setStatus(text, mode='idle'){
       el.statusText.textContent=text;
       el.statusPill.classList.remove('loading','ok','err');
@@ -1507,10 +1557,14 @@
       if(mode==='ok')el.statusPill.classList.add('ok');
       if(mode==='err')el.statusPill.classList.add('err');
       const l=mode==='loading';
-      el.btnCalc.disabled=l;
+      applyButtonState(l);
       el.btnText.style.display=l?'none':'flex';
       el.btnSpinner.style.display=l?'flex':'none';
-      if(l)el.btnCalc.classList.add('calculating'); else el.btnCalc.classList.remove('calculating');
+    }
+
+    function markPending(message='Cambios pendientes. Pulsa Calcular para actualizar.'){
+      state.pending=true;
+      setStatus(message,'idle');
     }
 
     function toast(msg, mode='ok'){
@@ -1520,6 +1574,12 @@
       el.toast.classList.add('show');
       clearTimeout(el.toast._t);
       el.toast._t=setTimeout(()=>el.toast.classList.remove('show'),2800);
+    }
+
+    function showError(msg=''){
+      if(!el.errorBox)return;
+      el.errorText.textContent=msg;
+      el.errorBox.classList.toggle('show',Boolean(msg));
     }
 
     function applyThemeClass(theme){
@@ -1716,14 +1776,35 @@
       saveInputs();
       updateKwhHint();
       clearErrorStyles();
+      validateInputs();
+      markPending('Valores restablecidos. Pulsa Calcular para actualizar.');
       toast('Restablecido');
-      setTimeout(()=>calculate(false), 300);
     }
 
     function updateKwhHint(){
       const v = getInputValues();
       const t = v.cPunta + v.cLlano + v.cValle;
       el.kwhHint.textContent=`${t.toFixed(2).replace('.',',')} kWh`;
+    }
+
+    function validateInputs(){
+      clearErrorStyles();
+      let message='';
+
+      const diasRaw=String(el.inputs.dias.value||'').trim();
+      const diasNum=parseNum(el.inputs.dias.value);
+      if(!diasRaw){
+        message='Introduce los días de facturación (1-365).';
+        el.inputs.dias.classList.add('error');
+      } else if(!Number.isFinite(diasNum) || diasNum<=0){
+        message='Los días deben ser un número entre 1 y 365.';
+        el.inputs.dias.classList.add('error');
+      }
+
+      state.hasValidationError=Boolean(message);
+      if(message) showError(message); else showError('');
+      applyButtonState(false);
+      return !state.hasValidationError;
     }
 
     function clearErrorStyles(){ Object.values(el.inputs).forEach(i=>i.classList.remove('error')); }
@@ -1922,6 +2003,7 @@
 
     function renderAll(d){
       if(!d||!d.success){setStatus('Error de cálculo','err');toast('Error al calcular','err');return;}
+      state.pending=false;
       setStatus('Resultados actualizados','ok');
 
       const r=d.resumen||{};
@@ -1954,10 +2036,18 @@
 
     function scheduleCalculateDebounced(){
       clearTimeout(state.debounce);
-      state.debounce = setTimeout(()=>calculate(false, false), 200);
+      state.debounce = setTimeout(()=>{
+        const valid = validateInputs();
+        if(valid) markPending();
+        else setStatus('Corrige los datos para calcular','err');
+      }, 200);
     }
 
     async function calculate(isUserAction, forceRefresh = false){
+      if(!validateInputs()){
+        setStatus('Corrige los datos para calcular','err');
+        return;
+      }
       const values = getInputValues();
       const signature = signatureFromValues(values);
 
@@ -1979,6 +2069,7 @@
 
       calculateLocal(values);
       state.lastSignature = signature;
+      state.pending = false;
     }
 
     function toggleMenu(force){
@@ -1993,7 +2084,8 @@
       updateThemeIcon();
       loadInputs();
 
-      calculate(false, true);
+      validateInputs();
+      markPending('Introduce tus datos y pulsa Calcular para ver el ranking.');
 
       Object.values(el.inputs).forEach(i=>{
         i.addEventListener('input',()=>{
