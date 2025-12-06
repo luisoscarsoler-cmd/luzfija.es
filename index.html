@@ -1018,9 +1018,6 @@
       return Number.isFinite(n) ? n : fallback;
     }
 
-    // Cooldown anti-spam: desactivar fetch directo 30min tras fallo CORS/red
-    let pvpcDirectDisabledUntil = 0;
-    const PVPC_DIRECT_DISABLE_MS = 30 * 60 * 1000;
 
     function startOfDayLocal(date){
       const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());
@@ -1307,48 +1304,29 @@
       console.log(`Consumos: Punta=${Math.round(cPunta)} Llano=${Math.round(cLlano)} Valle=${Math.round(cValle)}`);
       console.groupEnd();
 
-      const inCooldown = Date.now() < pvpcDirectDisabledUntil;
-
-      // INTENTO 1: Fetch directo (solo si no hay cooldown)
-      if (!inCooldown) {
+      // 🔥 Si hay proxy, usarlo DIRECTAMENTE (evita request CORS inútil)
+      const proxyBase = window.PVPC_PROXY_URL ? normalizeProxyBase(window.PVPC_PROXY_URL) : '';
+      if (proxyBase) {
         try {
-          console.log('PVPC: Intentando fetch directo a CNMC...');
-          const result = await fetchJsonWithTimeout(apiUrl, 8000);
+          const proxyUrl = `${proxyBase}${encodeURIComponent(apiUrl)}`;
+          console.log('PVPC: ✅ Usando proxy directo:', proxyUrl);
+          const result = await fetchJsonWithTimeout(proxyUrl, 12000);
           pvpcErrorShown = false;
           return result;
-        } catch (err) {
-          console.warn('PVPC fetch directo falló:', err?.message || err);
-          const msg = String(err?.message || '');
-          const isCorsOrNetwork = (err instanceof TypeError) || msg.includes('Failed to fetch');
-          if (isCorsOrNetwork) {
-            pvpcDirectDisabledUntil = Date.now() + PVPC_DIRECT_DISABLE_MS;
-            console.info('PVPC: ⏸️ Cooldown activado 30min (CORS/red detectado).');
+        } catch (proxyErr) {
+          console.warn('PVPC fetch con proxy falló:', proxyErr?.message || proxyErr);
+          if (typeof toast === 'function' && !pvpcErrorShown) {
+            toast('PVPC (regulada) no disponible ahora mismo. Intenta de nuevo con ⚡ Calcular.', 'err');
+            pvpcErrorShown = true;
           }
-        }
-      } else {
-        const remaining = Math.ceil((pvpcDirectDisabledUntil - Date.now()) / 60000);
-        console.info(`PVPC: ⏸️ Fetch directo desactivado (${remaining}min restantes).`);
-      }
-
-      // INTENTO 2: Proxy (solo si está configurado)
-      if (window.PVPC_PROXY_URL) {
-        const proxyBase = normalizeProxyBase(window.PVPC_PROXY_URL);
-        if (proxyBase) {
-          try {
-            const proxyUrl = `${proxyBase}${encodeURIComponent(apiUrl)}`;
-            console.log('PVPC: 🔄 Reintentando vía proxy:', proxyUrl);
-            const result = await fetchJsonWithTimeout(proxyUrl, 12000);
-            pvpcErrorShown = false;
-            return result;
-          } catch (proxyErr) {
-            console.warn('PVPC fetch con proxy falló:', proxyErr?.message || proxyErr);
-          }
+          return null;
         }
       }
 
-      console.info('PVPC: ⚠️ window.PVPC_PROXY_URL no configurado o inválido. PVPC no disponible.');
+      // Si no hay proxy configurado
+      console.info('PVPC: ⚠️ window.PVPC_PROXY_URL no configurado. PVPC no disponible.');
       if (typeof toast === 'function' && !pvpcErrorShown) {
-        toast('PVPC (regulada) no disponible ahora mismo. Mostrando ranking sin PVPC; puedes reintentar con ⚡ Calcular.', 'err');
+        toast('PVPC (regulada) no disponible. Configura proxy para habilitar.', 'err');
         pvpcErrorShown = true;
       }
       return null;
