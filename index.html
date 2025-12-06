@@ -75,6 +75,50 @@
   }
   </script>
 
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"BreadcrumbList",
+    "itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Inicio","item":"https://luzfija.es/"}
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {
+        "@type":"Question",
+        "name":"¿Qué significan punta, llano y valle?",
+        "acceptedAnswer":{"@type":"Answer","text":"Son periodos horarios con precios distintos en tarifas 3P. En general, punta es más caro, valle más barato y llano intermedio (los horarios exactos dependen del calendario y la tarifa)."}
+      },
+      {
+        "@type":"Question",
+        "name":"¿Qué es P1 y P2 en la potencia contratada?",
+        "acceptedAnswer":{"@type":"Answer","text":"La potencia se paga por días y puede variar por periodo (P1/P2). En muchas viviendas se contrata la misma potencia en ambos, pero puedes optimizarla según tu uso."}
+      },
+      {
+        "@type":"Question",
+        "name":"¿El comparador incluye impuestos?",
+        "acceptedAnswer":{"@type":"Answer","text":"Sí: el cálculo muestra potencia, consumo y una estimación de impuestos/IVA según el modelo del comparador."}
+      },
+      {
+        "@type":"Question",
+        "name":"¿Necesito registrarme?",
+        "acceptedAnswer":{"@type":"Answer","text":"No. Es una herramienta gratuita, sin registro. Puedes además compartir tu configuración por URL."}
+      },
+      {
+        "@type":"Question",
+        "name":"¿De dónde salen los precios?",
+        "acceptedAnswer":{"@type":"Answer","text":"Las tarifas se cargan desde un archivo tarifas.json publicado en esta misma web."}
+      }
+    ]
+  }
+  </script>
+
   <style>
     /* === TU DISEÑO ORIGINAL EXACTO (NO TOCAR) === */
     :root{ --bg0:#070A12; --bg1:#0B1020; --card: rgba(255,255,255,.06); --card2: rgba(255,255,255,.085); --border: rgba(255,255,255,.10); --border2: rgba(255,255,255,.16); --text:#F7F7FB; --muted: rgba(247,247,251,.72); --muted2: rgba(247,247,251,.55); --accent:#8B5CF6; --accent2:#22C55E; --warn:#F59E0B; --danger:#EF4444; --shadow: 0 22px 65px rgba(0,0,0,.52); --shadow2: 0 16px 40px rgba(0,0,0,.50); --radius: 18px; --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; --sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif; }
@@ -923,6 +967,9 @@
       // Variables para extraer precios unitarios (si vienen en el texto)
       let precioPunta = null, precioLlano = null, precioValle = null;
       let rangoFechas = null;
+      
+      // Array temporal para capturar TODOS los precios que encontremos
+      let preciosEncontrados = [];
 
       // Intentamos sacar fechas del primer elemento
       try {
@@ -950,20 +997,13 @@
              const exp = String(item?.explicacion || '');
              if (exp) {
                // Buscamos patrones tipo: "0,123456 €/kWh"
-               // Esto es aproximado porque la CNMC cambia el texto a veces
                const matches = exp.match(/(\d+[.,]\d+)\s*€\/kWh/gi);
-               if (matches && matches.length >= 1) {
-                  // Limpiamos el texto para dejar solo el número
-                  const cleanNum = matches[0].replace('€/kWh','').trim();
-                  precioPunta = parseEuro(cleanNum);
-               }
-               if (matches && matches.length >= 2) {
-                  const cleanNum = matches[1].replace('€/kWh','').trim();
-                  precioLlano = parseEuro(cleanNum);
-               }
-               if (matches && matches.length >= 3) {
-                  const cleanNum = matches[2].replace('€/kWh','').trim();
-                  precioValle = parseEuro(cleanNum);
+               if (matches) {
+                 matches.forEach(m => {
+                   const cleanNum = m.replace('€/kWh','').trim();
+                   const val = parseEuro(cleanNum);
+                   if (val > 0) preciosEncontrados.push(val);
+                 });
                }
              }
           }
@@ -973,6 +1013,26 @@
           else if (cabecera.includes('iva') || cabecera.includes('impuesto sobre el valor')) meta.iva += importe;
           else if (cabecera.includes('total factura')) meta.totalFactura = importe;
         });
+        
+        // --- LÓGICA INFALIBLE DE ASIGNACIÓN ---
+        // Ordenamos los precios encontrados de MENOR a MAYOR.
+        // Sabemos que en 2.0TD: Valle < Llano < Punta
+        if (preciosEncontrados.length >= 3) {
+          preciosEncontrados.sort((a, b) => a - b);
+          // El menor es Valle
+          precioValle = preciosEncontrados[0];
+          // El del medio es Llano
+          precioLlano = preciosEncontrados[1]; 
+          // El mayor es Punta
+          precioPunta = preciosEncontrados[2];
+        } else {
+           // Fallback por si no encuentra 3 precios (raro)
+           // Intentamos asignar lo que haya
+           if(preciosEncontrados[0]) precioValle = preciosEncontrados[0];
+           if(preciosEncontrados[1]) precioLlano = preciosEncontrados[1];
+           if(preciosEncontrados[2]) precioPunta = preciosEncontrados[2];
+        }
+
       } finally { 
         console.groupEnd(); 
       }
@@ -1648,16 +1708,31 @@
       const fmt=(n)=>Number.isFinite(n)?`${n.toFixed(4).replace('.',',')} €/kWh`:'—';
       const rango=pvpcLastMeta.rangoFechas?`Periodo oficial: ${pvpcLastMeta.rangoFechas.inicio} - ${pvpcLastMeta.rangoFechas.fin}`:'';
       const fecha=pvpcLastMeta.fechaConsulta?new Date(pvpcLastMeta.fechaConsulta):null;
-      const fechaTxt=fecha?fecha.toLocaleString('es-ES'):'-';
+      
+      const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+      const fechaTxt = fecha ? fecha.toLocaleString('es-ES', dateOptions) : '-';
 
       div.style.display='block';
       div.innerHTML = `
-        <div><strong>PVPC oficial CNMC</strong></div>
-        <div>Precio medio Punta: ${fmt(pvpcLastMeta.precioPunta)}</div>
-        <div>Precio medio Llano: ${fmt(pvpcLastMeta.precioLlano)}</div>
-        <div>Precio medio Valle: ${fmt(pvpcLastMeta.precioValle)}</div>
-        ${rango?`<div>${escapeHtml(rango)}</div>`:''}
-        <div>Consulta: ${escapeHtml(fechaTxt)}</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+          <div style="font-weight:900; color:var(--text); font-size:13px;">PVPC oficial CNMC</div>
+          <div style="font-size:11px; color:var(--muted2);">${escapeHtml(fechaTxt)}</div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px; margin-top:8px;">
+          <div style="display:flex; flex-direction:column; background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); padding:6px 10px; border-radius:8px;">
+            <span style="font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:rgba(239,68,68,1); font-weight:800;">Punta (P1)</span>
+            <span style="font-family:var(--mono); font-weight:700; font-size:13px;">${fmt(pvpcLastMeta.precioPunta)}</span>
+          </div>
+          <div style="display:flex; flex-direction:column; background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.3); padding:6px 10px; border-radius:8px;">
+            <span style="font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:rgba(245,158,11,1); font-weight:800;">Llano (P2)</span>
+            <span style="font-family:var(--mono); font-weight:700; font-size:13px;">${fmt(pvpcLastMeta.precioLlano)}</span>
+          </div>
+          <div style="display:flex; flex-direction:column; background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); padding:6px 10px; border-radius:8px;">
+            <span style="font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:rgba(34,197,94,1); font-weight:800;">Valle (P3)</span>
+            <span style="font-family:var(--mono); font-weight:700; font-size:13px;">${fmt(pvpcLastMeta.precioValle)}</span>
+          </div>
+        </div>
+        ${rango ? `<div style="margin-top:8px; font-size:11px; color:var(--muted2); text-align:right;">${escapeHtml(rango)}</div>` : ''}
       `;
     }
 
