@@ -498,7 +498,48 @@
     @media (max-width: 768px){
       .seoFold{ margin: 30px auto 20px; }
       .seoDetails > summary{ font-size: 12px; }
-      .seoContent{ font-size: 12px; }
+    .seoContent{ font-size: 12px; }
+    }
+
+    /* === LIGHT MODE PATCH: contrast + surfaces (append-only, safe) === */
+    body.light-mode thead th{
+      color: rgba(15,23,42,.65) !important;
+    }
+
+    body.light-mode tbody tr{
+      background: rgba(15,23,42,.03);
+    }
+
+    body.light-mode tbody td{
+      color: rgba(15,23,42,.86);
+    }
+
+    body.light-mode tbody td:nth-child(2){
+      color: var(--text) !important;
+    }
+
+    /* soft surfaces that were using fixed dark rgba(0,0,0,...) */
+    body.light-mode .statCard,
+    body.light-mode .chartTop,
+    body.light-mode .kwhPill{
+      background: rgba(15,23,42,.03);
+      border-color: rgba(15,23,42,.10);
+    }
+
+    /* inputs: avoid dark backgrounds in light mode */
+    body.light-mode .input{
+      background: rgba(255,255,255,.85);
+      border-color: rgba(15,23,42,.14);
+      color: var(--text);
+    }
+
+    /* overlays/panels: menu, toast, tooltip should be light in light mode */
+    body.light-mode .menuPanel,
+    body.light-mode .toast,
+    body.light-mode #globalTooltip{
+      background: rgba(255,255,255,.92);
+      color: var(--text);
+      border-color: rgba(15,23,42,.12);
     }
   </style>
 </head>
