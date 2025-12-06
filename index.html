@@ -745,7 +745,6 @@
     // 1) Crea un proxy (ej. Cloudflare Worker) que añada Access-Control-Allow-Origin:*
     // 2) Define ANTES de cargar este script (en el HTML), por ejemplo:
     //    window.PVPC_PROXY_URL = "https://tu-worker.workers.dev/?url=";
-    //    (No pongo <script>...</script> aquí porque dentro de este fichero rompería el parser)
     // 3) El comparador usará automáticamente el proxy si está disponible
 
     const PVPC_CACHE_TTL = 30 * 60 * 1000;
