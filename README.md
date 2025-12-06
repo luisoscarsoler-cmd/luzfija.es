@@ -3,7 +3,6 @@
 Herramienta gratuita y sin publicidad para comparar tarifas de electricidad en España. Calcula una estimación de factura según potencia contratada (P1/P2), días de facturación y consumos por periodos (punta/llano/valle). Incluye PVPC (tarifa regulada) cuando está disponible (vía proxy por CORS).
 
 🔗 Web: https://luzfija.es
-
 📧 Contacto: hola@luzfija.es
 
 🎯 Características
@@ -27,6 +26,7 @@ Herramienta gratuita y sin publicidad para comparar tarifas de electricidad en E
 ✅ Sin registro (y sin cookies propias)
 
 📊 ¿Qué calculamos?
+
 Inputs del usuario
 
 Potencia contratada P1 y P2 (kW)
@@ -49,36 +49,35 @@ Término variable (consumo × precio por periodo)
 
 Conceptos/impuestos según el modelo implementado (IVA, impuesto eléctrico, etc.)
 
-Nota: es una estimación orientativa. La factura real puede variar por redondeos, condiciones del contrato y cambios regulatorios.
+Nota: Es una estimación orientativa. La factura real puede variar por redondeos, condiciones del contrato y cambios regulatorios.
 
 🏆 PVPC (Tarifa Regulada) y CORS (CNMC)
 
-El PVPC se consulta en comparador.cnmc.gob.es, pero esa API no permite CORS directo desde navegador.
-Por eso la web usa un Cloudflare Worker como proxy CORS con whitelist estricta.
+El PVPC se consulta en comparador.cnmc.gob.es, pero esa API no permite CORS directo desde navegador. Por eso la web usa un Cloudflare Worker como proxy CORS con whitelist estricta.
 
 Cómo se activa en el frontend
 
 En index.html se define la URL del proxy (ya lo tienes preparado en el <head>):
 
 <script>
-  window.PVPC_PROXY_URL = "https://TU-WORKER.workers.dev/?url=";
+  window.PVPC_PROXY_URL = "[https://TU-WORKER.workers.dev/?url=](https://TU-WORKER.workers.dev/?url=)";
 </script>
+
 
 Caché (para reducir llamadas)
 
-Frontend (localStorage): caché por día (fecha ancla + inputs) y límite de entradas
+Frontend (localStorage): Caché por día (fecha ancla + inputs) y límite de entradas.
 
-Worker (edge cache): caché de respuesta (TTL configurable; típico 1h)
+Worker (edge cache): Caché de respuesta (TTL configurable; típico 1h).
 
 Diagrama:
-
 Usuario → caché local (por día)
 ↓ (miss)
-→ Worker (caché edge)
+Worker (caché edge)
 ↓ (miss)
-→ CNMC
+CNMC
 
-Referencia oficial CNMC: https://facturaluz2.cnmc.es/
+📌 Referencia oficial CNMC: https://facturaluz2.cnmc.es/
 
 🛠️ Tecnología
 
@@ -106,13 +105,14 @@ luzfija.es/
 ├── og.png
 └── og.svg
 
-google60cc5bcefe636a81.html se usa para verificación (Search Console).
 
-CNAME se usa para el dominio personalizado.
+google60cc5bcefe636a81.html: Se usa para verificación (Search Console).
+
+CNAME: Se usa para el dominio personalizado.
 
 🧪 Desarrollo local
 
-Importante: si abres index.html con file:// puede fallar la carga de tarifas.json. Mejor levantar un servidor local:
+Importante: Si abres index.html con file:// puede fallar la carga de tarifas.json. Mejor levantar un servidor local:
 
 # Opción 1: Python
 python -m http.server 8080
@@ -122,6 +122,7 @@ npx serve -l 8080
 
 # Abrir:
 # http://localhost:8080
+
 
 🧾 Formato de tarifas.json
 
@@ -168,10 +169,10 @@ Sugerir mejoras: hola@luzfija.es
 Actualizar tarifas: Pull request con cambios en tarifas.json
 
 ⚖️ Avisos Legales
+
 Descargo de responsabilidad
 
 Proyecto educativo y sin ánimo de lucro. Las estimaciones son orientativas y se obtienen consultando información pública disponible.
-
 Para información oficial y vinculante:
 
 CNMC: https://facturaluz2.cnmc.es/
@@ -192,8 +193,4 @@ Privacidad
 
 ✅ Si se usa analítica del hosting (ej. Cloudflare Web Analytics), es sin cookies
 
-📅 Última actualización
-
-Diciembre 2025 — Optimizaciones PVPC + caché
-
-<p align="center"> <strong>⚡ Hecho con ❤️ para ayudar a consumidores españoles ⚡</strong> </p> ::contentReference[oaicite:0]{index=0}
+📅 Última actualización: Diciembre 2025 — Optimizaciones PVPC + caché
