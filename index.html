@@ -75,50 +75,6 @@
   }
   </script>
 
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"BreadcrumbList",
-    "itemListElement":[
-      {"@type":"ListItem","position":1,"name":"Inicio","item":"https://luzfija.es/"}
-    ]
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"FAQPage",
-    "mainEntity":[
-      {
-        "@type":"Question",
-        "name":"¿Qué significan punta, llano y valle?",
-        "acceptedAnswer":{"@type":"Answer","text":"Son periodos horarios con precios distintos en tarifas 3P. En general, punta es más caro, valle más barato y llano intermedio (los horarios exactos dependen del calendario y la tarifa)."}
-      },
-      {
-        "@type":"Question",
-        "name":"¿Qué es P1 y P2 en la potencia contratada?",
-        "acceptedAnswer":{"@type":"Answer","text":"La potencia se paga por días y puede variar por periodo (P1/P2). En muchas viviendas se contrata la misma potencia en ambos, pero puedes optimizarla según tu uso."}
-      },
-      {
-        "@type":"Question",
-        "name":"¿El comparador incluye impuestos?",
-        "acceptedAnswer":{"@type":"Answer","text":"Sí: el cálculo muestra potencia, consumo y una estimación de impuestos/IVA según el modelo del comparador."}
-      },
-      {
-        "@type":"Question",
-        "name":"¿Necesito registrarme?",
-        "acceptedAnswer":{"@type":"Answer","text":"No. Es una herramienta gratuita, sin registro. Puedes además compartir tu configuración por URL."}
-      },
-      {
-        "@type":"Question",
-        "name":"¿De dónde salen los precios?",
-        "acceptedAnswer":{"@type":"Answer","text":"Las tarifas se cargan desde un archivo tarifas.json publicado en esta misma web."}
-      }
-    ]
-  }
-  </script>
-
   <style>
     /* === TU DISEÑO ORIGINAL EXACTO (NO TOCAR) === */
     :root{ --bg0:#070A12; --bg1:#0B1020; --card: rgba(255,255,255,.06); --card2: rgba(255,255,255,.085); --border: rgba(255,255,255,.10); --border2: rgba(255,255,255,.16); --text:#F7F7FB; --muted: rgba(247,247,251,.72); --muted2: rgba(247,247,251,.55); --accent:#8B5CF6; --accent2:#22C55E; --warn:#F59E0B; --danger:#EF4444; --shadow: 0 22px 65px rgba(0,0,0,.52); --shadow2: 0 16px 40px rgba(0,0,0,.50); --radius: 18px; --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; --sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif; }
@@ -881,14 +837,25 @@
 
     function buildPvpcPeriodo(dias){
       const d=Math.min(Math.max(Number(dias)||0,1),365);
-      const end=startOfDayLocal(new Date());
-      const start=addDays(end,-d);
-      const periodoFacturacion=`${formatYMD(start)},${formatYMD(end)}`;
+      
+      // 1. Empezamos con "hoy"
+      const today = new Date();
+      
+      // 2. Definimos el "fin" como AYER (para tener el día completo cerrado)
+      const end = startOfDayLocal(today);
+      end.setDate(end.getDate() - 1);
+      
+      // 3. El inicio es "fin - dias"
+      const start = addDays(end, -d);
+      
+      // Formateo YYYY-MM-DD
+      const periodoFacturacion = `${formatYMD(start)},${formatYMD(end)}`;
+      
       return {
         periodoFacturacion,
-        fechaInicio:`${formatYMD(start)}T00:00:00`,
-        inicioFacturacion:start.getTime(),
-        finFacturacion:end.getTime()
+        fechaInicio: `${formatYMD(start)}T00:00:00`,
+        inicioFacturacion: start.getTime(),
+        finFacturacion: end.getTime()
       };
     }
 
