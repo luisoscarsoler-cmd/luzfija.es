@@ -1,97 +1,55 @@
 ⚡ LuzFija.es — Comparador de Tarifas Eléctricas (España)
-
 Herramienta gratuita y sin publicidad para comparar tarifas de electricidad en España. Calcula una estimación de factura según potencia contratada (P1/P2), días de facturación y consumos por periodos (punta/llano/valle). Incluye PVPC (tarifa regulada) cuando está disponible (vía proxy por CORS).
-
 🔗 Web: https://luzfija.es
-
 📧 Contacto: hola@luzfija.es
-
 🎯 Características
-
 ✅ Comparación de tarifas 1P y 3P (discriminación horaria)
-
 ✅ PVPC incluido cuando está disponible
-
 ✅ Estimación con impuestos (modelo de cálculo del comparador)
-
 ✅ Ranking ordenado por precio total
-
 ✅ Gráfico visual Top 5
-
 ✅ Enlaces directos para contratar
-
 ✅ Compartir configuración por URL
-
 ✅ Exportar resultados a CSV
-
 ✅ Sin registro (y sin cookies propias)
-
 📊 ¿Qué calculamos?
-
 Inputs del usuario
-
 Potencia contratada P1 y P2 (kW)
-
 Días de facturación (1–365)
-
 Consumo por periodos (kWh):
-
 Punta (10h–14h y 18h–22h)
-
 Llano (8h–10h, 14h–18h, 22h–24h)
-
 Valle (0h–8h + fines de semana)
-
 Incluye (estimación)
-
 Término fijo (potencia × días)
-
 Término variable (consumo × precio por periodo)
-
 Conceptos/impuestos según el modelo implementado (IVA, impuesto eléctrico, etc.)
-
 Nota: Es una estimación orientativa. La factura real puede variar por redondeos, condiciones del contrato y cambios regulatorios.
-
 🏆 PVPC (Tarifa Regulada) y CORS (CNMC)
-
 El PVPC se consulta en comparador.cnmc.gob.es, pero esa API no permite CORS directo desde navegador. Por eso la web usa un Cloudflare Worker como proxy CORS con whitelist estricta.
-
 Cómo se activa en el frontend
-
 En index.html se define la URL del proxy (ya lo tienes preparado en el <head>):
-
 <script>
   window.PVPC_PROXY_URL = "[https://TU-WORKER.workers.dev/?url=](https://TU-WORKER.workers.dev/?url=)";
 </script>
 
 
 Caché (para reducir llamadas)
-
 Frontend (localStorage): Caché por día (fecha ancla + inputs) y límite de entradas.
-
 Worker (edge cache): Caché de respuesta (TTL configurable; típico 1h).
-
 Diagrama:
 Usuario → caché local (por día)
 ↓ (miss)
 Worker (caché edge)
 ↓ (miss)
 CNMC
-
 📌 Referencia oficial CNMC: https://facturaluz2.cnmc.es/
-
 🛠️ Tecnología
-
 HTML5 + CSS3 + Vanilla JavaScript (sin frameworks)
-
 Diseño responsive + modo claro/oscuro
-
 Hosting estático (p.ej. Cloudflare Pages / GitHub Pages, según despliegue)
-
 PVPC vía proxy (Cloudflare Workers)
-
 📁 Estructura del proyecto (actual)
-
 luzfija.es/
 ├── CNAME
 ├── README.md
@@ -108,13 +66,9 @@ luzfija.es/
 
 
 google60cc5bcefe636a81.html: Se usa para verificación (Search Console).
-
 CNAME: Se usa para el dominio personalizado.
-
 🧪 Desarrollo local
-
 Importante: Si abres index.html con file:// puede fallar la carga de tarifas.json. Mejor levantar un servidor local:
-
 # Opción 1: Python
 python -m http.server 8080
 
@@ -126,9 +80,7 @@ npx serve -l 8080
 
 
 🧾 Formato de tarifas.json
-
 La app espera un JSON con esta estructura:
-
 {
   "tarifas": [
     {
@@ -146,52 +98,28 @@ La app espera un JSON con esta estructura:
 
 
 La clave tarifas es obligatoria (array de objetos).
-
 🔧 Cloudflare Worker (PVPC Proxy)
-
 Características (según implementación típica del worker):
-
 ✅ Whitelist estricto: solo comparador.cnmc.gob.es/api/ofertas/pvpc
-
 ✅ Caché edge (TTL configurable)
-
 ✅ Headers CORS completos
-
 ✅ User-Agent identificable con contacto
-
 ✅ Solo cachea respuestas 2xx
-
 🤝 Contribuir
-
 Reportar errores: GitHub Issues
-
 Sugerir mejoras: hola@luzfija.es
-
 Actualizar tarifas: Pull request con cambios en tarifas.json
-
 ⚖️ Avisos Legales
-
 Descargo de responsabilidad
-
 Proyecto educativo y sin ánimo de lucro. Las estimaciones son orientativas y se obtienen consultando información pública disponible.
 Para información oficial y vinculante:
-
 CNMC: https://facturaluz2.cnmc.es/
-
 ESIOS (REE): https://www.esios.ree.es/es/pvpc
-
 No afiliación
-
 LuzFija.es no está afiliado con CNMC, Red Eléctrica, organismos oficiales ni comercializadoras. Proyecto independiente y de código abierto.
-
 Privacidad
-
 ❌ Sin cookies propias de seguimiento
-
 ❌ Sin registro de usuarios
-
 ✅ Solo localStorage para guardar preferencias (local)
-
 ✅ Si se usa analítica del hosting (ej. Cloudflare Web Analytics), es sin cookies
-
 📅 Última actualización: Diciembre 2025 — Optimizaciones PVPC + caché
