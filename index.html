@@ -129,6 +129,22 @@
   }
   </script>
 
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "LuzFija.es",
+    "url": "https://luzfija.es/",
+    "email": "hola@luzfija.es",
+    "contactPoint": [{
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "email": "hola@luzfija.es",
+      "availableLanguage": ["es"]
+    }]
+  }
+  </script>
+
   <script>
     (function(){
       var key='almax_theme';
@@ -634,6 +650,10 @@
               <span class="mi-left">🔗 Compartir configuración</span>
               <span class="mi-right">URL</span>
             </button>
+            <a class="menuItem" href="mailto:hola@luzfija.es" role="menuitem" style="text-decoration:none;">
+              <span class="mi-left">✉️ Contacto</span>
+              <span class="mi-right">email</span>
+            </a>
             <div class="menuDivider"></div>
             <button class="menuItem" id="btnReset" type="button" role="menuitem">
               <span class="mi-left">↺ Restablecer</span>
@@ -852,6 +872,26 @@
             <li>✓ PVPC regulada (CNMC) cuando está disponible</li>
             <li>✓ Comparación directa</li>
           </ul>
+        </div>
+
+        <div id="contacto">
+          <h3 style="font-size:14px; font-weight:900; margin-bottom:10px; color:var(--text);">Contacto</h3>
+
+          <p style="color:var(--muted); font-size:12px; line-height:1.7; margin:0;">
+            Sugerencias, errores o dudas sobre el comparador:
+          </p>
+
+          <div style="margin-top:12px; padding:12px 12px; border-radius:14px; border:1px solid var(--border); background:rgba(255,255,255,.04);">
+            <div style="font-size:11px; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted2); font-weight:900; margin-bottom:6px;">
+              ✉️ Email
+            </div>
+            <a href="mailto:hola@luzfija.es" style="color:var(--accent); font-weight:900; text-decoration:underline; font-size:13px;">
+              hola@luzfija.es
+            </a>
+            <div style="margin-top:8px; font-size:11px; color:var(--muted2); line-height:1.4;">
+              Respondo en cuanto puedo (proyecto gratuito).
+            </div>
+          </div>
         </div>
       </div>
 
